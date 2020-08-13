@@ -1,13 +1,10 @@
-import * as express from "express";
+require("dotenv").config();
+import { server } from "./app";
+import "./io";
+import { settings } from "./settings";
 
-const app = express();
+const { port } = settings;
 
-const root = "/api";
-
-app.get(root + "/new", function (req, res) {
-  res.send("Hello World");
-});
-
-app.listen(3000, () => {
-  console.log("app started");
+server.listen(port, () => {
+  console.log(`App is listening on port ${port}`);
 });

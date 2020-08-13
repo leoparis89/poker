@@ -18,6 +18,7 @@ Thumbs.db
 *~
 
 # General
+dist/
 log/
 *.log
 
