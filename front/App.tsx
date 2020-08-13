@@ -6,6 +6,7 @@ import { Home } from "./home/Home";
 import { Login } from "./Login";
 import { Session } from "./Session";
 import { Game } from "./game/Game";
+import { Navbar } from "react-bootstrap";
 
 export const App = function () {
   return (

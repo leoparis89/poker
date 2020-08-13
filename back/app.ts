@@ -69,11 +69,7 @@ const io = Socket.listen(server)
 
 io.on("connection", socket => {
   console.log(`User ${socket.request.user.id} has connected.`);
-  socket.on("disconnect", () => {
-    debugger;
-  });
-  socket.on("joinGame", id => {
-    debugger;
-  });
+  socket.on("disconnect", () => {});
+  socket.on("joinGame", id => {});
   // var cookief = cookie.parse(socket.handshake.headers.cookie);
 });
