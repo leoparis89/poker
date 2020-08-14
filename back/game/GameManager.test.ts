@@ -1,12 +1,13 @@
-import { GameManager } from "./GameManager";
-import { Socket } from "socket.io";
-import { Game } from "./Game";
 import shortid from "shortid";
+import { Socket } from "socket.io";
+import { userSocketMock } from "../_fixtures";
+import { Game } from "./Game";
+import { GameManager } from "./GameManager";
 
 jest.mock("shortId");
 
 beforeAll(() => {
-  (shortid.generate as jest.Mock).mockReturnValue("id");
+  (shortid.generate as jest.Mock).mockReturnValue("mockGameId");
 });
 
 describe("GameManager", () => {
@@ -20,17 +21,26 @@ describe("GameManager", () => {
       gameManager.create("user");
 
       expect(gameManager.activeGames).toEqual(
-        new Map([["id", new Game("user")]])
+        new Map([["mockGameId", new Game("user")]])
       );
     });
   });
 
-  describe("join", () => {
+  describe("connect", () => {
     it("should throw and error if game doesn't exist", () => {
       const gameManager = new GameManager();
       expect(() =>
-        gameManager.join("nonExistentId", {} as Socket)
+        gameManager.connect("nonExistentId", {} as Socket)
       ).toThrowError("Game with id:nonExistentId doesn't exist.");
+    });
+
+    it("connect to the requested game with the provided socket", () => {
+      const gameManager = new GameManager();
+      gameManager.create("creatorId");
+      const createdGame = gameManager.activeGames.get("mockGameId");
+      const spy = spyOn(createdGame, "connect" as never);
+      gameManager.connect("mockGameId", userSocketMock);
+      expect(spy).toHaveBeenCalledWith(userSocketMock);
     });
   });
 });

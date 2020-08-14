@@ -4,7 +4,6 @@ import { SessionContext, logout } from "./Session";
 
 export function NavBar() {
   const { user } = useContext(SessionContext);
-  console.log(user && user.photos[0].value);
   return (
     <Navbar bg="dark" variant="dark">
       <Navbar.Brand href="#home">
@@ -27,7 +26,7 @@ export function NavBar() {
             width="30"
             height="30"
             style={{ borderRadius: "50%", margin: "0 20px" }}
-            src={user.photos[0].value as any}
+            src={user.photos?.[0].value as any}
           />
           <Navbar.Text onClick={logout} style={{ cursor: "pointer" }}>
             Logout

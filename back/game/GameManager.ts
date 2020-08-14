@@ -7,12 +7,21 @@ export class GameManager {
   create(creatorId: string) {
     const game = new Game(creatorId);
     this.activeGames.set(game.id, game);
+    return game;
   }
 
-  join(gameId, socket: Socket) {
+  connect(gameId, socket: Socket) {
     const gameToJoin = this.activeGames.get(gameId);
     if (!gameToJoin) {
       throw new Error(`Game with id:${gameId} doesn't exist.`);
     }
+    gameToJoin.connect(socket);
+    return gameToJoin;
+  }
+
+  disconnectFromALlGames(socket: Socket) {
+    this.activeGames.forEach(game => {});
   }
 }
+
+export const gameManager = new GameManager();

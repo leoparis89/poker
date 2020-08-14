@@ -1,4 +1,7 @@
-export const mockProfile: IGoogleProfile = {
+import { Profile } from "passport-google-oauth20";
+import { UserSocket } from "./interfaces";
+
+export const mockProfile = {
   id: "117689296290332690711",
   displayName: "Lev Kowalski",
   name: { familyName: "Kowalski", givenName: "Lev" },
@@ -18,4 +21,19 @@ export const mockProfile: IGoogleProfile = {
     picture: "https://foo.com",
     locale: "fr"
   }
-};
+} as Profile;
+
+export const userSocketMock = {
+  request: { user: { id: "mockId" } },
+  emit: jest.fn() as any
+} as UserSocket;
+
+export const profileMock1 = {
+  id: "mockId1",
+  displayName: "John Doe"
+} as Profile;
+
+export const profileMock2 = {
+  id: "mockId2",
+  displayName: "Bob Williams"
+} as Profile;

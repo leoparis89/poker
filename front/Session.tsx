@@ -2,9 +2,10 @@ import Cookies from "js-cookie";
 import React, { useEffect, useState } from "react";
 import { getProfile } from "./sessionService";
 import { ToastContainer, toast } from "react-toastify";
+import { Profile } from "passport-google-oauth20";
 
 interface ISessionContext {
-  user: undefined | IGoogleProfile;
+  user: undefined | Profile;
   setUser: any;
 }
 const initalContext: ISessionContext = {

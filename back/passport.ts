@@ -1,7 +1,7 @@
-import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import { Strategy as GoogleStrategy, Profile } from "passport-google-oauth20";
 import passport from "passport";
 
-import { usersDb } from "./mockDb";
+import { usersDb } from "./db/users";
 passport.use(
   new GoogleStrategy(
     {
@@ -10,7 +10,7 @@ passport.use(
       callbackURL: "http://localhost:3000/auth/google/callback"
     },
     function (accessToken, refreshToken, profile, cb) {
-      usersDb[profile.id] = profile;
+      usersDb.set(profile);
       cb(undefined, profile);
       //   User.findOrCreate({ googleId: profile.id }, function (err, user) {
       //     return cb(err, user);
@@ -23,8 +23,8 @@ passport.serializeUser(function (user: any, done) {
   done(null, user.id);
 });
 
-passport.deserializeUser(function (id: number, done) {
-  done(undefined, usersDb[id]);
+passport.deserializeUser(function (id: string, done) {
+  done(undefined, usersDb.get(id));
 });
 
 export default passport;

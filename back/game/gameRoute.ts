@@ -1,12 +1,11 @@
 import { RequestHandler, Router } from "express";
-import { Game } from "./Game";
+import { gameManager } from "./GameManager";
 export const router = Router();
 
 export const handleNewGame: RequestHandler = (req, res) => {
-  const game = new Game((req.user as any).id);
-  const { id, creatorId: creator } = game;
-  // activeGames.set(id, game);
-  res.json({ id, creator });
+  const newGame = gameManager.create((req.user as any).id);
+  const { id, creatorId } = newGame;
+  res.json({ id, creatorId });
 };
 
 router.post("/new", handleNewGame);

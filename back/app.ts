@@ -1,10 +1,11 @@
 import express, { Response, Router } from "express";
-import { authGuard } from "./authGuard";
-import { router } from "./game/gameRoute";
-import passport from "./passport";
+import expressSession from "express-session";
 import http from "http";
 import Socket from "socket.io";
-import expressSession from "express-session";
+import { authGuard } from "./authGuard";
+import { gameManager } from "./game/GameManager";
+import { router } from "./game/gameRoute";
+import passport from "./passport";
 
 const session = expressSession({
   secret: "coconut",
@@ -16,7 +17,7 @@ const app = express();
 app.use(require("cookie-parser")());
 app.use(require("body-parser").urlencoded({ extended: true }));
 
-const myMiddleWare = Router().use(
+export const myMiddleWare = Router().use(
   session,
   passport.initialize(),
   passport.session()
@@ -52,24 +53,3 @@ app.get("/profile", authGuard, (req, res) => {
 });
 
 export const server = http.createServer(app);
-
-const io = Socket.listen(server)
-  .use((socket, next) => {
-    myMiddleWare(socket.request, {} as Response, next);
-  })
-  .use((socket, next) => {
-    const isAuth = socket.request.isAuthenticated();
-    if (!isAuth) {
-      socket.send("unauthorized");
-      socket.disconnect();
-      return;
-    }
-    next();
-  });
-
-io.on("connection", socket => {
-  console.log(`User ${socket.request.user.id} has connected.`);
-  socket.on("disconnect", () => {});
-  socket.on("joinGame", id => {});
-  // var cookief = cookie.parse(socket.handshake.headers.cookie);
-});
