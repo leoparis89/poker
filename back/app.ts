@@ -52,4 +52,13 @@ app.get("/profile", authGuard, (req, res) => {
   res.send(req.user);
 });
 
+/**
+ * serve static front end files
+ */
+app.use(express.static(__dirname + "/../front"));
+app.use((req, res) => {
+  var path = require("path");
+  res.sendFile(path.resolve(__dirname + "/../front/index.html"));
+});
+
 export const server = http.createServer(app);

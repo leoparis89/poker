@@ -4,7 +4,7 @@ import { userSocketMock } from "../_fixtures";
 import { Game } from "./Game";
 import { GameManager } from "./GameManager";
 
-jest.mock("shortId");
+jest.mock("shortid");
 
 beforeAll(() => {
   (shortid.generate as jest.Mock).mockReturnValue("mockGameId");

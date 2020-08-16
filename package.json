@@ -4,9 +4,12 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
+    "start": "node dist/back/index.js",
     "back:dev": "nodemon -w",
     "back:watch": "tsc -w -p tsconfig.back.json",
+    "back:build": "tsc -p tsconfig.back.json",
     "front:dev": "yarn poi --serve front/index.tsx",
+    "front:build": "yarn poi --prod ./front -d dist/front",
     "test:watch": "jest --watch",
     "test": "jest"
   },

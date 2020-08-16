@@ -4,7 +4,7 @@ import { UserSocket } from "../interfaces";
 import { profileMock1, profileMock2, userSocketMock } from "../_fixtures";
 import { Game } from "./Game";
 
-jest.mock("shortId");
+jest.mock("shortid");
 jest.mock("../db/users");
 
 beforeAll(() => {
