@@ -1,0 +1,24 @@
+sudo: required #is required to use docker service in travis
+
+language: node_js
+
+node_js:
+  - "12"
+
+services:
+  - docker # required, but travis uses older version of docker :(
+
+install:
+  - echo "install nothing!" # put your normal pre-testing installs here
+
+script:
+  - echo "no tests!" # put your normal testing scripts here
+
+after_success:
+  - docker --version # document the version travis is using
+  - pip install --user awscli # install aws cli w/o sudo
+  - export PATH=$PATH:$HOME/.local/bin # put aws in the path
+  - aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 928063651396.dkr.ecr.eu-west-1.amazonaws.com
+  - docker build -t poker .
+  - docker tag poker:latest 928063651396.dkr.ecr.eu-west-1.amazonaws.com/poker:latest
+  - docker push 928063651396.dkr.ecr.eu-west-1.amazonaws.com/poker:latest

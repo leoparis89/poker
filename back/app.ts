@@ -1,12 +1,13 @@
-import express, { Response, Router } from "express";
+import express, { Router } from "express";
 import expressSession from "express-session";
 import http from "http";
-import Socket from "socket.io";
+import pjson from "../package.json";
 import { authGuard } from "./authGuard";
-import { gameManager } from "./game/GameManager";
 import { router } from "./game/gameRoute";
 import passport from "./passport";
+import { settings } from "./settings";
 
+const { port } = settings;
 const session = expressSession({
   secret: "coconut",
   resave: true,
@@ -52,6 +53,9 @@ app.get("/profile", authGuard, (req, res) => {
   res.send(req.user);
 });
 
+app.get("/healthcheck", (req, res) => {
+  res.json(`Poker v${pjson.version} is listening on port ${port}`);
+});
 /**
  * serve static front end files
  */
