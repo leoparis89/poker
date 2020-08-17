@@ -7,6 +7,7 @@ import { Login } from "./Login";
 import { Session } from "./Session";
 import { Game } from "./game/Game";
 import { Navbar } from "react-bootstrap";
+import { Footer } from "./Footer";
 
 export const App = function () {
   return (
@@ -20,6 +21,7 @@ export const App = function () {
         </Switch>
       </Router>
       <ToastContainer />
+      <Footer></Footer>
     </Session>
   );
 };
