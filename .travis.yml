@@ -22,3 +22,4 @@ after_success:
   - docker build -t poker .
   - docker tag poker:latest 928063651396.dkr.ecr.eu-west-1.amazonaws.com/poker:latest
   - docker push 928063651396.dkr.ecr.eu-west-1.amazonaws.com/poker:latest
+  - aws ecs update-service --region eu-west-1 --force-new-deployment --service poker-service
