@@ -6,7 +6,11 @@ import { router } from "./game/gameRoute";
 import passport from "./passport";
 import { settings } from "./settings";
 
-const { port, version } = settings;
+const {
+  port,
+  version,
+  oAuth: { redirectUrl }
+} = settings;
 const session = expressSession({
   secret: "coconut",
   resave: true,
@@ -36,7 +40,7 @@ app.get(
   (req, res) => {
     // Successful authentication, redirect home.
     res.cookie("loggedIn", true);
-    res.redirect("http://localhost:4000/home");
+    res.redirect(redirectUrl);
   }
 );
 

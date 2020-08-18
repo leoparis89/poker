@@ -5,7 +5,7 @@ export class SocketService {
   private _socket: SocketIOClient.Socket | null = null;
 
   public init() {
-    this._socket = Socket("http://localhost:3000");
+    this._socket = Socket(require("./urls").socketIo);
     this.initialized = true;
     return this._socket;
   }

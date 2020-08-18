@@ -2,12 +2,18 @@ import { Strategy as GoogleStrategy, Profile } from "passport-google-oauth20";
 import passport from "passport";
 
 import { usersDb } from "./db/users";
+import { settings } from "./settings";
+
+const {
+  oAuth: { clientID, clientSecret, callbackURL }
+} = settings;
+
 passport.use(
   new GoogleStrategy(
     {
-      clientID: process.env.CLIENT_ID!,
-      clientSecret: process.env.CLIENT_SECRET!,
-      callbackURL: "http://localhost:3000/auth/google/callback"
+      clientID,
+      clientSecret,
+      callbackURL
     },
     function (accessToken, refreshToken, profile, cb) {
       usersDb.set(profile);
