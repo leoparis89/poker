@@ -4,6 +4,7 @@ import { socketService } from "../socketService";
 import { Profile } from "passport-google-oauth20";
 import { UserCard } from "./UserCard";
 import { Container, Row, Col } from "react-bootstrap";
+import { ChatWindow } from "./ChatWindow";
 
 export function Game(props) {
   const [activeGame, setSocket] = useState<string>();
@@ -19,15 +20,19 @@ export function Game(props) {
     }
     return () => {};
   }, []);
+  console.log(users);
   return (
     <Container>
       <Row>
         {users.map(user => (
-          <Col sm={4}>
-            <UserCard user={user} />
+          <Col sm={4} key={user.id}>
+            <UserCard user={user} key={user.id} />
           </Col>
         ))}
       </Row>
+      <div>
+        <ChatWindow users={users}></ChatWindow>
+      </div>
     </Container>
   );
 }

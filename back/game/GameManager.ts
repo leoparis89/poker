@@ -18,10 +18,6 @@ export class GameManager {
     gameToJoin.connect(socket);
     return gameToJoin;
   }
-
-  disconnectFromALlGames(socket: Socket) {
-    this.activeGames.forEach(game => {});
-  }
 }
 
 export const gameManager = new GameManager();
