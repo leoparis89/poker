@@ -160,7 +160,8 @@ describe("Game", () => {
         }
       ]);
     });
-    test("quit-game event received should remove player", () => {
+
+    test("quit-game-request event received should remove player", () => {
       const game = createGame();
 
       const socket1 = makeEmitter("mockId1");
@@ -168,7 +169,7 @@ describe("Game", () => {
       game.connect(socket1);
       game.connect(socket2);
 
-      socket1.emit("quit-game");
+      socket1.emit("quit-game-request");
       expect(game.players.get("mockId1")).toEqual(undefined);
       expect(game.players.get("mockId2")).not.toEqual(undefined);
     });

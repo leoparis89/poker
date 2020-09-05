@@ -48,10 +48,13 @@ export class Game {
     }
 
     const handleChatText = text => this.broadcastChat(user, text);
-    const handleQuitGame = () => this.removePlayer(userId);
+    const handleQuitGame = () => {
+      this.removePlayer(userId);
+      socket.emit("quit-game");
+    };
 
     socket.on("chat-text", handleChatText);
-    socket.on("quit-game", handleQuitGame);
+    socket.on("quit-game-request", handleQuitGame);
   }
 
   removeListeners(socket: UserSocket) {

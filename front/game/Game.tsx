@@ -1,16 +1,16 @@
-import { Profile } from "passport-google-oauth20";
-import React, { useEffect, useState, useContext } from "react";
-import { Alert, Col, Container, Row } from "react-bootstrap";
-import { useRouteMatch } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
+import { Alert, Col, Container, Row, Button } from "react-bootstrap";
+import { useRouteMatch, Redirect } from "react-router-dom";
+import { UserData } from "../../common/interfaces";
+import { SessionContext } from "../context/SessionContext";
 import { socketService } from "../socketService";
 import { ChatWindow } from "./ChatWindow";
 import { UserCard } from "./UserCard";
-import { SessionContext } from "../context/SessionContext";
-import { UserData } from "../../common/interfaces";
 
 export function Game(props) {
   const [activeGame, setActiveGame] = useState<string>();
   const [userDatas, setUserDatas] = useState<UserData[]>([]);
+  const [quit, setQuit] = useState<boolean>(false);
   const [error, setError] = useState<string>();
   const { user, connected } = useContext(SessionContext);
   const gameId = useRouteMatch<{ id: string }>().params.id;
@@ -32,9 +32,16 @@ export function Game(props) {
       socket.on("connected-users", (users: UserData[]) => {
         setUserDatas(users);
       });
+      socket.on("quit-game", () => {
+        setQuit(true);
+      });
     });
     return () => {};
   }, [user]);
+
+  if (quit) {
+    return <Redirect exact to="/home" />;
+  }
 
   return (
     <Container>
@@ -43,6 +50,9 @@ export function Game(props) {
       ) : (
         <div>
           <Alert variant="success">{activeGame}</Alert>
+          <Button onClick={quitGame} variant="danger">
+            Leave game
+          </Button>
           <Row>
             {userDatas.map(({ profile, gameData }) => (
               <Col sm={4} key={profile.id}>
@@ -60,3 +70,5 @@ export function Game(props) {
     </Container>
   );
 }
+
+const quitGame = () => socketService.socket.emit("quit-game-request");
