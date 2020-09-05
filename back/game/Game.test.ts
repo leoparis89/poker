@@ -10,6 +10,9 @@ import {
 } from "../_fixtures";
 import { Game } from "./Game";
 import { socketManager } from "./SocketManager";
+import { EventEmitter } from "events";
+import { gameManager } from "./GameManager";
+import { eventManager } from "react-toastify/dist/core";
 
 // jest.mock(userSockets);
 jest.mock("shortid");
@@ -26,6 +29,7 @@ beforeAll(() => {
     } as Profile;
   });
 
+  socketManager.emitter = new EventEmitter();
   MockDate.set("1970-01-02");
 });
 
@@ -39,18 +43,27 @@ describe("Game", () => {
   });
 
   describe("connect", () => {
-    it("should send connected users to newly connected socket", () => {
+    it("should send players data to newly connected socket", () => {
       const game = createGame();
       const socket1 = makeSocket("mockId1");
       const socket2 = makeSocket("mockId2");
       game.connect(socket1);
       expect(socket1.emit).toHaveBeenCalledWith("connected-users", [
-        { displayName: "display-name-mockId1", id: "mockId1" }
+        {
+          gameData: { online: true, score: 0 },
+          profile: { displayName: "display-name-mockId1", id: "mockId1" }
+        }
       ]);
       game.connect(socket2);
       expect(socket2.emit).toHaveBeenCalledWith("connected-users", [
-        { displayName: "display-name-mockId1", id: "mockId1" },
-        { displayName: "display-name-mockId2", id: "mockId2" }
+        {
+          gameData: { online: true, score: 0 },
+          profile: { displayName: "display-name-mockId1", id: "mockId1" }
+        },
+        {
+          gameData: { online: true, score: 0 },
+          profile: { displayName: "display-name-mockId2", id: "mockId2" }
+        }
       ]);
     });
 
@@ -83,21 +96,6 @@ describe("Game", () => {
           text: "cool",
           user: { displayName: "display-name-mockId1", id: "mockId1" }
         }
-      ]);
-    });
-  });
-
-  describe("getConnectedUsers", () => {
-    it("should return user profiles", () => {
-      const game = createGame();
-      game.players = new Map([
-        ["player1", { score: 1 }],
-        ["player2", { score: 3 }]
-      ]);
-      const result = game.getConnectedUsers();
-      expect(result).toEqual([
-        { displayName: "display-name-player1", id: "player1" },
-        { displayName: "display-name-player2", id: "player2" }
       ]);
     });
   });
@@ -173,6 +171,50 @@ describe("Game", () => {
       socket1.emit("quit-game");
       expect(game.players.get("mockId1")).toEqual(undefined);
       expect(game.players.get("mockId2")).not.toEqual(undefined);
+    });
+  });
+
+  describe("getPlayerGameDatas", () => {
+    it("should return the right value", () => {
+      const game = createGame();
+
+      const socket1 = makeEmitter("mockId1");
+      const socket2 = makeEmitter("mockId2");
+      game.connect(socket1);
+      game.connect(socket2);
+      const result = game.getPlayerGameDatas();
+      expect(result).toEqual([
+        {
+          gameData: { online: true, score: 0 },
+          profile: { displayName: "display-name-mockId1", id: "mockId1" }
+        },
+        {
+          gameData: { online: true, score: 0 },
+          profile: { displayName: "display-name-mockId2", id: "mockId2" }
+        }
+      ]);
+    });
+  });
+
+  describe("events by socket manager", () => {
+    test("add-user event should pass player online if he is in the game ", () => {
+      const game = createGame();
+      game.players.set("mockId", { score: 1, online: false });
+      socketManager.emitter.emit("add-user", "mockId");
+      expect(game.players.get("mockId")?.online).toEqual(true);
+      game.players = new Map();
+      socketManager.emitter.emit("add-user", "mockId");
+      expect(game.players.get("mockId")?.online).toEqual(undefined);
+    });
+
+    test("remove-user event should pass player offline if he is in the game ", () => {
+      const game = createGame();
+      game.players.set("mockId", { score: 1, online: true });
+      socketManager.emitter.emit("remove-user", "mockId");
+      expect(game.players.get("mockId")?.online).toEqual(false);
+      game.players = new Map();
+      socketManager.emitter.emit("remove-user", "mockId");
+      expect(game.players.get("mockId")?.online).toEqual(undefined);
     });
   });
 });

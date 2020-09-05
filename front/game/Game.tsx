@@ -6,10 +6,11 @@ import { socketService } from "../socketService";
 import { ChatWindow } from "./ChatWindow";
 import { UserCard } from "./UserCard";
 import { SessionContext } from "../context/SessionContext";
+import { UserData } from "../../common/interfaces";
 
 export function Game(props) {
   const [activeGame, setActiveGame] = useState<string>();
-  const [users, setUsers] = useState<Profile[]>([]);
+  const [userDatas, setUserDatas] = useState<UserData[]>([]);
   const [error, setError] = useState<string>();
   const { user, connected } = useContext(SessionContext);
   const gameId = useRouteMatch<{ id: string }>().params.id;
@@ -28,8 +29,8 @@ export function Game(props) {
 
     socket.on("join-success", gameId => {
       setActiveGame(gameId);
-      socket.on("connected-users", (users: Profile[]) => {
-        setUsers(users);
+      socket.on("connected-users", (users: UserData[]) => {
+        setUserDatas(users);
       });
     });
     return () => {};
@@ -43,9 +44,13 @@ export function Game(props) {
         <div>
           <Alert variant="success">{activeGame}</Alert>
           <Row>
-            {users.map(user => (
-              <Col sm={4} key={user.id}>
-                <UserCard user={user} key={user.id} />
+            {userDatas.map(({ profile, gameData }) => (
+              <Col sm={4} key={profile.id}>
+                <UserCard
+                  profile={profile}
+                  gameData={gameData}
+                  key={profile.id}
+                />
               </Col>
             ))}
           </Row>

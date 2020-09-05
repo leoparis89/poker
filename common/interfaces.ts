@@ -5,3 +5,13 @@ export interface ChatMessage {
   user: Profile;
   date: number;
 }
+
+export interface GameData {
+  score: number;
+  online: boolean;
+}
+
+export interface UserData {
+  profile: Profile;
+  gameData: GameData;
+}

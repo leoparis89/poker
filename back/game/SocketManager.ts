@@ -1,9 +1,11 @@
 import { UserSocket } from "../interfaces";
+import { EventEmitter } from "events";
 
 type userId = string;
 
 export class SocketManager {
   sockets = new Map<userId, UserSocket[]>();
+  emitter = new EventEmitter();
 
   addSocket(socket: UserSocket) {
     const id = socket.request.user.id;
@@ -53,10 +55,12 @@ export class SocketManager {
 
   private addUser(id: userId) {
     this.sockets.set(id, []);
+    this.emitter.emit("add-user", id);
   }
 
   private removeUser(id: userId) {
     this.sockets.delete(id);
+    this.emitter.emit("remove-user", id);
   }
 }
 

@@ -1,14 +1,13 @@
 import * as shortid from "shortid";
+
 import { UserSocket } from "../interfaces";
 import { Profile } from "passport-google-oauth20";
 import { usersDb } from "../db/users";
-import { ChatMessage } from "../../common/interfaces";
+import { ChatMessage, UserData } from "../../common/interfaces";
 import { socketManager } from "./SocketManager";
+import { GameData } from "../../common/interfaces";
 
 type userId = string;
-interface GameData {
-  score: number;
-}
 export class Game {
   id: string;
   players = new Map<userId, GameData>();
@@ -16,6 +15,18 @@ export class Game {
 
   constructor(public creatorId: userId) {
     this.id = shortid.generate();
+
+    socketManager.emitter
+      .on("add-user", userId => this.updateOnline(userId, true))
+      .on("remove-user", userId => this.updateOnline(userId, false));
+  }
+
+  updateOnline(userId: userId, online: boolean) {
+    const gameData = this.players.get(userId)!;
+    if (gameData) {
+      this.players.set(userId, { ...gameData, online });
+    }
+    this.broadcastPlayers();
   }
 
   broadcastChat = (user: Profile, text) => {
@@ -60,7 +71,7 @@ export class Game {
   }
 
   refresh(socket: UserSocket) {
-    socket.emit("connected-users", this.getConnectedUsers());
+    socket.emit("connected-users", this.getPlayerGameDatas());
     socket.emit("chat-history", this.messages);
   }
 
@@ -69,25 +80,28 @@ export class Game {
   }
 
   addPlayer(userId: userId) {
-    this.players.set(userId, { score: 0 });
-    this.broadcastConnectedUsers();
+    this.players.set(userId, { score: 0, online: true });
+    this.broadcastPlayers();
   }
 
-  broadcastConnectedUsers() {
-    this.broadcast("connected-users", this.getConnectedUsers());
+  broadcastPlayers() {
+    this.broadcast("connected-users", this.getPlayerGameDatas());
   }
 
   removePlayer(userId: userId) {
     this.players.delete(userId);
-    this.broadcastConnectedUsers();
+    this.broadcastPlayers();
   }
 
-  getConnectedUsers() {
-    const payload: Profile[] = [];
-    for (const id of this.players.keys()) {
-      payload.push(usersDb.get(id)!);
-    }
-    return payload;
+  getPlayerGameDatas(): UserData[] {
+    const result: UserData[] = [];
+    this.players.forEach((gameData, userId) => {
+      result.push({
+        gameData,
+        profile: usersDb.get(userId)!
+      });
+    });
+    return result;
   }
 
   broadcast(topic: string, payload: any) {
