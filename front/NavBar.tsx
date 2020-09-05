@@ -1,9 +1,11 @@
 import React, { useContext } from "react";
 import { Navbar } from "react-bootstrap";
-import { SessionContext, logout } from "./Session";
+import { SessionContext, logout } from "./context/SessionContext";
+import { Link } from "react-router-dom";
 
 export function NavBar() {
-  const { user } = useContext(SessionContext);
+  const { user, connected } = useContext(SessionContext);
+  console.log(connected);
   return (
     <Navbar bg="dark" variant="dark">
       <Navbar.Brand href="#home">
@@ -16,6 +18,9 @@ export function NavBar() {
         />{" "}
         Poker
       </Navbar.Brand>
+      <Navbar.Text>
+        <Link to="/home">Home</Link>
+      </Navbar.Text>
       <Navbar.Toggle />
       {user && (
         <Navbar.Collapse className="justify-content-end">
@@ -28,6 +33,7 @@ export function NavBar() {
             style={{ borderRadius: "50%", margin: "0 20px" }}
             src={user.photos?.[0].value as any}
           />
+          <Online online={connected} />
           <Navbar.Text onClick={logout} style={{ cursor: "pointer" }}>
             Logout
           </Navbar.Text>
@@ -36,3 +42,9 @@ export function NavBar() {
     </Navbar>
   );
 }
+
+const Online = ({ online }) => (
+  <div style={{ color: online ? "green" : "red" }}>
+    {online ? "Online" : "Offline"}
+  </div>
+);

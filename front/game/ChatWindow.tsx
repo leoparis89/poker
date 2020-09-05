@@ -1,47 +1,40 @@
-import { Profile } from "passport-google-oauth20";
 import styled from "@emotion/styled";
-import React, { FunctionComponent, useEffect, useState } from "react";
+import moment from "moment";
+import React, {
+  FunctionComponent,
+  useEffect,
+  useState,
+  useContext
+} from "react";
 import { Button, Card, FormControl, InputGroup } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { ChatMessage } from "../../common/interfaces";
 import { socketService } from "../socketService";
+import { SessionContext } from "../context/SessionContext";
 
-import moment from "moment";
-type ChatMessageWithProfile = ChatMessage & { user: Profile };
-
-export const ChatWindow: FunctionComponent<{ users: Profile[] }> = ({
-  users,
-}) => {
+export const ChatWindow: FunctionComponent<{}> = () => {
   const { register, handleSubmit, watch, errors, reset } = useForm();
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [messagesWithProfile, setMessagesWithProfile] = useState<
-    ChatMessageWithProfile[]
-  >([]);
 
+  const { user, connected } = useContext(SessionContext);
   useEffect(() => {
-    const lastMessage = messages[messages.length - 1];
-    const profile = users.find((user) => user.id === lastMessage.userId);
-    if (!profile) {
+    if (!user) {
       return;
     }
-    setMessagesWithProfile((prevMessages) => [
-      ...prevMessages,
-      { ...lastMessage, user: profile },
-    ]);
-  }, [messages]);
 
-  useEffect(() => {
-    socketService.socket.on("chat-receive", (message: ChatMessage) => {
-      setMessages((prevMessages) => [...prevMessages, message]);
+    socketService.socket.on("chat-history", (messages: ChatMessage[]) => {
+      setMessages(messages);
+      socketService.socket.on("chat-message", (message: ChatMessage) => {
+        setMessages(prevMessages => [...prevMessages, message]);
+      });
     });
-    // TODO ceanup
-  }, []);
+    return () => {};
+  }, [user]);
 
-  const onSubmit = (val) => {
-    socketService.socket.emit("chat-send", val.chatInput);
+  const onSubmit = val => {
+    socketService.socket.emit("chat-text", val.chatInput);
     reset();
-    console.log(val);
   };
 
   return (
@@ -49,7 +42,7 @@ export const ChatWindow: FunctionComponent<{ users: Profile[] }> = ({
       <h2>Chatroom</h2>
       <Frame>
         <MessageFrame>
-          {messagesWithProfile.map((message) => (
+          {messages.map(message => (
             <Message message={message}></Message>
           ))}
         </MessageFrame>
@@ -71,9 +64,7 @@ export const ChatWindow: FunctionComponent<{ users: Profile[] }> = ({
   );
 };
 
-const Message: FunctionComponent<{ message: ChatMessageWithProfile }> = ({
-  message,
-}) => (
+const Message: FunctionComponent<{ message: ChatMessage }> = ({ message }) => (
   <div>
     <Card style={{ borderRadius: 10, margin: 10, display: "inline-block" }}>
       <Card.Body>
@@ -91,11 +82,11 @@ const Message: FunctionComponent<{ message: ChatMessageWithProfile }> = ({
 
 const MessageFrame = styled.div({
   height: 600,
-  overflow: "scroll",
+  overflow: "scroll"
 });
 const Frame = styled.div({
   // height: 300,
   // border: "1pw black solid",
   margin: "10px 0",
-  boxShadow: "0 2px 10px 0 rgb(185 185 185)",
+  boxShadow: "0 2px 10px 0 rgb(185 185 185)"
 });

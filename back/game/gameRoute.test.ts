@@ -14,8 +14,10 @@ describe("handleNewGame", () => {
       res as Response,
       jest.fn()
     );
-    expect(gameManager.activeGames.get("mockGameId")).toEqual(
-      new Game("mockUserId")
-    );
+
+    const addedGame = gameManager.activeGames.get("mockGameId");
+    const expected = new Game("mockUserId");
+
+    expect(JSON.stringify(addedGame)).toEqual(JSON.stringify(expected));
   });
 });

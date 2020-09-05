@@ -1,5 +1,6 @@
 import { Socket } from "socket.io";
 import { Game } from "./Game";
+import errorMessages from "../../common/errorMessages";
 
 export class GameManager {
   activeGames = new Map<string, Game>();
@@ -13,10 +14,9 @@ export class GameManager {
   connect(gameId, socket: Socket) {
     const gameToJoin = this.activeGames.get(gameId);
     if (!gameToJoin) {
-      throw new Error(`Game with id:${gameId} doesn't exist.`);
+      throw new Error(errorMessages.GAME_NOT_FOUND);
     }
     gameToJoin.connect(socket);
-    return gameToJoin;
   }
 }
 

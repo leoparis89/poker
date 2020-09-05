@@ -6,7 +6,6 @@ import { Modal, Button, Form } from "react-bootstrap";
 export default function Join({ show, handleClose }) {
   const { register, handleSubmit, errors, setValue } = useForm(); // initialise the hook
   const onSubmit = data => {
-    debugger;
     console.log(data);
   };
 

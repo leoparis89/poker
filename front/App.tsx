@@ -1,13 +1,12 @@
 import React from "react";
-import { ToastContainer, toast } from "react-toastify";
 import { BrowserRouter as Router, Redirect, Switch } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import { AuthRoute } from "./AuthRoute";
+import { Session } from "./context/SessionContext";
+import { Footer } from "./Footer";
+import { Game } from "./game/Game";
 import { Home } from "./home/Home";
 import { Login } from "./Login";
-import { Session } from "./Session";
-import { Game } from "./game/Game";
-import { Navbar } from "react-bootstrap";
-import { Footer } from "./Footer";
 
 export const App = function () {
   return (

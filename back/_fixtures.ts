@@ -1,5 +1,6 @@
 import { Profile } from "passport-google-oauth20";
 import { UserSocket } from "./interfaces";
+import { EventEmitter } from "events";
 
 export const mockProfile = {
   id: "117689296290332690711",
@@ -23,10 +24,19 @@ export const mockProfile = {
   }
 } as Profile;
 
-export const userSocketMock = {
-  request: { user: { id: "mockId" } },
-  emit: jest.fn() as any
-} as UserSocket;
+export const makeSocket = (userId: string = "mockId") => {
+  return {
+    request: { user: { id: userId } },
+    emit: jest.fn() as any,
+    on: jest.fn() as any
+  } as UserSocket;
+};
+
+export const makeEmitter = (userId: string = "mockId") => {
+  const emitter = new EventEmitter() as UserSocket;
+  emitter.request = { user: { id: userId } };
+  return emitter;
+};
 
 export const profileMock1 = {
   id: "mockId1",

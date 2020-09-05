@@ -1,5 +1,7 @@
+import { Profile } from "passport-google-oauth20";
+
 export interface ChatMessage {
   text: string;
-  userId: string;
+  user: Profile;
   date: number;
 }

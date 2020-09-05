@@ -1,15 +1,18 @@
 import { Response } from "express";
 import Socket from "socket.io";
 import { myMiddleWare, server } from "./app";
+import { socketManager } from "./game/SocketManager";
+import { UserSocket } from "./interfaces";
+import { handleJoinGame } from "./game/socket-handlers/handleJoinGame";
 import { gameManager } from "./game/GameManager";
-import { ChatMessage } from "../common/interfaces";
 
 const io = Socket.listen(server)
   .use((socket, next) => {
     myMiddleWare(socket.request, {} as Response, next);
   })
-  .use((socket, next) => {
+  .use((socket: UserSocket, next) => {
     const isAuth = socket.request.isAuthenticated();
+
     if (!isAuth) {
       socket.send("unauthorized");
       socket.disconnect();
@@ -18,25 +21,9 @@ const io = Socket.listen(server)
     next();
   });
 
-io.on("connection", socket => {
-  console.log(`User ${socket.request.user.id} has connected.`);
-  socket.on("joinGame", (gameId: string) => {
-    gameManager.connect(gameId, socket);
+const handleConnection = (socket: Socket.Socket) => {
+  socketManager.addSocket(socket);
+  socket.on("joinGame", handleJoinGame(socket, gameManager));
+};
 
-    socket.on("chat-send", text => {
-      const chatMessage: ChatMessage = {
-        date: Date.now(),
-        text,
-        userId: socket.request.user.id
-      };
-
-      gameManager.activeGames
-        .get(gameId)
-        ?.broadcast("chat-receive", chatMessage);
-    });
-
-    socket.on("disconnect", () => {
-      gameManager.activeGames.get(gameId)?.disconnect(socket);
-    });
-  });
-});
+io.on("connection", handleConnection);

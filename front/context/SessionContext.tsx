@@ -1,14 +1,17 @@
 import Cookies from "js-cookie";
-import React, { useEffect, useState } from "react";
-import { getProfile } from "./sessionService";
-import { ToastContainer, toast } from "react-toastify";
 import { Profile } from "passport-google-oauth20";
+import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { getProfile } from "../sessionService";
+import { socketService } from "../socketService";
 
 interface ISessionContext {
   user: undefined | Profile;
+  connected: boolean;
   setUser: any;
 }
 const initalContext: ISessionContext = {
+  connected: false,
   user: undefined,
   setUser: () => {}
 };
@@ -17,6 +20,7 @@ export const SessionContext = React.createContext(initalContext);
 
 export function Session(props) {
   const [user, setUser] = useState(undefined);
+  const [connected, setConnected] = useState(false);
   useEffect(() => {
     if (window.location.pathname === "/login" || user) {
       return;
@@ -24,6 +28,11 @@ export function Session(props) {
 
     getProfile()
       .then(profile => {
+        socketService.init();
+        socketService.socket
+          .on("disconnect", () => setConnected(false))
+          .on("connect", () => setConnected(true));
+
         setUser(profile as any);
       })
       .catch(err => {
@@ -34,7 +43,7 @@ export function Session(props) {
       });
   });
   return (
-    <SessionContext.Provider value={{ user, setUser }}>
+    <SessionContext.Provider value={{ user, setUser, connected }}>
       {props.children}
     </SessionContext.Provider>
   );

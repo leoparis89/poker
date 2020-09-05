@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { Redirect } from "react-router-dom";
 import { gameService } from "../gameService";
-import { logout, SessionContext } from "../Session";
+import { logout, SessionContext } from "../context/SessionContext";
 import Join from "./Join";
 import { socketService } from "../socketService";
 
@@ -12,9 +12,8 @@ export const Home = function () {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    if (user) {
-      socketService.init();
-    }
+    // if (user) {
+    // }
     // return () => {};
   });
 

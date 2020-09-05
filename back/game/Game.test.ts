@@ -1,230 +1,178 @@
+import MockDate from "mockdate";
+import { Profile } from "passport-google-oauth20";
 import shortid from "shortid";
 import { usersDb } from "../db/users";
-import { UserSocket } from "../interfaces";
-import { profileMock1, profileMock2, userSocketMock } from "../_fixtures";
+import {
+  makeEmitter,
+  makeSocket,
+  profileMock1,
+  profileMock2
+} from "../_fixtures";
 import { Game } from "./Game";
+import { socketManager } from "./SocketManager";
 
+// jest.mock(userSockets);
 jest.mock("shortid");
 jest.mock("../db/users");
+jest.mock("./SocketManager");
 
 beforeAll(() => {
   (shortid.generate as jest.Mock).mockReturnValue("id");
+
+  (usersDb.get as jest.Mock).mockImplementation(id => {
+    return {
+      id,
+      displayName: "display-name-" + id
+    } as Profile;
+  });
+
+  MockDate.set("1970-01-02");
 });
 
 const createGame = () => new Game("creatorId");
 
 describe("Game", () => {
-  it("should initialize with an id", () => {
+  it("should initialize with an id and no players", () => {
     const game = createGame();
     expect(game.id).toEqual("id");
+    expect(game.players).toEqual(new Map());
   });
 
   describe("connect", () => {
-    it("should add an entry for user in sockets map if it doesn't already exist", () => {
+    it("should send connected users to newly connected socket", () => {
       const game = createGame();
-      game.connect(userSocketMock);
-      expect(game.sockets.get("mockId")).toEqual([userSocketMock]);
-    });
-
-    it("should add socket to existing entry if it exists", () => {
-      const game = createGame();
-      game.connect(userSocketMock);
-      game.connect(userSocketMock);
-      expect(game.sockets.get("mockId")).toEqual([
-        userSocketMock,
-        userSocketMock
-      ]);
-    });
-
-    it("should broadcast connected users if a new socket connects", () => {
-      (usersDb.get as jest.Mock)
-        .mockReturnValueOnce(profileMock1)
-        .mockReturnValueOnce(profileMock1)
-        .mockReturnValueOnce(profileMock2);
-      const game = createGame();
-
-      const socket1 = {
-        ...userSocketMock,
-        ...{
-          request: { user: { id: "mockId1" } }
-        }
-      } as UserSocket;
-
-      const socket2 = {
-        ...userSocketMock,
-        ...{
-          request: { user: { id: "mockId2" } }
-        }
-      } as UserSocket;
-
-      const socket3 = {
-        ...userSocketMock,
-        ...{
-          request: { user: { id: "mockId2" } }
-        }
-      } as UserSocket;
+      const socket1 = makeSocket("mockId1");
+      const socket2 = makeSocket("mockId2");
       game.connect(socket1);
       expect(socket1.emit).toHaveBeenCalledWith("connected-users", [
-        profileMock1
+        { displayName: "display-name-mockId1", id: "mockId1" }
       ]);
-
       game.connect(socket2);
-      expect(socket1.emit).toHaveBeenCalledWith("connected-users", [
-        profileMock1,
-        profileMock2
-      ]);
-
-      game.connect(socket3);
-      expect(socket1.emit).toHaveBeenCalledWith("connected-users", [
-        profileMock1,
-        profileMock2
-      ]);
       expect(socket2.emit).toHaveBeenCalledWith("connected-users", [
-        profileMock1,
-        profileMock2
+        { displayName: "display-name-mockId1", id: "mockId1" },
+        { displayName: "display-name-mockId2", id: "mockId2" }
       ]);
-      expect(socket3.emit).toHaveBeenCalledWith("connected-users", [
-        profileMock1,
-        profileMock2
+    });
+
+    it("should send message history to newly connected socket", () => {
+      const game = createGame();
+
+      const socket1 = makeEmitter("mockId1");
+      const socket2 = makeEmitter("mockId2");
+      socket2.emit = jest.fn();
+
+      game.connect(socket1);
+      socket1.emit("chat-text", "hello");
+      socket1.emit("chat-text", "world");
+      socket1.emit("chat-text", "cool");
+      game.connect(socket2);
+
+      expect(socket2.emit).toHaveBeenCalledWith("chat-history", [
+        {
+          date: 86400000,
+          text: "hello",
+          user: { displayName: "display-name-mockId1", id: "mockId1" }
+        },
+        {
+          date: 86400000,
+          text: "world",
+          user: { displayName: "display-name-mockId1", id: "mockId1" }
+        },
+        {
+          date: 86400000,
+          text: "cool",
+          user: { displayName: "display-name-mockId1", id: "mockId1" }
+        }
+      ]);
+    });
+  });
+
+  describe("getConnectedUsers", () => {
+    it("should return user profiles", () => {
+      const game = createGame();
+      game.players = new Map([
+        ["player1", { score: 1 }],
+        ["player2", { score: 3 }]
+      ]);
+      const result = game.getConnectedUsers();
+      expect(result).toEqual([
+        { displayName: "display-name-player1", id: "player1" },
+        { displayName: "display-name-player2", id: "player2" }
       ]);
     });
   });
 
   describe("broadcast", () => {
-    it("should emit provided payload on provided topic to all connected sockets", () => {
+    it("should send payload on topic to all players", () => {
       const game = createGame();
-      const socket1 = { ...userSocketMock };
-      const socket2 = { ...userSocketMock };
-      const socket3 = { ...userSocketMock };
-      game.connect(socket1);
-      game.connect(socket2);
-      game.connect(socket3);
-      game.broadcast("mockTopic", { mock: "payload" });
-      expect(socket1.emit).toHaveBeenCalledWith("mockTopic", {
-        mock: "payload"
-      });
-      expect(socket2.emit).toHaveBeenCalledWith("mockTopic", {
-        mock: "payload"
-      });
-      expect(socket3.emit).toHaveBeenCalledWith("mockTopic", {
-        mock: "payload"
-      });
+      game.addPlayer("player1");
+      game.addPlayer("player2");
+
+      game.broadcast("hello-topic", "payload");
+      expect(socketManager.emitToUsers).toHaveBeenCalledWith(
+        ["player1", "player2"],
+        "hello-topic",
+        "payload"
+      );
     });
   });
 
-  describe("emitConnectedUserProfiles", () => {
-    it("should broadcast the list of connected users", () => {
-      (usersDb.get as jest.Mock)
-        .mockReturnValueOnce(profileMock1)
-        .mockReturnValueOnce(profileMock2);
+  describe("events on connected socket", () => {
+    test("chat-text event received should triger a broadcast of chat-message", () => {
+      const game = createGame();
+      const spy = jest.spyOn(game, "broadcast");
 
+      const socket1 = makeEmitter("mockId1");
+      game.connect(socket1);
+
+      socket1.emit("chat-text", "hello");
+
+      expect(spy).toHaveBeenCalledWith("chat-message", {
+        date: 86400000,
+        text: "hello",
+        user: { displayName: "display-name-mockId1", id: "mockId1" }
+      });
+    });
+
+    test("chat-text event received should be stored in message history", () => {
       const game = createGame();
 
-      const socket1 = {
-        ...userSocketMock,
-        ...{
-          request: { user: { id: "mockId1" } }
+      const socket1 = makeEmitter("mockId1");
+      game.connect(socket1);
+
+      socket1.emit("chat-text", "hello");
+      socket1.emit("chat-text", "world");
+      socket1.emit("chat-text", "cool");
+
+      expect(game.messages).toEqual([
+        {
+          date: 86400000,
+          text: "hello",
+          user: { displayName: "display-name-mockId1", id: "mockId1" }
+        },
+        {
+          date: 86400000,
+          text: "world",
+          user: { displayName: "display-name-mockId1", id: "mockId1" }
+        },
+        {
+          date: 86400000,
+          text: "cool",
+          user: { displayName: "display-name-mockId1", id: "mockId1" }
         }
-      } as UserSocket;
-
-      const socket2 = {
-        ...userSocketMock,
-        ...{
-          request: { user: { id: "mockId2" } }
-        }
-      } as UserSocket;
-
-      const socket3 = {
-        ...userSocketMock,
-        ...{
-          request: { user: { id: "mockId2" } }
-        }
-      } as UserSocket;
-
-      game.sockets.set("mockId1", [socket1]);
-      game.sockets.set("mockId2", [socket2, socket3]);
-      game.broadcastConnectedUsers();
-
-      expect(socket1.emit).toHaveBeenCalledWith("connected-users", [
-        profileMock1,
-        profileMock2
       ]);
     });
-  });
-
-  describe("disconnect", () => {
-    it("should remove the socket from game", () => {
+    test("quit-game event received should remove player", () => {
       const game = createGame();
 
-      const socket1 = {
-        ...userSocketMock,
-        ...{
-          request: { user: { id: "mockId1" } }
-        },
-        id: "foo"
-      } as UserSocket;
+      const socket1 = makeEmitter("mockId1");
+      const socket2 = makeEmitter("mockId2");
+      game.connect(socket1);
+      game.connect(socket2);
 
-      const socket2 = {
-        ...userSocketMock,
-        ...{
-          request: { user: { id: "mockId1" } }
-        }
-      } as UserSocket;
-
-      game.sockets.set("mockId1", [socket1, socket2]);
-      game.disconnect(socket1);
-      expect(game.sockets.get("mockId1")!.length).toEqual(1);
+      socket1.emit("quit-game");
+      expect(game.players.get("mockId1")).toEqual(undefined);
+      expect(game.players.get("mockId2")).not.toEqual(undefined);
     });
-
-    it("should remove user entry from sockets id user has no sockets", () => {
-      const game = createGame();
-
-      const socket1 = {
-        ...userSocketMock,
-        ...{
-          request: { user: { id: "mockId1" } }
-        },
-        id: "foo"
-      } as UserSocket;
-
-      const socket2 = {
-        ...userSocketMock,
-        ...{
-          request: { user: { id: "mockId1" } }
-        }
-      } as UserSocket;
-
-      game.sockets.set("mockId1", [socket1, socket2]);
-      game.disconnect(socket1);
-      game.disconnect(socket2);
-      expect(game.sockets.get("mockId1")).toEqual(undefined);
-    });
-
-    it("should trow an error if socket doesn't exist in game", () => {});
-    (usersDb.get as jest.Mock)
-      .mockReturnValueOnce(profileMock1)
-      .mockReturnValueOnce(profileMock2);
-
-    const game = createGame();
-
-    const socket1 = {
-      ...userSocketMock,
-      ...{
-        request: { user: { id: "mockId1" } }
-      }
-    } as UserSocket;
-
-    const socket2 = {
-      ...userSocketMock,
-      ...{
-        request: { user: { id: "mockId2" } }
-      }
-    } as UserSocket;
-
-    game.sockets.set("mockId1", [socket1]);
-
-    expect(() => game.disconnect(socket2)).toThrowError(
-      "No socket with id mockId2 found in game."
-    );
   });
 });

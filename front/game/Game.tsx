@@ -1,38 +1,57 @@
-import React, { useEffect, useState } from "react";
+import { Profile } from "passport-google-oauth20";
+import React, { useEffect, useState, useContext } from "react";
+import { Alert, Col, Container, Row } from "react-bootstrap";
 import { useRouteMatch } from "react-router-dom";
 import { socketService } from "../socketService";
-import { Profile } from "passport-google-oauth20";
-import { UserCard } from "./UserCard";
-import { Container, Row, Col } from "react-bootstrap";
 import { ChatWindow } from "./ChatWindow";
+import { UserCard } from "./UserCard";
+import { SessionContext } from "../context/SessionContext";
 
 export function Game(props) {
-  const [activeGame, setSocket] = useState<string>();
+  const [activeGame, setActiveGame] = useState<string>();
   const [users, setUsers] = useState<Profile[]>([]);
+  const [error, setError] = useState<string>();
+  const { user, connected } = useContext(SessionContext);
   const gameId = useRouteMatch<{ id: string }>().params.id;
 
   useEffect(() => {
-    if (!activeGame) {
-      socketService.socket.emit("joinGame", gameId);
-      socketService.socket.on("connected-users", (users: Profile[]) => {
+    if (!user) {
+      return;
+    }
+
+    const { socket } = socketService;
+
+    socket.emit("joinGame", gameId);
+    socket.on("join-failure", message => {
+      setError(message);
+    });
+
+    socket.on("join-success", gameId => {
+      setActiveGame(gameId);
+      socket.on("connected-users", (users: Profile[]) => {
         setUsers(users);
       });
-    }
+    });
     return () => {};
-  }, []);
-  console.log(users);
+  }, [user]);
+
   return (
     <Container>
-      <Row>
-        {users.map(user => (
-          <Col sm={4} key={user.id}>
-            <UserCard user={user} key={user.id} />
-          </Col>
-        ))}
-      </Row>
-      <div>
-        <ChatWindow users={users}></ChatWindow>
-      </div>
+      {error ? (
+        <Alert variant="danger">{error}</Alert>
+      ) : (
+        <div>
+          <Alert variant="success">{activeGame}</Alert>
+          <Row>
+            {users.map(user => (
+              <Col sm={4} key={user.id}>
+                <UserCard user={user} key={user.id} />
+              </Col>
+            ))}
+          </Row>
+          <ChatWindow></ChatWindow>
+        </div>
+      )}
     </Container>
   );
 }
