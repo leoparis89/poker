@@ -8,7 +8,8 @@ export const mockProfile = {
   name: { familyName: "Kowalski", givenName: "Lev" },
   photos: [
     {
-      value: "https://foo.com"
+      value:
+        "https://lh3.googleusercontent.com/a-/AOh14GglsHXVtHhODpxGkORuq7crY8iAV4BnDDWLi4oNlA"
     }
   ],
   provider: "google",
@@ -19,7 +20,8 @@ export const mockProfile = {
     name: "Lev Kowalski",
     given_name: "Lev",
     family_name: "Kowalski",
-    picture: "https://foo.com",
+    picture:
+      "https://lh3.googleusercontent.com/a-/AOh14GglsHXVtHhODpxGkORuq7crY8iAV4BnDDWLi4oNlA",
     locale: "fr"
   }
 } as Profile;
