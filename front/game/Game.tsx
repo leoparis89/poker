@@ -54,11 +54,12 @@ export function Game(props) {
             Leave game
           </Button>
           <Row>
-            {userDatas.map(({ profile, gameData }) => (
+            {userDatas.map(({ profile, gameData, online }) => (
               <Col sm={4} key={profile.id}>
                 <UserCard
                   profile={profile}
                   gameData={gameData}
+                  online={online}
                   key={profile.id}
                 />
               </Col>

@@ -5,7 +5,8 @@ import { UserData } from "../../common/interfaces";
 
 export const UserCard: FunctionComponent<UserData> = ({
   profile,
-  gameData
+  gameData,
+  online
 }) => {
   return (
     <div>
@@ -13,8 +14,8 @@ export const UserCard: FunctionComponent<UserData> = ({
         <Card.Img variant="top" src={profile.photos?.[0].value} />
         <Card.Body>
           <Card.Title>{profile.displayName}</Card.Title>
-          <Card.Text>score: {gameData.score} user</Card.Text>
-          <Online online={gameData.online}></Online>
+          <Card.Text>score: {gameData.tokens} user</Card.Text>
+          <Online online={online}></Online>
         </Card.Body>
       </Card>
     </div>

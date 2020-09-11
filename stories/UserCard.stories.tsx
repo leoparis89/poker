@@ -17,7 +17,7 @@ const Template: Story<UserData> = args => <UserCard {...args} />;
 export const Primary = Template.bind({});
 Primary.args = {
   profile: mockProfile,
-  gameData: { score: 1, online: true }
+  gameData: { tokens: 1, userData: { online: true } }
 };
 
 // export const Secondary = Template.bind({});

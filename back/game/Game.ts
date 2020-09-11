@@ -10,7 +10,7 @@ import { GameData } from "../../common/interfaces";
 type userId = string;
 export class Game {
   id: string;
-  players = new Map<userId, GameData>();
+  players = new Map<userId, UserData>();
   messages: ChatMessage[] = [];
 
   constructor(public creatorId: userId) {
@@ -21,10 +21,10 @@ export class Game {
       .on("remove-user", userId => this.updateOnline(userId, false));
   }
 
-  updateOnline(userId: userId, online: boolean) {
-    const gameData = this.players.get(userId)!;
-    if (gameData) {
-      this.players.set(userId, { ...gameData, online });
+  private updateOnline(userId: userId, online: boolean) {
+    const userData = this.players.get(userId)!;
+    if (userData) {
+      this.players.set(userId, { ...userData, online });
     }
     this.broadcastPlayers();
   }
@@ -83,7 +83,12 @@ export class Game {
   }
 
   addPlayer(userId: userId) {
-    this.players.set(userId, { score: 0, online: true });
+    const profile = usersDb.get(userId)!;
+    this.players.set(userId, {
+      online: true,
+      profile,
+      gameData: { tokens: 0 }
+    });
     this.broadcastPlayers();
   }
 
@@ -98,11 +103,8 @@ export class Game {
 
   getPlayerGameDatas(): UserData[] {
     const result: UserData[] = [];
-    this.players.forEach((gameData, userId) => {
-      result.push({
-        gameData,
-        profile: usersDb.get(userId)!
-      });
+    this.players.forEach((userData, userId) => {
+      result.push(userData);
     });
     return result;
   }

@@ -13,6 +13,7 @@ import { socketManager } from "./SocketManager";
 import { EventEmitter } from "events";
 import { gameManager } from "./GameManager";
 import { eventManager } from "react-toastify/dist/core";
+import { UserData } from "../../common/interfaces";
 
 // jest.mock(userSockets);
 jest.mock("shortid");
@@ -50,18 +51,21 @@ describe("Game", () => {
       game.connect(socket1);
       expect(socket1.emit).toHaveBeenCalledWith("connected-users", [
         {
-          gameData: { online: true, score: 0 },
+          gameData: { tokens: 0 },
+          online: true,
           profile: { displayName: "display-name-mockId1", id: "mockId1" }
         }
       ]);
       game.connect(socket2);
       expect(socket2.emit).toHaveBeenCalledWith("connected-users", [
         {
-          gameData: { online: true, score: 0 },
+          gameData: { tokens: 0 },
+          online: true,
           profile: { displayName: "display-name-mockId1", id: "mockId1" }
         },
         {
-          gameData: { online: true, score: 0 },
+          gameData: { tokens: 0 },
+          online: true,
           profile: { displayName: "display-name-mockId2", id: "mockId2" }
         }
       ]);
@@ -186,11 +190,13 @@ describe("Game", () => {
       const result = game.getPlayerGameDatas();
       expect(result).toEqual([
         {
-          gameData: { online: true, score: 0 },
+          online: true,
+          gameData: { tokens: 0 },
           profile: { displayName: "display-name-mockId1", id: "mockId1" }
         },
         {
-          gameData: { online: true, score: 0 },
+          online: true,
+          gameData: { tokens: 0 },
           profile: { displayName: "display-name-mockId2", id: "mockId2" }
         }
       ]);
@@ -200,7 +206,7 @@ describe("Game", () => {
   describe("events by socket manager", () => {
     test("add-user event should pass player online if he is in the game ", () => {
       const game = createGame();
-      game.players.set("mockId", { score: 1, online: false });
+      game.players.set("mockId", { online: false } as UserData);
       socketManager.emitter.emit("add-user", "mockId");
       expect(game.players.get("mockId")?.online).toEqual(true);
       game.players = new Map();
@@ -210,7 +216,7 @@ describe("Game", () => {
 
     test("remove-user event should pass player offline if he is in the game ", () => {
       const game = createGame();
-      game.players.set("mockId", { score: 1, online: true });
+      game.players.set("mockId", { online: true } as UserData);
       socketManager.emitter.emit("remove-user", "mockId");
       expect(game.players.get("mockId")?.online).toEqual(false);
       game.players = new Map();
