@@ -4701,6 +4701,14 @@ capture-exit@^2.0.0:
   dependencies:
     rsvp "^4.8.4"
 
+cardsJS@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/cardsJS/-/cardsJS-1.1.1.tgz#ce27e3517415cb49c40c4fab65f3114b8a652566"
+  integrity sha1-zifjUXQVy0nEDE+rZfMRS4plJWY=
+  dependencies:
+    jquery "~2.1.3"
+    knockout "~3.3.0"
+
 case-sensitive-paths-webpack-plugin@^2.1.2, case-sensitive-paths-webpack-plugin@^2.2.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/case-sensitive-paths-webpack-plugin/-/case-sensitive-paths-webpack-plugin-2.3.0.tgz#23ac613cc9a856e4f88ff8bb73bbb5e989825cf7"
@@ -9038,6 +9046,11 @@ joycon@^2.2.1:
   resolved "https://registry.yarnpkg.com/joycon/-/joycon-2.2.5.tgz#8d4cf4cbb2544d7b7583c216fcdfec19f6be1615"
   integrity sha512-YqvUxoOcVPnCp0VU1/56f+iKSdvIRJYPznH22BdXV3xMk75SFXhWeJkZ8C9XxUWt1b5x2X1SxuFygW1U0FmkEQ==
 
+jquery@~2.1.3:
+  version "2.1.4"
+  resolved "https://registry.yarnpkg.com/jquery/-/jquery-2.1.4.tgz#228bde698a0c61431dc2630a6a154f15890d2317"
+  integrity sha1-IoveaYoMYUMdwmMKahVPFYkNIxc=
+
 js-cookie@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/js-cookie/-/js-cookie-2.2.1.tgz#69e106dc5d5806894562902aa5baec3744e9b2b8"
@@ -9292,6 +9305,11 @@ kleur@^3.0.3:
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-3.0.3.tgz#a79c9ecc86ee1ce3fa6206d1216c501f147fc07e"
   integrity sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==
+
+knockout@~3.3.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/knockout/-/knockout-3.3.0.tgz#50502a4e2f1fe2bdfa0e52843cdfcbbd43bc374c"
+  integrity sha1-UFAqTi8f4r36DlKEPN/LvUO8N0w=
 
 latest-version@^5.0.0:
   version "5.1.0"
