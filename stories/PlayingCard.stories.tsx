@@ -36,3 +36,8 @@ export const DiamondsJack = Template.bind({});
 DiamondsJack.args = {
   rankSuit: "JD"
 };
+
+export const BlueBack = Template.bind({});
+BlueBack.args = {
+  rankSuit: "Blue_Back"
+};
