@@ -3,8 +3,15 @@ import MockExpressResponse from "mock-express-response";
 import { handleNewGame } from "./gameRoute";
 import { gameManager } from "./GameManager";
 import { Game } from "./Game";
+import { newDeck } from "../../front/cards/deckService";
+import { mockDeck } from "../_fixtures";
 
+jest.mock("../../front/cards/deckService");
 jest.mock("shortid", () => ({ generate: () => "mockGameId" }));
+
+beforeAll(() => {
+  (newDeck as jest.Mock).mockReturnValue(mockDeck);
+});
 
 describe("handleNewGame", () => {
   it("should create a new game and add it to active games", async () => {

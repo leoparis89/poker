@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 
 export function NavBar() {
   const { user, connected } = useContext(SessionContext);
-  console.log(connected);
   return (
     <Navbar bg="dark" variant="dark">
       <Navbar.Brand href="#home">

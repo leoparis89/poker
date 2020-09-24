@@ -4,7 +4,7 @@ import { ToastContainer } from "react-toastify";
 import { AuthRoute } from "./AuthRoute";
 import { Session } from "./context/SessionContext";
 import { Footer } from "./Footer";
-import { Game } from "./game/Game";
+import { ConnectedGame } from "./game/Game";
 import { Home } from "./home/Home";
 import { Login } from "./Login";
 
@@ -14,7 +14,11 @@ export const App = function () {
       <Router>
         <Switch>
           <AuthRoute path={"/home"} component={Home} isPublic={false} />
-          <AuthRoute path={"/game/:id"} component={Game} isPublic={false} />
+          <AuthRoute
+            path={"/game/:id"}
+            component={ConnectedGame}
+            isPublic={false}
+          />
           <AuthRoute path={"/login"} component={Login} isPublic={true} />
           <Redirect exact to="/home" />
         </Switch>

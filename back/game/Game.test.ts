@@ -6,19 +6,22 @@ import {
   makeEmitter,
   makeSocket,
   profileMock1,
-  profileMock2
+  profileMock2,
+  mockDeck
 } from "../_fixtures";
 import { Game } from "./Game";
 import { socketManager } from "./SocketManager";
 import { EventEmitter } from "events";
 import { gameManager } from "./GameManager";
 import { eventManager } from "react-toastify/dist/core";
-import { UserData } from "../../common/interfaces";
+import { newDeck } from "../../front/cards/deckService";
+import { UserSession } from "../../common/interfaces";
 
 // jest.mock(userSockets);
 jest.mock("shortid");
 jest.mock("../db/users");
 jest.mock("./SocketManager");
+jest.mock("../../front/cards/deckService");
 
 beforeAll(() => {
   (shortid.generate as jest.Mock).mockReturnValue("id");
@@ -32,6 +35,7 @@ beforeAll(() => {
 
   socketManager.emitter = new EventEmitter();
   MockDate.set("1970-01-02");
+  (newDeck as jest.Mock).mockReturnValue(mockDeck);
 });
 
 const createGame = () => new Game("creatorId");
@@ -44,31 +48,91 @@ describe("Game", () => {
   });
 
   describe("connect", () => {
-    it("should send players data to newly connected socket", () => {
+    it("should send game data to newly connected socket", () => {
       const game = createGame();
+      const spy = jest.spyOn(game, "broadbastGameData");
       const socket1 = makeSocket("mockId1");
-      const socket2 = makeSocket("mockId2");
       game.connect(socket1);
-      expect(socket1.emit).toHaveBeenCalledWith("connected-users", [
+
+      expect(socketManager.emitToUsers).toHaveBeenCalledWith(
+        ["mockId1"],
+        "game-data",
         {
-          gameData: { tokens: 0 },
-          online: true,
-          profile: { displayName: "display-name-mockId1", id: "mockId1" }
+          gameData: {
+            creatorId: "creatorId",
+            flop: null,
+            id: "id",
+            pot: 0,
+            startTurn: 0,
+            turn: 0,
+            users: [
+              { bet: null, hand: null, tokens: 1000, userId: "creatorId" },
+              { bet: null, hand: null, tokens: 1000, userId: "mockId1" }
+            ]
+          },
+          players: [
+            {
+              online: true,
+              profile: { displayName: "display-name-mockId1", id: "mockId1" }
+            }
+          ]
         }
-      ]);
+      );
+      const socket2 = makeSocket("mockId2");
       game.connect(socket2);
-      expect(socket2.emit).toHaveBeenCalledWith("connected-users", [
+      expect(socketManager.emitToUsers).toHaveBeenCalledWith(
+        ["mockId1", "mockId2"],
+        "game-data",
         {
-          gameData: { tokens: 0 },
-          online: true,
-          profile: { displayName: "display-name-mockId1", id: "mockId1" }
-        },
-        {
-          gameData: { tokens: 0 },
-          online: true,
-          profile: { displayName: "display-name-mockId2", id: "mockId2" }
+          gameData: {
+            creatorId: "creatorId",
+            flop: null,
+            id: "id",
+            pot: 0,
+            startTurn: 0,
+            turn: 0,
+            users: [
+              { bet: null, hand: null, tokens: 1000, userId: "creatorId" },
+              { bet: null, hand: null, tokens: 1000, userId: "mockId1" },
+              { bet: null, hand: null, tokens: 1000, userId: "mockId2" }
+            ]
+          },
+          players: [
+            {
+              online: true,
+              profile: { displayName: "display-name-mockId1", id: "mockId1" }
+            },
+            {
+              online: true,
+              profile: { displayName: "display-name-mockId2", id: "mockId2" }
+            }
+          ]
         }
-      ]);
+      );
+      // expect(socket1.emit).toHaveBeenCalledWith("game-data", "bar");
+      // game.connect(socket2);
+      // expect(socket2.emit).toHaveBeenCalledWith("game-data", [
+      //   {
+      //     gameData: {
+      //       bet: null,
+      //       hand: [4, 4],
+      //       tokens: 1000,
+      //       userId: "mockId1"
+      //     },
+      //     online: true,
+      //     profile: { displayName: "display-name-mockId1", id: "mockId1" }
+      //   },
+      //   {
+      //     gameData: {
+      //       bet: null,
+      //       hand: [4, 4],
+      //       tokens: 1000,
+      //       userId: "mockId2"
+      //     },
+      //     online: true,
+      //     profile: { displayName: "display-name-mockId2", id: "mockId2" }
+      //   }
+      // ]);
     });
 
     it("should send message history to newly connected socket", () => {
@@ -181,46 +245,59 @@ describe("Game", () => {
 
   describe("getPlayerGameDatas", () => {
     it("should return the right value", () => {
-      const game = createGame();
+      const game = new Game("mockId1");
 
       const socket1 = makeEmitter("mockId1");
       const socket2 = makeEmitter("mockId2");
       game.connect(socket1);
       game.connect(socket2);
       const result = game.getPlayerGameDatas();
-      expect(result).toEqual([
-        {
-          online: true,
-          gameData: { tokens: 0 },
-          profile: { displayName: "display-name-mockId1", id: "mockId1" }
+
+      expect(result).toEqual({
+        gameData: {
+          creatorId: "mockId1",
+          flop: null,
+          id: "id",
+          pot: 0,
+          startTurn: 0,
+          turn: 0,
+          users: [
+            { bet: null, hand: null, tokens: 1000, userId: "mockId1" },
+            { bet: null, hand: null, tokens: 1000, userId: "mockId2" }
+          ]
         },
-        {
-          online: true,
-          gameData: { tokens: 0 },
-          profile: { displayName: "display-name-mockId2", id: "mockId2" }
-        }
-      ]);
+        players: [
+          {
+            online: true,
+            profile: { displayName: "display-name-mockId1", id: "mockId1" }
+          },
+          {
+            online: true,
+            profile: { displayName: "display-name-mockId2", id: "mockId2" }
+          }
+        ]
+      });
     });
   });
 
   describe("events by socket manager", () => {
-    test("add-user event should pass player online if he is in the game ", () => {
+    test("user-online event should pass player online if he is in the game ", () => {
       const game = createGame();
-      game.players.set("mockId", { online: false } as UserData);
-      socketManager.emitter.emit("add-user", "mockId");
+      game.players.set("mockId", { online: false } as UserSession);
+      socketManager.emitter.emit("user-online", "mockId");
       expect(game.players.get("mockId")?.online).toEqual(true);
       game.players = new Map();
-      socketManager.emitter.emit("add-user", "mockId");
+      socketManager.emitter.emit("user-online", "mockId");
       expect(game.players.get("mockId")?.online).toEqual(undefined);
     });
 
-    test("remove-user event should pass player offline if he is in the game ", () => {
+    test("user-offline event should pass player offline if he is in the game ", () => {
       const game = createGame();
-      game.players.set("mockId", { online: true } as UserData);
-      socketManager.emitter.emit("remove-user", "mockId");
+      game.players.set("mockId", { online: true } as UserSession);
+      socketManager.emitter.emit("user-offline", "mockId");
       expect(game.players.get("mockId")?.online).toEqual(false);
       game.players = new Map();
-      socketManager.emitter.emit("remove-user", "mockId");
+      socketManager.emitter.emit("user-offline", "mockId");
       expect(game.players.get("mockId")?.online).toEqual(undefined);
     });
   });

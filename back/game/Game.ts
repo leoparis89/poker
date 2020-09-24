@@ -1,32 +1,147 @@
-import * as shortid from "shortid";
-
-import { UserSocket } from "../interfaces";
 import { Profile } from "passport-google-oauth20";
+import * as shortid from "shortid";
+import { ChatMessage, GameStateUI, UserSession } from "../../common/interfaces";
 import { usersDb } from "../db/users";
-import { ChatMessage, UserData } from "../../common/interfaces";
+import { UserSocket } from "../interfaces";
+import { newGame } from "./game-engine/actionHandlers";
+import { gameReducer } from "./game-engine/gameReducer.";
+import { GameDataCore } from "./game-engine/models";
 import { socketManager } from "./SocketManager";
-import { GameData } from "../../common/interfaces";
 
 type userId = string;
-export class Game {
+
+class GameCore {
   id: string;
-  players = new Map<userId, UserData>();
+  players = new Map<userId, UserSession>(); // TODO no game info saved in here
   messages: ChatMessage[] = [];
+  gameData: GameDataCore;
 
   constructor(public creatorId: userId) {
     this.id = shortid.generate();
-
-    socketManager.emitter
-      .on("add-user", userId => this.updateOnline(userId, true))
-      .on("remove-user", userId => this.updateOnline(userId, false));
+    this.gameData = gameReducer(newGame(), {
+      type: "add-player",
+      payload: creatorId
+    });
   }
 
-  private updateOnline(userId: userId, online: boolean) {
+  hasPlayer(userId: userId) {
+    return !!this.players.get(userId);
+  }
+
+  addPlayer(userId: userId) {
+    const profile = usersDb.get(userId)!;
+    this.players.set(userId, {
+      online: true,
+      profile
+    });
+
+    if (this.gameData.users.find(u => u.userId === userId)) {
+      return;
+    }
+
+    this.gameData = gameReducer(this.gameData, {
+      type: "add-player",
+      payload: userId
+    });
+  }
+
+  removePlayer(userId: userId) {
+    this.players.delete(userId);
+  }
+
+  getPlayerGameDatas(): GameStateUI {
+    // this.players.forEach((userData, userId) => {
+    //   const gameData = this.gameData.users.find(u => u.userId === userId);
+    //   result.push({ ...userData, gameData });
+    // });
+    const { deck, ...dataWithoutDeck } = this.gameData;
+
+    const result: UserSession[] = [];
+    this.players.forEach(val => result.push(val));
+
+    return {
+      players: result,
+      gameData: { ...dataWithoutDeck, id: this.id, creatorId: this.creatorId }
+    };
+  }
+
+  protected updateOnline(userId: userId, online: boolean) {
     const userData = this.players.get(userId)!;
     if (userData) {
       this.players.set(userId, { ...userData, online });
     }
-    this.broadcastPlayers();
+  }
+
+  deal(userId: string) {
+    this.gameData = gameReducer(this.gameData, {
+      type: "deal"
+    });
+  }
+
+  bet(amount: number | "fold", userId: string) {
+    this.gameData = gameReducer(this.gameData, {
+      type: "bet",
+      payload: { bet: amount, userId }
+    });
+  }
+}
+
+export class Game extends GameCore {
+  constructor(creatorId) {
+    super(creatorId);
+
+    const handleOnlineState = (online: boolean) => userId => {
+      this.updateOnline(userId, online);
+      this.broadbastGameData();
+    };
+
+    socketManager.emitter
+      .on("user-online", handleOnlineState(true))
+      .on("user-offline", handleOnlineState(false));
+  }
+
+  connect(socket: UserSocket) {
+    const userId = socket.request.user.id;
+
+    this.addPlayer(userId);
+    this.addListeners(socket);
+    this.broadbastGameData();
+
+    this.refresh(socket);
+  }
+
+  addListeners(socket: UserSocket) {
+    const userId = socket.request.user.id;
+    const user = usersDb.get(userId);
+    if (!user) {
+      throw new Error(`User with id ${userId} does not exist`);
+    }
+
+    const handleChatText = text => this.broadcastChat(user, text);
+    const handleQuitGame = () => {
+      this.removePlayer(userId);
+      this.broadbastGameData();
+      socket.emit("quit-game");
+    };
+    const handleDeal = () => {
+      this.deal(userId);
+      this.broadbastGameData();
+    };
+    const handleBet = amount => this.bet(amount, userId);
+
+    socket.on("chat-text", handleChatText);
+    socket.on("quit-game-request", handleQuitGame);
+    socket.on("deal", handleDeal);
+    socket.on("bet", handleBet);
+  }
+
+  removeListeners(socket: UserSocket) {
+    socket.removeAllListeners();
+  }
+
+  refresh(socket: UserSocket) {
+    // socket.emit("game-data", this.getPlayerGameDatas());
+    socket.emit("chat-history", this.messages);
   }
 
   broadcastChat = (user: Profile, text) => {
@@ -40,73 +155,8 @@ export class Game {
     this.messages.push(chatMessage);
   };
 
-  addListeners(socket: UserSocket) {
-    const userId = socket.request.user.id;
-    const user = usersDb.get(userId);
-    if (!user) {
-      throw new Error(`User with id ${userId} does not exist`);
-    }
-
-    const handleChatText = text => this.broadcastChat(user, text);
-    const handleQuitGame = () => {
-      this.removePlayer(userId);
-      socket.emit("quit-game");
-    };
-
-    socket.on("chat-text", handleChatText);
-    socket.on("quit-game-request", handleQuitGame);
-  }
-
-  removeListeners(socket: UserSocket) {
-    socket.removeAllListeners();
-  }
-
-  connect(socket: UserSocket) {
-    const userId = socket.request.user.id;
-
-    if (!this.hasPlayer(userId)) {
-      this.addPlayer(userId);
-    }
-
-    this.addListeners(socket);
-    socket.emit("join-success", this.id);
-    this.refresh(socket);
-  }
-
-  refresh(socket: UserSocket) {
-    socket.emit("connected-users", this.getPlayerGameDatas());
-    socket.emit("chat-history", this.messages);
-  }
-
-  hasPlayer(userId: userId) {
-    return !!this.players.get(userId);
-  }
-
-  addPlayer(userId: userId) {
-    const profile = usersDb.get(userId)!;
-    this.players.set(userId, {
-      online: true,
-      profile,
-      gameData: { tokens: 0 }
-    });
-    this.broadcastPlayers();
-  }
-
-  broadcastPlayers() {
-    this.broadcast("connected-users", this.getPlayerGameDatas());
-  }
-
-  removePlayer(userId: userId) {
-    this.players.delete(userId);
-    this.broadcastPlayers();
-  }
-
-  getPlayerGameDatas(): UserData[] {
-    const result: UserData[] = [];
-    this.players.forEach((userData, userId) => {
-      result.push(userData);
-    });
-    return result;
+  broadbastGameData() {
+    this.broadcast("game-data", this.getPlayerGameDatas());
   }
 
   broadcast(topic: string, payload: any) {

@@ -14,30 +14,25 @@ const Template: Story<PlayingCardProps> = args => <PlayingCard {...args} />;
 
 export const SpadesAce = Template.bind({});
 SpadesAce.args = {
-  rank: "A",
-  suit: "S"
+  rankSuit: "AS"
 };
 
 export const Spades10 = Template.bind({});
 Spades10.args = {
-  rank: "10",
-  suit: "S"
+  rankSuit: "10S"
 };
 
 export const HeartsKing = Template.bind({});
 HeartsKing.args = {
-  rank: "K",
-  suit: "H"
+  rankSuit: "KH"
 };
 
 export const Clubs7 = Template.bind({});
 Clubs7.args = {
-  rank: "7",
-  suit: "C"
+  rankSuit: "7C"
 };
 
 export const DiamondsJack = Template.bind({});
 DiamondsJack.args = {
-  rank: "J",
-  suit: "D"
+  rankSuit: "JD"
 };

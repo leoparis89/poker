@@ -1,4 +1,5 @@
 import { Profile } from "passport-google-oauth20";
+import { UserGameData, GameDataCore } from "../back/game/game-engine/models";
 
 export interface ChatMessage {
   text: string;
@@ -6,29 +7,21 @@ export interface ChatMessage {
   date: number;
 }
 
-export interface GameData {
-  tokens: number;
-  blind?: number;
-  hisTurn?: boolean;
-  hand?: [any, any];
-}
-
-export interface GameDataWIP {
-  userId: string;
-  data?: {
-    tokens: number;
-    blind: number | null;
-    hisTurn: boolean;
-    hand: [any, any];
-  };
-}
-export interface UserData {
+export interface UserSession {
   profile: Profile;
-  gameData: GameData;
   online: boolean;
 }
 
-interface GamePokerData {
-  flop: [any, any, any] | null;
-  turn: number;
+export type GameDataUI = Omit<GameDataCore, "deck"> & {
+  id: string;
+  creatorId: string;
+};
+
+export type GameData = GameDataCore | GameDataUI;
+
+export type RankSuit = string;
+
+export interface GameStateUI {
+  players: UserSession[];
+  gameData: GameDataUI;
 }

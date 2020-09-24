@@ -1,25 +1,20 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Alert, Col, Container, Row, Button } from "react-bootstrap";
-import { useRouteMatch, Redirect } from "react-router-dom";
-import { UserData } from "../../common/interfaces";
+import { Alert, Button, Col, Container, Row } from "react-bootstrap";
+import { Redirect, useRouteMatch } from "react-router-dom";
+import { ChatMessage, GameStateUI } from "../../common/interfaces";
 import { SessionContext } from "../context/SessionContext";
 import { socketService } from "../socketService";
 import { ChatWindow } from "./ChatWindow";
+import { Controls } from "./Controls";
 import { UserCard } from "./UserCard";
 
-export function Game(props) {
-  const [activeGame, setActiveGame] = useState<string>();
-  const [userDatas, setUserDatas] = useState<UserData[]>([]);
+export function Game({ user, gameId }) {
+  const [gameState, setGameState] = useState<GameStateUI | null>(null);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [quit, setQuit] = useState<boolean>(false);
   const [error, setError] = useState<string>();
-  const { user, connected } = useContext(SessionContext);
-  const gameId = useRouteMatch<{ id: string }>().params.id;
 
   useEffect(() => {
-    if (!user) {
-      return;
-    }
-
     const { socket } = socketService;
 
     socket.emit("joinGame", gameId);
@@ -27,15 +22,21 @@ export function Game(props) {
       setError(message);
     });
 
-    socket.on("join-success", gameId => {
-      setActiveGame(gameId);
-      socket.on("connected-users", (users: UserData[]) => {
-        setUserDatas(users);
-      });
-      socket.on("quit-game", () => {
-        setQuit(true);
+    socket.on("chat-history", (messages: ChatMessage[]) => {
+      setMessages(messages);
+      socketService.socket.on("chat-message", (message: ChatMessage) => {
+        setMessages(prevMessages => [...prevMessages, message]);
       });
     });
+
+    socket.on("game-data", (gameData: GameStateUI) => {
+      setGameState(gameData);
+    });
+
+    socket.on("quit-game", () => {
+      setQuit(true);
+    });
+
     return () => {};
   }, [user]);
 
@@ -48,28 +49,52 @@ export function Game(props) {
       {error ? (
         <Alert variant="danger">{error}</Alert>
       ) : (
-        <div>
-          <Alert variant="success">{activeGame}</Alert>
-          <Button onClick={quitGame} variant="danger">
-            Leave game
-          </Button>
-          <Row>
-            {userDatas.map(({ profile, gameData, online }) => (
-              <Col sm={4} key={profile.id}>
-                <UserCard
-                  profile={profile}
-                  gameData={gameData}
-                  online={online}
-                  key={profile.id}
-                />
-              </Col>
-            ))}
-          </Row>
-          <ChatWindow></ChatWindow>
-        </div>
+        gameState && (
+          <div>
+            <Alert variant="success">Game ID: {gameState.gameData.id}</Alert>
+            <h2>Pot: {gameState.gameData.pot}</h2>
+            <Row>
+              {gameState.players.map(({ profile, online }) => (
+                <Col sm={3} key={profile.id}>
+                  <UserCard
+                    profile={profile}
+                    online={online}
+                    gameData={gameState.gameData.users.find(
+                      u => u.userId === profile.id
+                    )}
+                    key={profile.id}
+                  />
+                </Col>
+              ))}
+            </Row>
+            <Controls
+              gameData={gameState.gameData}
+              myId={user.id}
+              onDeal={handleDeal}
+              onBet={handleBet}
+            ></Controls>
+            <ChatWindow messages={messages}></ChatWindow>
+            <Button onClick={quitGame} variant="danger">
+              Leave game
+            </Button>
+          </div>
+        )
       )}
     </Container>
   );
 }
 
+export const ConnectedGame = props => {
+  const { user, connected } = useContext(SessionContext);
+  if (!user) {
+    return <div>No User</div>;
+  }
+  const gameId = useRouteMatch<{ id: string }>().params.id;
+  return <Game {...props} user={user} gameId={gameId} />;
+};
+
 const quitGame = () => socketService.socket.emit("quit-game-request");
+
+const handleDeal = () => socketService.socket.emit("deal");
+
+const handleBet = (amount: number) => socketService.socket.emit("bet", amount);

@@ -49,3 +49,5 @@ export const profileMock2 = {
   id: "mockId2",
   displayName: "Bob Williams"
 } as Profile;
+
+export const mockDeck = new Array(20).fill("MockCard");

@@ -12,10 +12,10 @@ import { ChatMessage } from "../../common/interfaces";
 import { socketService } from "../socketService";
 import { SessionContext } from "../context/SessionContext";
 
-export const ChatWindow: FunctionComponent<{}> = () => {
+export const ChatWindow: FunctionComponent<{ messages: any }> = ({
+  messages
+}) => {
   const { register, handleSubmit, watch, errors, reset } = useForm();
-
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
 
   const { user, connected } = useContext(SessionContext);
   useEffect(() => {
@@ -23,12 +23,6 @@ export const ChatWindow: FunctionComponent<{}> = () => {
       return;
     }
 
-    socketService.socket.on("chat-history", (messages: ChatMessage[]) => {
-      setMessages(messages);
-      socketService.socket.on("chat-message", (message: ChatMessage) => {
-        setMessages(prevMessages => [...prevMessages, message]);
-      });
-    });
     return () => {};
   }, [user]);
 
@@ -65,7 +59,7 @@ export const ChatWindow: FunctionComponent<{}> = () => {
 };
 
 const Message: FunctionComponent<{ message: ChatMessage }> = ({ message }) => (
-  <div>
+  <div key={message.date}>
     <Card style={{ borderRadius: 10, margin: 10, display: "inline-block" }}>
       <Card.Body>
         <Card.Subtitle className="mb-2 text-muted">

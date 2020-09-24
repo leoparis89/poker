@@ -1,16 +1,15 @@
 import React, { FunctionComponent } from "react";
+import { RankSuit } from "../../common/interfaces";
 require("cardsJS/dist/cards.js");
 require("cardsJS/dist/cards.css");
 
 export interface PlayingCardProps {
-  suit;
-  rank;
+  rankSuit: RankSuit;
 }
 export const PlayingCard: FunctionComponent<PlayingCardProps> = ({
-  rank,
-  suit
+  rankSuit
 }) => {
   return (
-    <img className="card" src={require(`cardsJS/cards/${rank}${suit}.svg`)} />
+    <img className="card" src={require(`cardsJS/cards/${rankSuit}.svg`)} />
   );
 };
