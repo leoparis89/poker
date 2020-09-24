@@ -3,23 +3,33 @@ import React, { FunctionComponent } from "react";
 import { UserGameData } from "../../back/game/game-engine/models";
 import { PlayingCard } from "../cards/PlayingCard";
 import { UserSession } from "../../common/interfaces";
+import { Badge } from "react-bootstrap";
 
-const Wrapper = styled("div")({
+const Wrapper = styled("div")((props: any) => ({
   // width: 350,
-  boxShadow: "0 2px 10px 0 rgb(185 185 185)",
+  // boxShadow: "0 2px 10px 0 rgb(185 185 185)",
+  boxShadow: `0 2px 10px 0 ${props.currentTurn ? "green" : "rgb(185 185 185)"}`,
   padding: 0,
   borderRadius: 25,
   display: "flex",
-  alignItems: "center"
-});
+  alignItems: "center",
+  ...(props.currentTurn && { border: "solid 0.3em green" })
+}));
 export const UserCard: FunctionComponent<UserDataUI> = ({
   profile,
   online,
-  gameData
+  gameData,
+  currentTurn
 }) => {
   return (
     <div role="listitem">
-      <Wrapper>
+      {gameData && (
+        <div style={{ display: "flex", margin: 10 }}>
+          <Badge variant="primary">Tokens: {gameData.tokens}</Badge>
+          {gameData.bet && <Badge variant="warning">Bet: {gameData.bet}</Badge>}
+        </div>
+      )}
+      <Wrapper currentTurn={currentTurn}>
         <img
           style={{ borderRadius: "50%", width: 50, margin: 10 }}
           src={profile.photos?.[0].value}
@@ -36,7 +46,7 @@ export const UserCard: FunctionComponent<UserDataUI> = ({
     </Card> */}
       </Wrapper>
       {gameData?.hand && (
-        <div style={{ display: "flex" }}>
+        <div style={{ display: "flex", margin: 10 }}>
           <PlayingCard rankSuit={gameData.hand[0]} />
           <PlayingCard rankSuit={gameData.hand[1]} />
         </div>
@@ -60,4 +70,5 @@ export const Online = ({ online }) => (
 
 export interface UserDataUI extends UserSession {
   gameData?: UserGameData;
+  currentTurn?: boolean;
 }

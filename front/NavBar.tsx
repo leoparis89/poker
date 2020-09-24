@@ -43,7 +43,7 @@ export function NavBar() {
 }
 
 const Online = ({ online }) => (
-  <div style={{ color: online ? "green" : "red" }}>
+  <div style={{ color: online ? "green" : "red", marginRight: 20 }}>
     {online ? "Online" : "Offline"}
   </div>
 );

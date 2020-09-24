@@ -7,6 +7,7 @@ import { socketService } from "../socketService";
 import { ChatWindow } from "./ChatWindow";
 import { Controls } from "./Controls";
 import { UserCard } from "./UserCard";
+import { Players } from "./Players";
 
 export function Game({ user, gameId }) {
   const [gameState, setGameState] = useState<GameStateUI | null>(null);
@@ -53,20 +54,7 @@ export function Game({ user, gameId }) {
           <div>
             <Alert variant="success">Game ID: {gameState.gameData.id}</Alert>
             <h2>Pot: {gameState.gameData.pot}</h2>
-            <Row>
-              {gameState.players.map(({ profile, online }) => (
-                <Col sm={3} key={profile.id}>
-                  <UserCard
-                    profile={profile}
-                    online={online}
-                    gameData={gameState.gameData.users.find(
-                      u => u.userId === profile.id
-                    )}
-                    key={profile.id}
-                  />
-                </Col>
-              ))}
-            </Row>
+            <Players gameState={gameState}></Players>
             <Controls
               gameData={gameState.gameData}
               myId={user.id}

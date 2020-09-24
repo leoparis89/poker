@@ -2,7 +2,6 @@ import { createOrderedDeck } from "./deckService";
 
 test("createOrderdDeck should return the right value ", () => {
   expect(createOrderedDeck()).toEqual([
-    "1H",
     "2H",
     "3H",
     "4H",
@@ -13,10 +12,9 @@ test("createOrderdDeck should return the right value ", () => {
     "9H",
     "10H",
     "JH",
-    "VH",
     "QH",
     "KH",
-    "1S",
+    "AH",
     "2S",
     "3S",
     "4S",
@@ -27,10 +25,9 @@ test("createOrderdDeck should return the right value ", () => {
     "9S",
     "10S",
     "JS",
-    "VS",
     "QS",
     "KS",
-    "1C",
+    "AS",
     "2C",
     "3C",
     "4C",
@@ -41,10 +38,9 @@ test("createOrderdDeck should return the right value ", () => {
     "9C",
     "10C",
     "JC",
-    "VC",
     "QC",
     "KC",
-    "1D",
+    "AC",
     "2D",
     "3D",
     "4D",
@@ -55,8 +51,8 @@ test("createOrderdDeck should return the right value ", () => {
     "9D",
     "10D",
     "JD",
-    "VD",
     "QD",
-    "KD"
+    "KD",
+    "AD"
   ]);
 });
