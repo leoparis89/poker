@@ -3,18 +3,19 @@ import { useForm } from "react-hook-form";
 import { Button } from "react-bootstrap";
 import { GameDataUI } from "../../common/interfaces";
 import {
-  gameHasStarted,
+  gameStarted,
   isSmallBlind,
   isBigBlind,
-  getLastBlind
+  getLastBlind,
+  SMALL_BLIND
 } from "../../back/game/game-engine/actionHandlers";
 import styled from "@emotion/styled";
 
 type ControlProps = {
   gameData: GameDataUI;
-  myId;
-  onBet;
-  onDeal;
+  myId: string;
+  onBet: (a: number | "fold") => any;
+  onDeal: () => any;
 };
 
 const StyledButton = styled(Button)({ width: 100, margin: 5 });
@@ -25,11 +26,6 @@ export const Controls: FunctionComponent<ControlProps> = ({
   onBet,
   onDeal
 }) => {
-  const { handleSubmit, register, errors } = useForm();
-  const onSubmit = values => console.log(values);
-
-  const disabled = true;
-
   const {
     smallBlind,
     bigBlind,
@@ -41,25 +37,35 @@ export const Controls: FunctionComponent<ControlProps> = ({
     check
   } = makeControlStatus(gameData, myId);
 
+  const { tokens } = gameData.users.find(u => u.userId === myId)!;
+
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      style={{ display: "flex", justifyContent: "center", margin: 30 }}
-    >
+    <div style={{ display: "flex", justifyContent: "center" }}>
       <StyledButton disabled={!deal} variant="secondary" onClick={onDeal}>
         deal
       </StyledButton>
-      <StyledButton disabled={!smallBlind} variant="secondary">
+      <StyledButton
+        disabled={!smallBlind}
+        onClick={() => onBet(tokens < SMALL_BLIND ? tokens : SMALL_BLIND)}
+        variant="secondary"
+      >
         small blind
       </StyledButton>
-      <StyledButton disabled={!bigBlind} variant="secondary">
+      <StyledButton
+        disabled={!bigBlind}
+        onClick={() =>
+          onBet(tokens < 2 * SMALL_BLIND ? tokens : 2 * SMALL_BLIND)
+        }
+        variant="secondary"
+      >
         big blind
       </StyledButton>
       <StyledButton disabled={!fold} variant="secondary">
         fold
       </StyledButton>
       <StyledButton disabled={!check}>check</StyledButton>
-      <StyledButton disabled={!raise} variant="danger">
+      <StyledButton disabled={!call}>call</StyledButton>
+      <StyledButton disabled={!raise} variant="warning">
         raise
       </StyledButton>
       <input
@@ -70,7 +76,10 @@ export const Controls: FunctionComponent<ControlProps> = ({
         min={raise?.min}
         max={raise?.max}
       />
-    </form>
+      <StyledButton disabled={!allIn} variant="danger">
+        all in
+      </StyledButton>
+    </div>
   );
 };
 
@@ -96,7 +105,7 @@ export const makeControlStatus = (
     return result;
   }
 
-  if (!gameHasStarted(gameData)) {
+  if (!gameStarted(gameData)) {
     return { deal: true };
   }
 
@@ -133,6 +142,15 @@ export const makeControlStatus = (
   if (lastBlind === 0) {
     return {
       call: true,
+      raise: { min, max },
+      fold: true,
+      allIn: true,
+      check: true
+    };
+  }
+
+  if (lastBlind === null && gameData.flop) {
+    return {
       raise: { min, max },
       fold: true,
       allIn: true,

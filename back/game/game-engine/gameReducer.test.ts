@@ -7,10 +7,10 @@ import {
 } from "./actionHandlers";
 import { gameReducer } from "./gameReducer.";
 import { UserGameData, Move, Action } from "./models";
-import { newDeck } from "../../../front/cards/deckService";
+import { newDeck } from "./deckService";
 import { mockDeck } from "../../_fixtures";
 
-jest.mock("../../../front/cards/deckService");
+jest.mock("./deckService");
 
 beforeAll(() => {
   (newDeck as jest.Mock).mockReturnValue([...mockDeck]);

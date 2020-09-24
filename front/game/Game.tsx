@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Alert, Button, Col, Container, Row } from "react-bootstrap";
+import { Alert, Button, Container } from "react-bootstrap";
 import { Redirect, useRouteMatch } from "react-router-dom";
 import { ChatMessage, GameStateUI } from "../../common/interfaces";
 import { SessionContext } from "../context/SessionContext";
 import { socketService } from "../socketService";
 import { ChatWindow } from "./ChatWindow";
 import { Controls } from "./Controls";
-import { UserCard } from "./UserCard";
+import { Flop } from "./Flop";
 import { Players } from "./Players";
 
 export function Game({ user, gameId }) {
@@ -54,6 +54,7 @@ export function Game({ user, gameId }) {
           <div>
             <Alert variant="success">Game ID: {gameState.gameData.id}</Alert>
             <h2>Pot: {gameState.gameData.pot}</h2>
+            <Flop flop={gameState.gameData.flop} />
             <Players gameState={gameState}></Players>
             <Controls
               gameData={gameState.gameData}
@@ -85,4 +86,5 @@ const quitGame = () => socketService.socket.emit("quit-game-request");
 
 const handleDeal = () => socketService.socket.emit("deal");
 
-const handleBet = (amount: number) => socketService.socket.emit("bet", amount);
+const handleBet = (amount: number | "fold") =>
+  socketService.socket.emit("bet", amount);

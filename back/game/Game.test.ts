@@ -1,27 +1,19 @@
+import { EventEmitter } from "events";
 import MockDate from "mockdate";
 import { Profile } from "passport-google-oauth20";
 import shortid from "shortid";
-import { usersDb } from "../db/users";
-import {
-  makeEmitter,
-  makeSocket,
-  profileMock1,
-  profileMock2,
-  mockDeck
-} from "../_fixtures";
-import { Game } from "./Game";
-import { socketManager } from "./SocketManager";
-import { EventEmitter } from "events";
-import { gameManager } from "./GameManager";
-import { eventManager } from "react-toastify/dist/core";
-import { newDeck } from "../../front/cards/deckService";
 import { UserSession } from "../../common/interfaces";
+import { usersDb } from "../db/users";
+import { makeEmitter, makeSocket, mockDeck } from "../_fixtures";
+import { Game } from "./Game";
+import { newDeck } from "./game-engine/deckService";
+import { socketManager } from "./SocketManager";
 
 // jest.mock(userSockets);
 jest.mock("shortid");
 jest.mock("../db/users");
 jest.mock("./SocketManager");
-jest.mock("../../front/cards/deckService");
+jest.mock("./game-engine/deckService");
 
 beforeAll(() => {
   (shortid.generate as jest.Mock).mockReturnValue("id");

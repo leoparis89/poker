@@ -1,9 +1,9 @@
 import { Move, UserGameData, GameDataCore, Action, userId } from "./models";
-import { newDeck } from "../../../front/cards/deckService";
+import { newDeck } from "./deckService";
 import { GameDataUI } from "../../../common/interfaces";
 import { gameReducer } from "./gameReducer.";
 
-const SMALL_BLIND = 10;
+export const SMALL_BLIND = 10;
 
 export const handleReset = (gameData: GameDataCore): GameDataCore => {
   const newUsers: any = [];
@@ -34,7 +34,7 @@ export const handleAddPlayer = (
   gameData: GameDataCore,
   userId
 ): GameDataCore => {
-  if (gameHasStarted(gameData)) {
+  if (gameStarted(gameData)) {
     return gameData;
   }
   const newuser: UserGameData = {
@@ -56,7 +56,7 @@ export const handleRemovePlayer = (
   gameData: GameDataCore,
   userId
 ): GameDataCore => {
-  if (gameHasStarted(gameData)) {
+  if (gameStarted(gameData)) {
     return gameData;
   }
 
@@ -102,16 +102,16 @@ export const handleFlop = (gameData: GameDataCore): GameDataCore => {
   return gameData;
 };
 
-export const handleBet = (blind?: number | "fold") => (
+export const handleBet = (bet?: number | "fold") => (
   gameData: GameDataCore
 ) => {
-  if (blind === "fold") {
+  if (bet === "fold") {
     const updatedUser = applyFold(gameData);
     return integrateUser(gameData, updatedUser);
   }
 
-  const actualBlind = getBlind(gameData, blind);
-  const updatedUser = applyBlind(gameData, actualBlind);
+  const actualBet = forceBlind(gameData, bet);
+  const updatedUser = applyBet(gameData, actualBet);
   return integrateUser(gameData, updatedUser);
 };
 
@@ -129,7 +129,7 @@ export const handleTurn = (gameData: GameDataCore): GameDataCore => {
   return { ...gameData, turn: nextTurn };
 };
 
-const getBlind = (gameData: GameDataCore, blind?: number) => {
+const forceBlind = (gameData: GameDataCore, blind?: number) => {
   if (isBigOrSmallBlind(gameData)) {
     return (isSmallBlind(gameData) ? 1 : 2) * SMALL_BLIND;
   }
@@ -148,7 +148,7 @@ const integrateUser = (
   return { ...gameData, users: newUsers };
 };
 
-const applyBlind = (gameData: GameDataCore, blind: number) => {
+const applyBet = (gameData: GameDataCore, bet: number) => {
   const { users, turn } = gameData;
   const currentUser = users[turn!];
 
@@ -158,27 +158,27 @@ const applyBlind = (gameData: GameDataCore, blind: number) => {
 
   const currentBlind = currentUser.bet || 0;
 
-  const allIn = currentUser.tokens <= blind;
+  const allIn = currentUser.tokens <= bet;
 
   if (!allIn) {
     const prevBlind = getLastBlind(users, turn!);
 
-    if (prevBlind && prevBlind > blind + currentBlind) {
+    if (prevBlind && prevBlind > bet + currentBlind) {
       throw new Error(
-        `Amount ${blind} is insufficient. Minimum should be ${
+        `Amount ${bet} is insufficient. Minimum should be ${
           prevBlind - currentBlind
         }.`
       );
     }
   }
 
-  const finalBlind = (allIn ? currentUser.tokens : blind) + currentBlind;
+  const finalBlind = (allIn ? currentUser.tokens : bet) + currentBlind;
   // const finalBlind = Math.max(currentUser.tokens - blind, 0);
 
   const updatedUser: UserGameData = {
     ...currentUser,
     bet: finalBlind,
-    tokens: currentUser.tokens - blind
+    tokens: currentUser.tokens - bet
   };
   return updatedUser;
 };
@@ -232,7 +232,7 @@ const cycleNext = (current: number, total: number) => {
   return current + 1;
 };
 export const playsersAreEven = (users: UserGameData[]) => {
-  if (!everybodyPosted(users)) {
+  if (!everybodyBidded(users)) {
     return false;
   }
 
@@ -258,10 +258,10 @@ const resetBlinds = (users: UserGameData[]) =>
     return [...acc, { ...user, bet: blind }];
   }, [] as UserGameData[]);
 
-const everybodyPosted = (users: UserGameData[]) =>
+const everybodyBidded = (users: UserGameData[]) =>
   users.every(u => u.bet !== null);
 
-export const gameHasStarted = (game: GameDataCore | GameDataUI) =>
+export const gameStarted = (game: GameDataCore | GameDataUI) =>
   !game.users.every(u => u.hand === null);
 
 const isAllIn = (user: UserGameData) => user.tokens === 0;

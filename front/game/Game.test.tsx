@@ -54,7 +54,7 @@ const gameState: GameStateUI = {
 
 describe("<Game/>", () => {
   it("should display players", () => {
-    render(<Game user={{} as any} gameId={"foo"} />);
+    render(<Game user={{ id: "foo" } as any} gameId={"foo"} />);
     act(() => {
       socketService.socket.emit("game-data", gameState);
     });

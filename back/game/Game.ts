@@ -5,7 +5,7 @@ import { usersDb } from "../db/users";
 import { UserSocket } from "../interfaces";
 import { newGame } from "./game-engine/actionHandlers";
 import { gameReducer } from "./game-engine/gameReducer.";
-import { GameDataCore } from "./game-engine/models";
+import { GameDataCore, Action } from "./game-engine/models";
 import { socketManager } from "./SocketManager";
 
 type userId = string;
@@ -18,7 +18,9 @@ class GameCore {
 
   constructor(public creatorId: userId) {
     this.id = shortid.generate();
-    this.gameData = gameReducer(newGame(), {
+    this.gameData = newGame();
+
+    this.applyAction({
       type: "add-player",
       payload: creatorId
     });
@@ -39,7 +41,7 @@ class GameCore {
       return;
     }
 
-    this.gameData = gameReducer(this.gameData, {
+    this.applyAction({
       type: "add-player",
       payload: userId
     });
@@ -50,10 +52,6 @@ class GameCore {
   }
 
   getPlayerGameDatas(): GameStateUI {
-    // this.players.forEach((userData, userId) => {
-    //   const gameData = this.gameData.users.find(u => u.userId === userId);
-    //   result.push({ ...userData, gameData });
-    // });
     const { deck, ...dataWithoutDeck } = this.gameData;
 
     const result: UserSession[] = [];
@@ -73,16 +71,20 @@ class GameCore {
   }
 
   deal(userId: string) {
-    this.gameData = gameReducer(this.gameData, {
+    this.applyAction({
       type: "deal"
     });
   }
 
   bet(amount: number | "fold", userId: string) {
-    this.gameData = gameReducer(this.gameData, {
+    this.applyAction({
       type: "bet",
       payload: { bet: amount, userId }
     });
+  }
+
+  private applyAction(action: Action) {
+    this.gameData = gameReducer(this.gameData, action);
   }
 }
 
@@ -127,7 +129,10 @@ export class Game extends GameCore {
       this.deal(userId);
       this.broadbastGameData();
     };
-    const handleBet = amount => this.bet(amount, userId);
+    const handleBet = amount => {
+      this.bet(amount, userId);
+      this.broadbastGameData();
+    };
 
     socket.on("chat-text", handleChatText);
     socket.on("quit-game-request", handleQuitGame);
