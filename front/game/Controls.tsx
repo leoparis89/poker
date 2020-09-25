@@ -1,15 +1,16 @@
+import styled from "@emotion/styled";
 import React, { FunctionComponent } from "react";
 import { useForm } from "react-hook-form";
+
 import { Button } from "react-bootstrap";
-import { GameDataUI } from "../../common/interfaces";
 import {
   gameStarted,
-  isSmallBlind,
-  isBigBlind,
   getLastBlind,
+  isBigBlind,
+  isSmallBlind,
   SMALL_BLIND
 } from "../../back/game/game-engine/actionHandlers";
-import styled from "@emotion/styled";
+import { GameDataUI } from "../../common/interfaces";
 
 type ControlProps = {
   gameData: GameDataUI;
@@ -26,136 +27,125 @@ export const Controls: FunctionComponent<ControlProps> = ({
   onBet,
   onDeal
 }) => {
-  const {
-    smallBlind,
-    bigBlind,
-    deal,
-    fold,
-    raise,
-    call,
-    allIn,
-    check
-  } = makeControlStatus(gameData, myId);
+  const myIndex = gameData.users.findIndex(u => u.userId === myId);
 
-  const { tokens } = gameData.users.find(u => u.userId === myId)!;
+  if (myIndex !== gameData.turn || gameData.users.length < 2) {
+    return <div>No Action</div>;
+  }
 
-  return (
-    <div style={{ display: "flex", justifyContent: "center" }}>
-      <StyledButton disabled={!deal} variant="secondary" onClick={onDeal}>
+  if (!gameStarted(gameData)) {
+    return (
+      <StyledButton variant="secondary" onClick={onDeal}>
         deal
       </StyledButton>
-      <StyledButton
-        disabled={!smallBlind}
-        onClick={() => onBet(tokens < SMALL_BLIND ? tokens : SMALL_BLIND)}
-        variant="secondary"
-      >
+    );
+  }
+
+  const myMyUserProfile = gameData.users.find(u => u.userId === myId);
+  if (!myMyUserProfile) {
+    throw new Error("User not in game !");
+  }
+
+  const { tokens: myTokens, bet: myBet } = myMyUserProfile;
+
+  if (myBet === "fold") {
+    throw new Error("Folded player cant play!");
+  }
+
+  const handleBlind = ({ big }) => () => {
+    const amount = (big ? 2 : 1) * SMALL_BLIND;
+    onBet(myTokens < amount ? myTokens : amount);
+  };
+
+  if (isSmallBlind(gameData)) {
+    return (
+      <StyledButton onClick={handleBlind({ big: false })} variant="secondary">
         small blind
       </StyledButton>
-      <StyledButton
-        disabled={!bigBlind}
-        onClick={() =>
-          onBet(tokens < 2 * SMALL_BLIND ? tokens : 2 * SMALL_BLIND)
-        }
-        variant="secondary"
-      >
+    );
+  }
+
+  if (isBigBlind(gameData)) {
+    return (
+      <StyledButton onClick={handleBlind({ big: true })} variant="secondary">
         big blind
       </StyledButton>
-      <StyledButton disabled={!fold} variant="secondary">
-        fold
-      </StyledButton>
-      <StyledButton disabled={!check}>check</StyledButton>
-      <StyledButton disabled={!call}>call</StyledButton>
-      <StyledButton disabled={!raise} variant="warning">
-        raise
-      </StyledButton>
-      <input
-        disabled={!raise}
-        type="number"
-        id="raise"
-        name="raise"
-        min={raise?.min}
-        max={raise?.max}
-      />
-      <StyledButton disabled={!allIn} variant="danger">
-        all in
-      </StyledButton>
+    );
+  }
+
+  const handleAllIn = () => onBet(myTokens);
+  const handleFold = () => onBet("fold");
+  const foldButton = (
+    <StyledButton onClick={handleFold} variant="secondary">
+      fold
+    </StyledButton>
+  );
+  const allInButton = (
+    <StyledButton onClick={handleAllIn} variant="danger">
+      all in
+    </StyledButton>
+  );
+  const lastBlind = getLastBlind(gameData.users, gameData.turn)!;
+
+  if (myTokens <= lastBlind) {
+    return (
+      <div>
+        {foldButton}
+        {allInButton}
+      </div>
+    );
+  }
+
+  const handleCheck = () => onBet(0);
+
+  const handleCall = () =>
+    onBet(myBet === null ? lastBlind : lastBlind - myBet);
+
+  const handleRaise = raise => {
+    const diff = lastBlind - (myBet === null ? 0 : myBet);
+    const val = diff + raise;
+    onBet(val);
+  };
+
+  const canCheck =
+    lastBlind === 0 || (lastBlind === null && gameData.flop !== null);
+
+  return (
+    <div>
+      {foldButton}
+      {canCheck ? (
+        <StyledButton onClick={handleCheck}>check</StyledButton>
+      ) : (
+        <StyledButton onClick={handleCall}>call</StyledButton>
+      )}
+      <RaiseBtn myTokens={myTokens} onRaise={handleRaise}></RaiseBtn>
+      {allInButton}
     </div>
   );
 };
 
-export interface ControlStatus {
-  smallBlind?: boolean;
-  bigBlind?: boolean;
-  fold?: boolean;
-  check?: boolean;
-  raise?: { min: number; max: number };
-  call?: boolean;
-  deal?: boolean;
-  allIn?: boolean;
-}
-export const makeControlStatus = (
-  gameData: GameDataUI,
-  myUserId: string
-): ControlStatus => {
-  const myIndex = gameData.users.findIndex(u => u.userId === myUserId);
+export const RaiseBtn = ({ myTokens, onRaise }) => {
+  const { handleSubmit, register, errors } = useForm();
+  const onSubmit = ({ raise }) => {
+    onRaise(Number(raise)); //wtf
+  };
 
-  const result: ControlStatus = {};
-
-  if (myIndex !== gameData.turn || gameData.users.length < 2) {
-    return result;
-  }
-
-  if (!gameStarted(gameData)) {
-    return { deal: true };
-  }
-
-  if (isSmallBlind(gameData)) {
-    return { smallBlind: true };
-  }
-
-  if (isBigBlind(gameData)) {
-    return { bigBlind: true };
-  }
-
-  const myUser = gameData.users[myIndex]!;
-  const lastBlind = getLastBlind(gameData.users, gameData.turn)!;
-
-  if (myUser.tokens <= lastBlind) {
-    return {
-      allIn: true,
-      fold: true
-    };
-  }
-
-  const max = myUser.tokens;
-  const min = lastBlind;
-
-  if (lastBlind !== 0 && myUser.tokens > lastBlind) {
-    return {
-      call: true,
-      raise: { min, max },
-      fold: true,
-      allIn: true
-    };
-  }
-
-  if (lastBlind === 0) {
-    return {
-      call: true,
-      raise: { min, max },
-      fold: true,
-      allIn: true,
-      check: true
-    };
-  }
-
-  if (lastBlind === null && gameData.flop) {
-    return {
-      raise: { min, max },
-      fold: true,
-      allIn: true,
-      check: true
-    };
-  }
-  return {};
+  return (
+    <form onSubmit={handleSubmit(onSubmit as any)}>
+      <StyledButton type="submit" variant="warning">
+        raise
+      </StyledButton>
+      <label htmlFor="raise">raise amount</label>
+      <input
+        ref={register({
+          required: "Required"
+        })}
+        type="number"
+        id="raise"
+        name="raise"
+        min={0}
+        max={myTokens}
+      />
+    </form>
+  );
 };

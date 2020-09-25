@@ -1,10 +1,9 @@
-import React, { useContext, useState, useEffect } from "react";
-import { Button, Modal } from "react-bootstrap";
+import React, { useContext, useEffect, useState } from "react";
+import { Button } from "react-bootstrap";
 import { Redirect } from "react-router-dom";
-import { gameService } from "../gameService";
 import { logout, SessionContext } from "../context/SessionContext";
+import { gameService } from "../gameService";
 import Join from "./Join";
-import { socketService } from "../socketService";
 
 export const Home = function () {
   const { user } = useContext(SessionContext);
