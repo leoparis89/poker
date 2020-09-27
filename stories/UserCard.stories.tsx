@@ -1,7 +1,7 @@
 import { Meta, Story } from "@storybook/react/types-6-0";
 import React from "react";
 import { UserCard } from "../front/game/UserCard";
-import { UserDataUI } from "../common/interfaces";
+import { UserDataUI } from "../common/models";
 import { mockProfile } from "../back/_fixtures";
 
 export default {

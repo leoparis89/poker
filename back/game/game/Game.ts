@@ -1,12 +1,12 @@
 import { Profile } from "passport-google-oauth20";
 import * as shortid from "shortid";
-import { ChatMessage, GameStateUI, UserSession } from "../../common/interfaces";
-import { usersDb } from "../db/users";
-import { UserSocket } from "../interfaces";
-import { newGame } from "./game-engine/actionHandlers";
-import { gameReducer } from "./game-engine/gameReducer.";
-import { GameDataCore, Action } from "./game-engine/models";
-import { socketManager } from "./SocketManager";
+import { ChatMessage, GameStateUI, UserSession } from "../../../common/models";
+import { usersDb } from "../../db/users";
+import { UserSocket } from "../../models";
+import { newGame } from "../game-engine/actionHandlers";
+import { gameReducer } from "../game-engine/gameReducer.";
+import { GameDataCore, Action } from "../game-engine/models";
+import { socketManager } from "../socket-manager/SocketManager";
 
 type userId = string;
 
@@ -46,7 +46,6 @@ class GameCore {
       payload: userId
     });
   }
-
   removePlayer(userId: userId) {
     this.players.delete(userId);
   }
@@ -67,10 +66,15 @@ class GameCore {
     const userData = this.players.get(userId)!;
     if (userData) {
       this.players.set(userId, { ...userData, online });
+      return true;
     }
+    return false;
   }
 
   deal(userId: string) {
+    this.applyAction({
+      type: "reset"
+    });
     this.applyAction({
       type: "deal"
     });
@@ -93,8 +97,9 @@ export class Game extends GameCore {
     super(creatorId);
 
     const handleOnlineState = (online: boolean) => userId => {
-      this.updateOnline(userId, online);
-      this.broadbastGameData();
+      if (this.updateOnline(userId, online)) {
+        this.broadbastGameData();
+      }
     };
 
     socketManager.emitter
@@ -161,7 +166,8 @@ export class Game extends GameCore {
   };
 
   broadbastGameData() {
-    this.broadcast("game-data", this.getPlayerGameDatas());
+    const data = this.getPlayerGameDatas();
+    this.broadcast("game-data", data);
   }
 
   broadcast(topic: string, payload: any) {

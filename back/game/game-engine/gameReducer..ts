@@ -10,8 +10,10 @@ import {
   handleAddPlayer,
   handleRemovePlayer,
   handleDeal,
-  handleReset
+  handleReset,
+  handleGains
 } from "./actionHandlers";
+
 export const gameReducer = (gameData: GameDataCore, action: Action) => {
   switch (action.type) {
     case "bet":
@@ -22,7 +24,8 @@ export const gameReducer = (gameData: GameDataCore, action: Action) => {
         checkEnoughUsers,
         handleBet(bet),
         handleTurn,
-        handleFlop
+        handleFlop,
+        handleGains
       )(gameData);
     case "add-player":
       return handleAddPlayer(gameData, action.payload);

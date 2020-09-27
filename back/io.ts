@@ -1,10 +1,10 @@
 import { Response } from "express";
 import Socket from "socket.io";
 import { myMiddleWare, server } from "./app";
-import { socketManager } from "./game/SocketManager";
-import { UserSocket } from "./interfaces";
+import { socketManager } from "./game/socket-manager/SocketManager";
+import { UserSocket } from "./models";
 import { handleJoinGame } from "./game/socket-handlers/handleJoinGame";
-import { gameManager } from "./game/GameManager";
+import { gameManager } from "./game/game-manager/gameManager";
 
 const io = Socket.listen(server)
   .use((socket, next) => {

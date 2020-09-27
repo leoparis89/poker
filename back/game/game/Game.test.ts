@@ -2,18 +2,18 @@ import { EventEmitter } from "events";
 import MockDate from "mockdate";
 import { Profile } from "passport-google-oauth20";
 import shortid from "shortid";
-import { UserSession } from "../../common/interfaces";
-import { usersDb } from "../db/users";
-import { makeEmitter, makeSocket, mockDeck } from "../_fixtures";
+import { UserSession } from "../../../common/models";
+import { usersDb } from "../../db/users";
+import { makeEmitter, makeSocket, mockDeck } from "../../_fixtures";
 import { Game } from "./Game";
-import { newDeck } from "./game-engine/deckService";
-import { socketManager } from "./SocketManager";
+import { newDeck } from "../game-engine/deck-service/deckService";
+import { socketManager } from "../socket-manager/SocketManager";
 
 // jest.mock(userSockets);
 jest.mock("shortid");
-jest.mock("../db/users");
-jest.mock("./SocketManager");
-jest.mock("./game-engine/deckService");
+jest.mock("../../db/users");
+jest.mock("../socket-manager/SocketManager");
+jest.mock("../game-engine/deck-service/deckService");
 
 beforeAll(() => {
   (shortid.generate as jest.Mock).mockReturnValue("id");
@@ -55,7 +55,7 @@ describe("Game", () => {
             flop: null,
             id: "id",
             pot: 0,
-            startTurn: 0,
+            startTurn: null,
             turn: 0,
             users: [
               { bet: null, hand: null, tokens: 1000, userId: "creatorId" },
@@ -81,7 +81,7 @@ describe("Game", () => {
             flop: null,
             id: "id",
             pot: 0,
-            startTurn: 0,
+            startTurn: null,
             turn: 0,
             users: [
               { bet: null, hand: null, tokens: 1000, userId: "creatorId" },
@@ -251,7 +251,7 @@ describe("Game", () => {
           flop: null,
           id: "id",
           pot: 0,
-          startTurn: 0,
+          startTurn: null,
           turn: 0,
           users: [
             { bet: null, hand: null, tokens: 1000, userId: "mockId1" },

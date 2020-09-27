@@ -3,14 +3,15 @@ import React, { FunctionComponent } from "react";
 import { useForm } from "react-hook-form";
 
 import { Button } from "react-bootstrap";
+import { getLastBlind } from "../../back/game/game-engine/actionHandlers";
+import { SMALL_BLIND } from "../../back/game/game-engine/config";
 import {
   gameStarted,
-  getLastBlind,
   isBigBlind,
   isSmallBlind,
-  SMALL_BLIND
-} from "../../back/game/game-engine/actionHandlers";
-import { GameDataUI } from "../../common/interfaces";
+  gameIsOver
+} from "../../back/game/game-engine/gameMethods";
+import { GameDataUI } from "../../common/models";
 
 type ControlProps = {
   gameData: GameDataUI;
@@ -33,7 +34,7 @@ export const Controls: FunctionComponent<ControlProps> = ({
     return <div>No Action</div>;
   }
 
-  if (!gameStarted(gameData)) {
+  if (!gameStarted(gameData) || gameIsOver(gameData)) {
     return (
       <StyledButton variant="secondary" onClick={onDeal}>
         deal

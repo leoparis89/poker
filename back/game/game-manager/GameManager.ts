@@ -1,6 +1,6 @@
 import { Socket } from "socket.io";
-import { Game } from "./Game";
-import errorMessages from "../../common/errorMessages";
+import { Game } from "../game/Game";
+import errorMessages from "../../../common/errorMessages";
 
 export class GameManager {
   activeGames = new Map<string, Game>();

@@ -8,7 +8,7 @@ import {
   GameDataCore,
   UserGameData
 } from "../../back/game/game-engine/models";
-import { GameDataUI } from "../../common/interfaces";
+import { GameDataUI } from "../../common/models";
 import { Controls } from "./Controls";
 
 const toGameDataUI = (gameData: GameDataCore): GameDataUI => {
@@ -30,7 +30,8 @@ describe("<Controls/>", () => {
     { type: "add-player", payload: "foo" },
     { type: "add-player", payload: "bar" },
     { type: "add-player", payload: "baz" },
-    { type: "add-player", payload: "kuk" }
+    { type: "add-player", payload: "kuk" },
+    { type: "reset" }
   ] as Action[];
 
   game = addUsers.reduce(gameReducer, game);

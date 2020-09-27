@@ -1,16 +1,17 @@
+import { mockDeck } from "../../_fixtures";
 import {
   getLastBlind,
   handleBet,
-  makeNewGame,
-  playsersAreEven,
-  newGame
+  newGame,
+  playsersAreEven
 } from "./actionHandlers";
+import { newDeck } from "./deck-service/deckService";
 import { gameReducer } from "./gameReducer.";
-import { UserGameData, Move, Action } from "./models";
-import { newDeck } from "./deckService";
-import { mockDeck } from "../../_fixtures";
+import { Action, GameDataCore, Move, UserGameData } from "./models";
+import { getWinnerIdexes } from "./solver";
 
-jest.mock("./deckService");
+jest.mock("./deck-service/deckService");
+jest.mock("./solver");
 
 beforeAll(() => {
   (newDeck as jest.Mock).mockReturnValue([...mockDeck]);
@@ -43,7 +44,8 @@ test("complete scenario 3", () => {
     { type: "add-player", payload: "foo" },
     { type: "add-player", payload: "bar" },
     { type: "add-player", payload: "baz" },
-    { type: "add-player", payload: "kuk" }
+    { type: "add-player", payload: "kuk" },
+    { type: "reset" }
   ] as Action[];
   const result1 = addUsers.reduce(gameReducer, game);
   expect(result1).toEqual({
@@ -648,10 +650,14 @@ test("complete scenario", () => {
     { userId: "baz", bet: 10 }
   ];
 
+  (getWinnerIdexes as jest.Mock).mockReturnValue([
+    { winnerIndex: 1 },
+    { winnerIndex: 4 }
+  ]);
   const result3 = moves3.map(toAction).reduce(gameReducer, result2);
   expect(result3).toEqual({
     flop: ["MockCard", "MockCard", "MockCard", "MockCard", "MockCard"],
-    pot: 300,
+    pot: 0,
     turn: 4,
     startTurn: 0,
     deck: new Array(5).fill("MockCard"),
@@ -665,7 +671,7 @@ test("complete scenario", () => {
       {
         bet: null,
         hand: ["MockCard", "MockCard"],
-        tokens: 910,
+        tokens: 1060,
         userId: "bar"
       },
       {
@@ -683,21 +689,21 @@ test("complete scenario", () => {
       {
         bet: null,
         hand: ["MockCard", "MockCard"],
-        tokens: 910,
+        tokens: 1060,
         userId: "boz"
       }
     ]
   });
 
-  // /**
-  //  * Check that the sum of all provided bets + initial small and big bets
-  //  * add up to the final pot
-  //  */
-  expect(
-    [...moves1, ...moves2, ...moves3].reduce((acc, { bet: bet }) => {
-      return acc + (typeof bet === "number" ? bet : 0);
-    }, 0) + 30
-  ).toEqual(result3.pot);
+  /**
+   * Check that the sum of all provided bets + initial small and big bets
+   * add up to the final pot
+   */
+  // expect(
+  //   [...moves1, ...moves2, ...moves3].reduce((acc, { bet: bet }) => {
+  //     return acc + (typeof bet === "number" ? bet : 0);
+  //   }, 0) + 30
+  // ).toEqual(result3.pot);
 
   expect(() => {
     gameReducer(result3, {
@@ -706,21 +712,21 @@ test("complete scenario", () => {
     });
   }).toThrowError("Game is finished. No more turns allowed.");
 
-  const result4 = gameReducer(result3, { type: "reset" });
-  expect(result4).toEqual({
-    deck: new Array(20).fill("MockCard"),
-    flop: null,
-    pot: 300,
-    startTurn: 1,
-    turn: 1,
-    users: [
-      { bet: null, hand: null, tokens: 970, userId: "foo" },
-      { bet: null, hand: null, tokens: 910, userId: "bar" },
-      { bet: null, hand: null, tokens: 910, userId: "baz" },
-      { bet: null, hand: null, tokens: 1000, userId: "kuk" },
-      { bet: null, hand: null, tokens: 910, userId: "boz" }
-    ]
-  });
+  // const result4 = gameReducer(result3, { type: "reset" });
+  // expect(result4).toEqual({
+  //   deck: new Array(20).fill("MockCard"),
+  //   flop: null,
+  //   pot: 300,
+  //   startTurn: 1,
+  //   turn: 1,
+  //   users: [
+  //     { bet: null, hand: null, tokens: 970, userId: "foo" },
+  //     { bet: null, hand: null, tokens: 910, userId: "bar" },
+  //     { bet: null, hand: null, tokens: 910, userId: "baz" },
+  //     { bet: null, hand: null, tokens: 1000, userId: "kuk" },
+  //     { bet: null, hand: null, tokens: 910, userId: "boz" }
+  //   ]
+  // });
 });
 
 //   test("complete scenario 2", () => {
@@ -780,3 +786,66 @@ test("complete scenario", () => {
 // });
 
 // describe("user reducers", () => {});
+
+const makeNewGame = (creatorId: string, userIds: string[]): GameDataCore => {
+  const creatorIndex = userIds.indexOf(creatorId);
+
+  const game = newGame();
+  if (creatorIndex === -1) {
+    throw "Creator is not present in list.";
+  }
+
+  const actions: Action[] = userIds.map(u => ({
+    type: "add-player",
+    payload: u
+  }));
+  const result1 = actions.reduce(gameReducer, game);
+  const result2 = gameReducer(result1, { type: "deal" });
+  return { ...result2, turn: creatorIndex, startTurn: creatorIndex };
+};
+
+test("complete scenario 4 (everyone folds preflop)", () => {
+  let game = newGame();
+
+  expect(game).toEqual({
+    deck: new Array(20).fill("MockCard"),
+    flop: null,
+    pot: 0,
+    turn: null,
+    startTurn: null,
+    users: []
+  });
+  const addUsers = [
+    { type: "add-player", payload: "foo" },
+    { type: "add-player", payload: "bar" },
+    { type: "add-player", payload: "baz" },
+    { type: "reset" }
+  ] as Action[];
+
+  game = addUsers.reduce(gameReducer, game);
+
+  const moves: Move[] = [
+    { userId: "foo" },
+    { userId: "bar" },
+    { userId: "baz", bet: "fold" },
+    { userId: "foo", bet: "fold" }
+  ];
+  game = moves.map(toAction).reduce(gameReducer, game);
+
+  expect(game).toEqual({
+    deck: mockDeck,
+    flop: null,
+    pot: 0,
+    startTurn: 0,
+    turn: 1,
+    users: [
+      { bet: "fold", hand: null, tokens: 990, userId: "foo" },
+      { bet: null, hand: null, tokens: 1010, userId: "bar" },
+      { bet: "fold", hand: null, tokens: 1000, userId: "baz" }
+    ]
+  });
+
+  expect(() =>
+    gameReducer(game, { type: "bet", payload: { userId: "bar", bet: 30 } })
+  ).toThrowError("Game is finished. No more turns allowed.");
+});

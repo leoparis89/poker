@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 import React, { FunctionComponent } from "react";
 import { UserGameData } from "../../back/game/game-engine/models";
 import { PlayingCard } from "../cards/PlayingCard";
-import { UserSession } from "../../common/interfaces";
+import { UserSession } from "../../common/models";
 import { Badge } from "react-bootstrap";
 
 const Wrapper = styled("div")((props: any) => ({

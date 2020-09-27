@@ -1,5 +1,5 @@
 import { Profile } from "passport-google-oauth20";
-import { UserSocket } from "./interfaces";
+import { UserSocket } from "./models";
 import { EventEmitter } from "events";
 
 export const mockProfile = {

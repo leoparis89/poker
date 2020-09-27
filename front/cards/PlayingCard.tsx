@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from "react";
-import { RankSuit } from "../../common/interfaces";
+import { RankSuit } from "../../common/models";
 require("cardsJS/dist/cards.js");
 require("cardsJS/dist/cards.css");
 

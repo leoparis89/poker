@@ -1,25 +1,41 @@
-import { Move, UserGameData, GameDataCore, Action, userId } from "./models";
-import { newDeck } from "./deckService";
-import { GameDataUI } from "../../../common/interfaces";
+import { newDeck } from "./deck-service/deckService";
+import {
+  gameStarted,
+  isBigBlind,
+  isSmallBlind,
+  gameIsOver
+} from "./gameMethods";
 import { gameReducer } from "./gameReducer.";
+import { Action, GameDataCore, UserGameData, Hand, FullFlop } from "./models";
+import { SMALL_BLIND } from "./config";
+import { getWinners, getWinnerIdexes } from "./solver";
 
-export const SMALL_BLIND = 10;
-
+/**
+ * Resets deck, hands, and user bets (could be folded).
+ * In crements start turn and sets it at current turn.
+ * @param gameData
+ */
 export const handleReset = (gameData: GameDataCore): GameDataCore => {
   const newUsers: any = [];
   for (const user of gameData.users) {
     newUsers.push({ ...user, bet: null, hand: null });
   }
+
+  const newStartTurn = gameData.startTurn === null ? 0 : gameData.startTurn + 1;
   return {
     ...gameData,
     users: newUsers,
-    startTurn: gameData.startTurn! + 1,
-    turn: gameData.startTurn! + 1,
+    startTurn: newStartTurn,
+    turn: newStartTurn,
     flop: null,
     deck: newDeck()
   };
 };
 
+/**
+ * Creates a new deck and deals hands
+ * @param gameData
+ */
 export const handleDeal = (gameData: GameDataCore): GameDataCore => {
   const newDeck = [...gameData.deck];
   const newUsers: UserGameData[] = [];
@@ -47,8 +63,8 @@ export const handleAddPlayer = (
   return {
     ...gameData,
     users: [...gameData.users, newuser],
-    turn: gameData.turn === null ? 0 : gameData.turn,
-    startTurn: gameData.startTurn === null ? 0 : gameData.startTurn
+    turn: gameData.turn === null ? 0 : gameData.turn
+    // startTurn: gameData.startTurn === null ? 0 : gameData.startTurn
   };
 };
 
@@ -74,40 +90,43 @@ export const handleRemovePlayer = (
 
 export const handleFlop = (gameData: GameDataCore): GameDataCore => {
   const users = gameData.users;
-  const newDeck = [...gameData.deck];
-  if (playsersAreEven(users)) {
-    const potAddition = users.reduce((pot, user) => {
-      return pot + (typeof user.bet === "number" ? user.bet : 0);
-    }, 0);
+  if (!playsersAreEven(users)) {
+    return gameData;
+  }
 
-    if (gameData.flop) {
-      const newFLop = [...gameData.flop, newDeck.shift()];
-      return {
-        ...gameData,
-        flop: newFLop as any,
-        pot: gameData.pot + potAddition,
-        users: resetBlinds(users),
-        deck: newDeck
-      };
-    }
+  const potTotal = users.reduce(
+    (pot, user) => pot + (typeof user.bet === "number" ? user.bet : 0),
+    0
+  );
 
+  if (allButOneFolded(users)) {
     return {
       ...gameData,
-      flop: newDeck.splice(0, 3) as any,
-      pot: potAddition,
-      deck: newDeck,
+      pot: gameData.pot + potTotal,
       users: resetBlinds(users)
     };
   }
-  return gameData;
+
+  const newDeck = [...gameData.deck];
+
+  const newFlop = gameData.flop
+    ? [...gameData.flop, newDeck.shift()]
+    : (newDeck.splice(0, 3) as any);
+
+  return {
+    ...gameData,
+    flop: newFlop,
+    pot: gameData.pot + potTotal,
+    deck: newDeck,
+    users: resetBlinds(users)
+  };
 };
 
 export const handleBet = (bet?: number | "fold") => (
   gameData: GameDataCore
 ) => {
   if (bet === "fold") {
-    const updatedUser = applyFold(gameData);
-    return integrateUser(gameData, updatedUser);
+    return applyFold(gameData);
   }
 
   const actualBet = forceBlind(gameData, bet);
@@ -127,6 +146,50 @@ export const handleTurn = (gameData: GameDataCore): GameDataCore => {
   }
 
   return { ...gameData, turn: nextTurn };
+};
+
+export const handleGains = (gameData: GameDataCore): GameDataCore => {
+  if (!gameIsOver(gameData)) {
+    return gameData;
+  }
+
+  if (allButOneFolded(gameData.users)) {
+    const newUsers: UserGameData[] = [];
+    gameData.users.forEach((user, i) => {
+      if (user.bet !== "fold") {
+        newUsers.push({ ...user, tokens: user.tokens + gameData.pot });
+        return;
+      }
+      newUsers.push(user);
+    });
+    return {
+      ...gameData,
+      users: newUsers,
+      pot: 0
+    };
+  }
+
+  const winners = getWinnerIdexes(
+    gameData.users,
+    gameData.flop as FullFlop
+  ).map(e => e.winnerIndex);
+
+  const prize = gameData.pot / winners.length;
+  const newUsers: UserGameData[] = [];
+
+  gameData.users.forEach((user, i) => {
+    if (winners.includes(i)) {
+      newUsers.push({ ...user, tokens: user.tokens + prize });
+      return;
+    }
+    newUsers.push(user);
+  });
+  return {
+    ...gameData,
+    users: newUsers,
+    pot: 0
+  };
+  // return { ...gameData, users: newUsers };
 };
 
 const forceBlind = (gameData: GameDataCore, blind?: number) => {
@@ -173,7 +236,6 @@ const applyBet = (gameData: GameDataCore, bet: number) => {
   }
 
   const finalBlind = (allIn ? currentUser.tokens : bet) + currentBlind;
-  // const finalBlind = Math.max(currentUser.tokens - blind, 0);
 
   const updatedUser: UserGameData = {
     ...currentUser,
@@ -187,11 +249,16 @@ const applyFold = (gameData: GameDataCore) => {
   const { users, turn } = gameData;
   const currentUser = users[turn!];
 
+  const newGameData = {
+    ...gameData,
+    pot: gameData.pot + (currentUser.bet as number)
+  };
+
   const updatedUser: UserGameData = {
     ...currentUser,
     bet: "fold"
   };
-  return updatedUser;
+  return integrateUser(newGameData, updatedUser);
 };
 
 export const getLastBlind = (users: UserGameData[], currentTurn: number) => {
@@ -261,24 +328,17 @@ const resetBlinds = (users: UserGameData[]) =>
 const everybodyBidded = (users: UserGameData[]) =>
   users.every(u => u.bet !== null);
 
-export const gameStarted = (game: GameDataCore | GameDataUI) =>
-  !game.users.every(u => u.hand === null);
-
 const isAllIn = (user: UserGameData) => user.tokens === 0;
-
-const isPreflop = (gameData: GameDataCore | GameDataUI) => {
-  return gameData.flop === null;
-};
-export const isSmallBlind = (gameData: GameDataCore | GameDataUI) =>
-  isPreflop(gameData) && gameData.users.every(d => d.bet === null);
-
-export const isBigBlind = (gameData: GameDataCore | GameDataUI) =>
-  isPreflop(gameData) &&
-  gameData.users.filter(d => d.bet !== null).length === 1;
 
 const isBigOrSmallBlind = (gameData: GameDataCore) =>
   isSmallBlind(gameData) || isBigBlind(gameData);
 
+export const allButOneFolded = (users: UserGameData[]) => {
+  return (
+    users.length >= 2 &&
+    users.filter(u => u.bet === "fold").length === users.length - 1
+  );
+};
 export const newGame = (): GameDataCore => {
   return {
     users: [],
@@ -290,28 +350,8 @@ export const newGame = (): GameDataCore => {
   };
 };
 
-export const makeNewGame = (
-  creatorId: string,
-  userIds: string[]
-): GameDataCore => {
-  const creatorIndex = userIds.indexOf(creatorId);
-
-  const game = newGame();
-  if (creatorIndex === -1) {
-    throw "Creator is not present in list.";
-  }
-
-  const actions: Action[] = userIds.map(u => ({
-    type: "add-player",
-    payload: u
-  }));
-  const result1 = actions.reduce(gameReducer, game);
-  const result2 = gameReducer(result1, { type: "deal" });
-  return { ...result2, turn: creatorIndex, startTurn: creatorIndex };
-};
-
 export const checkGameIsNotOver = (gameData: GameDataCore) => {
-  if (gameData.flop?.length === 5) {
+  if (gameIsOver(gameData)) {
     throw new Error("Game is finished. No more turns allowed.");
   }
   return gameData;

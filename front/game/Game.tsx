@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Alert, Button, Container } from "react-bootstrap";
 import { Redirect, useRouteMatch } from "react-router-dom";
-import { ChatMessage, GameStateUI } from "../../common/interfaces";
+import { ChatMessage, GameStateUI } from "../../common/models";
 import { SessionContext } from "../context/SessionContext";
 import { socketService } from "../socketService";
 import { ChatWindow } from "./ChatWindow";

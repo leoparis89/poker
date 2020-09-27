@@ -1,4 +1,4 @@
-import { UserSocket } from "../interfaces";
+import { UserSocket } from "../../models";
 import { EventEmitter } from "events";
 
 type userId = string;

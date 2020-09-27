@@ -1,12 +1,12 @@
 import { Response } from "express";
 import MockExpressResponse from "mock-express-response";
 import { handleNewGame } from "./gameRoute";
-import { gameManager } from "./GameManager";
-import { Game } from "./Game";
-import { newDeck } from "./game-engine/deckService";
+import { gameManager } from "./game-manager/gameManager";
+import { Game } from "./game/Game";
+import { newDeck } from "./game-engine/deck-service/deckService";
 import { mockDeck } from "../_fixtures";
 
-jest.mock("./game-engine/deckService");
+jest.mock("./game-engine/deck-service/deckService");
 jest.mock("shortid", () => ({ generate: () => "mockGameId" }));
 
 beforeAll(() => {

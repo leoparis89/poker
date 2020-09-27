@@ -1,5 +1,5 @@
 import { SocketManager } from "./SocketManager";
-import { makeSocket } from "../_fixtures";
+import { makeSocket } from "../../_fixtures";
 
 describe("UserSockets", () => {
   describe("addSocket", () => {

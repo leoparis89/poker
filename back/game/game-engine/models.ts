@@ -1,4 +1,4 @@
-import { RankSuit } from "../../../common/interfaces";
+import { RankSuit } from "../../../common/models";
 
 export type GameDataCore = ReadOnly<_GameDataCore>;
 export type UserGameData = ReadOnly<_UserGameData>;
@@ -40,10 +40,13 @@ interface _UserGameData {
   userId: string;
   tokens: number;
   bet: number | null | "fold";
-  hand: [RankSuit, RankSuit] | null;
+  hand: Hand | null;
 }
 
 interface _Move {
   userId: string;
   bet?: number | "fold";
 }
+
+export type Hand = [RankSuit, RankSuit];
+export type FullFlop = [RankSuit, RankSuit, RankSuit, RankSuit, RankSuit];

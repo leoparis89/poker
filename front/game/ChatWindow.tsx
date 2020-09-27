@@ -8,7 +8,7 @@ import React, {
 } from "react";
 import { Button, Card, FormControl, InputGroup } from "react-bootstrap";
 import { useForm } from "react-hook-form";
-import { ChatMessage } from "../../common/interfaces";
+import { ChatMessage } from "../../common/models";
 import { socketService } from "../socketService";
 import { SessionContext } from "../context/SessionContext";
 

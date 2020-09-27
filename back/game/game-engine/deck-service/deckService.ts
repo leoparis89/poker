@@ -1,4 +1,4 @@
-import { RankSuit } from "../../../common/interfaces";
+import { RankSuit } from "../../../../common/models";
 
 import { shuffle } from "lodash";
 

@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from "react";
 import { Row, Col } from "react-bootstrap";
 import { UserCard } from "./UserCard";
-import { GameStateUI } from "../../common/interfaces";
+import { GameStateUI } from "../../common/models";
 
 export const Players: FunctionComponent<{ gameState: GameStateUI }> = ({
   gameState
