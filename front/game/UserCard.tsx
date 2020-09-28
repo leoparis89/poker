@@ -1,9 +1,9 @@
 import styled from "@emotion/styled";
 import React, { FunctionComponent } from "react";
-import { UserGameData } from "../../back/game/game-engine/models";
-import { PlayingCard } from "../cards/PlayingCard";
-import { UserSession } from "../../common/models";
 import { Badge } from "react-bootstrap";
+import { UserGameData } from "../../back/game/game-engine/models";
+import { UserSession } from "../../common/models";
+import { PlayingCard } from "../cards/PlayingCard";
 
 const Wrapper = styled("div")((props: any) => ({
   // width: 350,
@@ -19,7 +19,8 @@ export const UserCard: FunctionComponent<UserDataUI> = ({
   profile,
   online,
   gameData,
-  currentTurn
+  currentTurn,
+  showCards
 }) => {
   return (
     <div role="listitem">
@@ -46,9 +47,12 @@ export const UserCard: FunctionComponent<UserDataUI> = ({
     </Card> */}
       </Wrapper>
       {gameData?.hand && (
-        <div style={{ display: "flex", margin: 10 }}>
-          <PlayingCard rankSuit={gameData.hand[0]} />
-          <PlayingCard rankSuit={gameData.hand[1]} />
+        <div
+          style={{ display: "flex", margin: 10 }}
+          data-fan="spacing: 0.1; width: 80; radius: 80;"
+        >
+          <PlayingCard rankSuit={showCards ? gameData.hand[0] : "Blue_Back"} />
+          <PlayingCard rankSuit={showCards ? gameData.hand[1] : "Blue_Back"} />
         </div>
       )}
     </div>
@@ -71,4 +75,5 @@ export const Online = ({ online }) => (
 export interface UserDataUI extends UserSession {
   gameData?: UserGameData;
   currentTurn?: boolean;
+  showCards: boolean;
 }

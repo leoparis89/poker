@@ -31,7 +31,7 @@ export const Controls: FunctionComponent<ControlProps> = ({
   const myIndex = gameData.users.findIndex(u => u.userId === myId);
 
   if (myIndex !== gameData.turn || gameData.users.length < 2) {
-    return <div>No Action</div>;
+    return null;
   }
 
   if (!gameStarted(gameData) || gameIsOver(gameData)) {
@@ -90,10 +90,10 @@ export const Controls: FunctionComponent<ControlProps> = ({
 
   if (myTokens <= lastBlind) {
     return (
-      <div>
+      <>
         {foldButton}
         {allInButton}
-      </div>
+      </>
     );
   }
 
@@ -112,7 +112,7 @@ export const Controls: FunctionComponent<ControlProps> = ({
     lastBlind === 0 || (lastBlind === null && gameData.flop !== null);
 
   return (
-    <div>
+    <>
       {foldButton}
       {canCheck ? (
         <StyledButton onClick={handleCheck}>check</StyledButton>
@@ -121,7 +121,7 @@ export const Controls: FunctionComponent<ControlProps> = ({
       )}
       <RaiseBtn myTokens={myTokens} onRaise={handleRaise}></RaiseBtn>
       {allInButton}
-    </div>
+    </>
   );
 };
 
@@ -150,3 +150,15 @@ export const RaiseBtn = ({ myTokens, onRaise }) => {
     </form>
   );
 };
+
+const ControlsWrapper = styled("div")({
+  display: "flext",
+  justifyContent: "center",
+  alignItems: "center",
+  height: 100
+});
+export const WrapperdControls = props => (
+  <ControlsWrapper>
+    <Controls {...props} />
+  </ControlsWrapper>
+);

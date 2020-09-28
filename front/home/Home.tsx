@@ -29,8 +29,8 @@ export const Home = function () {
       <h1>Home</h1>
       <h2>Welcome {user?.displayName} !</h2>
       <Button onClick={newGame}>New Game</Button>
-      <Button onClick={() => setShow(true)}>Join</Button>
-      <Button onClick={logout}>Logout</Button>
+      {/* <Button onClick={() => setShow(true)}>Join</Button>
+      <Button onClick={logout}>Logout</Button> */}
       {activeGameId && <Redirect to={`/game/${activeGameId}`}></Redirect>}
       <Join show={show} handleClose={handleClose}></Join>
     </div>

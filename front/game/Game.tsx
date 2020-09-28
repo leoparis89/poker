@@ -5,7 +5,7 @@ import { ChatMessage, GameStateUI } from "../../common/models";
 import { SessionContext } from "../context/SessionContext";
 import { socketService } from "../socketService";
 import { ChatWindow } from "./ChatWindow";
-import { Controls } from "./Controls";
+import { WrapperdControls } from "./Controls";
 import { Flop } from "./Flop";
 import { Players } from "./Players";
 
@@ -46,30 +46,32 @@ export function Game({ user, gameId }) {
   }
 
   return (
-    <Container>
-      {error ? (
-        <Alert variant="danger">{error}</Alert>
-      ) : (
-        gameState && (
-          <div>
-            <Alert variant="success">Game ID: {gameState.gameData.id}</Alert>
-            <h2>Pot: {gameState.gameData.pot}</h2>
-            <Flop flop={gameState.gameData.flop} />
-            <Players gameState={gameState}></Players>
-            <Controls
-              gameData={gameState.gameData}
-              myId={user.id}
-              onDeal={handleDeal}
-              onBet={handleBet}
-            ></Controls>
-            <ChatWindow messages={messages}></ChatWindow>
-            <Button onClick={quitGame} variant="danger">
-              Leave game
-            </Button>
-          </div>
-        )
-      )}
-    </Container>
+    <Table>
+      <Container>
+        {error ? (
+          <Alert variant="danger">{error}</Alert>
+        ) : (
+          gameState && (
+            <div>
+              <Alert variant="success">Game ID: {gameState.gameData.id}</Alert>
+              <h2>Pot: {gameState.gameData.pot}</h2>
+              <Flop flop={gameState.gameData.flop} />
+              <Players gameState={gameState} myId={user.id}></Players>
+              <WrapperdControls
+                gameData={gameState.gameData}
+                myId={user.id}
+                onDeal={handleDeal}
+                onBet={handleBet}
+              ></WrapperdControls>
+              <ChatWindow messages={messages}></ChatWindow>
+              <Button onClick={quitGame} variant="danger">
+                Leave game
+              </Button>
+            </div>
+          )
+        )}
+      </Container>
+    </Table>
   );
 }
 
@@ -88,3 +90,16 @@ const handleDeal = () => socketService.socket.emit("deal");
 
 const handleBet = (amount: number | "fold") =>
   socketService.socket.emit("bet", amount);
+
+const Table = props => {
+  const img = require("./assets/table-background.jpg");
+  return (
+    <div
+    // style={{
+    //   backgroundImage: `url("./assets/table-background.jpg");`
+    // }}
+    >
+      {props.children}
+    </div>
+  );
+};
