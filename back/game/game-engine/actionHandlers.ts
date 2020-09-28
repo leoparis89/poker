@@ -1,14 +1,13 @@
+import { SMALL_BLIND } from "./config";
 import { newDeck } from "./deck-service/deckService";
 import {
+  gameIsOver,
   gameStarted,
   isBigBlind,
-  isSmallBlind,
-  gameIsOver
+  isSmallBlind
 } from "./gameMethods";
-import { gameReducer } from "./gameReducer.";
-import { Action, GameDataCore, UserGameData, Hand, FullFlop } from "./models";
-import { SMALL_BLIND } from "./config";
-import { getWinners, getWinnerIdexes } from "./solver";
+import { FullFlop, GameDataCore, UserGameData } from "./models";
+import { getWinnerIdexes } from "./solver";
 
 /**
  * Resets deck, hands, and user bets (could be folded).
@@ -16,12 +15,16 @@ import { getWinners, getWinnerIdexes } from "./solver";
  * @param gameData
  */
 export const handleReset = (gameData: GameDataCore): GameDataCore => {
-  const newUsers: any = [];
+  const newUsers: UserGameData[] = [];
   for (const user of gameData.users) {
     newUsers.push({ ...user, bet: null, hand: null });
   }
 
-  const newStartTurn = gameData.startTurn === null ? 0 : gameData.startTurn + 1;
+  const newStartTurn =
+    gameData.startTurn === null
+      ? 0
+      : cycleNext(gameData.startTurn, gameData.users.length);
+
   return {
     ...gameData,
     users: newUsers,
@@ -33,7 +36,7 @@ export const handleReset = (gameData: GameDataCore): GameDataCore => {
 };
 
 /**
- * Creates a new deck and deals hands
+ * Deals hands
  * @param gameData
  */
 export const handleDeal = (gameData: GameDataCore): GameDataCore => {
@@ -64,7 +67,6 @@ export const handleAddPlayer = (
     ...gameData,
     users: [...gameData.users, newuser],
     turn: gameData.turn === null ? 0 : gameData.turn
-    // startTurn: gameData.startTurn === null ? 0 : gameData.startTurn
   };
 };
 
@@ -130,14 +132,14 @@ export const handleBet = (bet?: number | "fold") => (
   }
 
   const actualBet = forceBlind(gameData, bet);
-  const updatedUser = applyBet(gameData, actualBet);
+  const updatedUser = applyBetOnUser(gameData, actualBet);
   return integrateUser(gameData, updatedUser);
 };
 
+/**
+ * Increment turn within a cycle while ignoring folds
+ */
 export const handleTurn = (gameData: GameDataCore): GameDataCore => {
-  /**
-   * Cycle turns while ignoring folds
-   */
   const users = gameData.users;
   let nextTurn = cycleNext(gameData.turn!, users.length);
 
@@ -189,7 +191,6 @@ export const handleGains = (gameData: GameDataCore): GameDataCore => {
     users: newUsers,
     pot: 0
   };
-  // return { ...gameData, users: newUsers };
 };
 
 const forceBlind = (gameData: GameDataCore, blind?: number) => {
@@ -211,7 +212,7 @@ const integrateUser = (
   return { ...gameData, users: newUsers };
 };
 
-const applyBet = (gameData: GameDataCore, bet: number) => {
+const applyBetOnUser = (gameData: GameDataCore, bet: number) => {
   const { users, turn } = gameData;
   const currentUser = users[turn!];
 
@@ -274,7 +275,7 @@ const getLastTurnNotFoldAndNotAllIn = (
   let turn = currentTurn;
 
   while (true) {
-    const prevTurn = getPrevTurn(turn, users.length);
+    const prevTurn = cyclePrev(turn, users.length);
     const prevUser = users[prevTurn];
 
     if (prevUser.bet !== "fold" && !isAllIn(prevUser)) {
@@ -285,7 +286,7 @@ const getLastTurnNotFoldAndNotAllIn = (
   }
 };
 
-const getPrevTurn = (current: number, total: number) => {
+const cyclePrev = (current: number, total: number) => {
   if (current === 0) {
     return total - 1;
   }
