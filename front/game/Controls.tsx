@@ -126,21 +126,19 @@ export const Controls: FunctionComponent<ControlProps> = ({
 };
 
 export const RaiseBtn = ({ myTokens, onRaise }) => {
-  const { handleSubmit, register, errors } = useForm();
-  const onSubmit = ({ raise }) => {
-    onRaise(Number(raise)); //wtf
+  const { handleSubmit, register, errors, formState } = useForm();
+  const onSubmit = val => {
+    onRaise(Number(val.raise)); //wtf
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit as any)}>
-      <StyledButton type="submit" variant="warning">
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <StyledButton type="submit" variant="warning" disabled={!formState.dirty}>
         raise
       </StyledButton>
-      <label htmlFor="raise">raise amount</label>
+      <label htmlFor="raise">amount</label>
       <input
-        ref={register({
-          required: "Required"
-        })}
+        ref={register({ required: true })}
         type="number"
         id="raise"
         name="raise"

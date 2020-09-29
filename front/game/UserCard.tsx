@@ -23,7 +23,7 @@ export const UserCard: FunctionComponent<UserDataUI> = ({
   showCards
 }) => {
   return (
-    <div role="listitem">
+    <div role="listitem" style={{ height: 200 }}>
       {gameData && (
         <div style={{ display: "flex", margin: 10 }}>
           <Badge variant="primary">Tokens: {gameData.tokens}</Badge>
@@ -38,13 +38,6 @@ export const UserCard: FunctionComponent<UserDataUI> = ({
         <span style={{ margin: 10 }}>{profile.displayName}</span>
         <Online online={online}></Online>
         <br />
-        {/* <Card style={{ width: "18rem" }}>
-    <Card.Img variant="top" src={profile.photos?.[0].value} />
-    <Card.Body>
-    <Card.Title>{profile.displayName}</Card.Title>
-    <Online online={online}></Online>
-    </Card.Body>
-    </Card> */}
       </Wrapper>
       {gameData?.hand && (
         <div
