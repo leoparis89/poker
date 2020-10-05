@@ -20,10 +20,16 @@ export const UserCard: FunctionComponent<UserDataUI> = ({
   online,
   gameData,
   currentTurn,
-  showCards
+  showCards,
+  isDealer
 }) => {
   return (
     <div role="listitem" style={{ height: 200 }}>
+      {isDealer && (
+        <Badge style={{ margin: 10 }} variant="success">
+          Dealer
+        </Badge>
+      )}
       {gameData && (
         <div style={{ display: "flex", margin: 10 }}>
           <Badge variant="primary">Tokens: {gameData.tokens}</Badge>
@@ -68,5 +74,6 @@ export const Online = ({ online }) => (
 export interface UserDataUI extends UserSession {
   gameData?: UserGameData;
   currentTurn?: boolean;
+  isDealer: boolean;
   showCards: boolean;
 }

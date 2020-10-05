@@ -11,12 +11,16 @@ export const Players: FunctionComponent<{
   return (
     <Row>
       {gameState.players.map(({ profile, online }) => {
-        const isCurrent =
-          gameState.gameData.turn ===
-          gameState.gameData.users.findIndex(u => u.userId === profile.id);
+        const userIndex = gameState.gameData.users.findIndex(
+          u => u.userId === profile.id
+        );
+        const isCurrent = gameState.gameData.turn === userIndex;
+        const isDealer = userIndex === gameState.gameData.startTurn;
+
         return (
           <Col sm={3} key={profile.id}>
             <UserCard
+              isDealer={isDealer}
               profile={profile}
               online={online}
               currentTurn={isCurrent}
