@@ -24,7 +24,7 @@ const makeUserDataUI = (userId, tokens = 100, bet = null) => {
   } as UserGameData;
 };
 
-describe("<Controls/>", () => {
+describe.skip("<Controls/>", () => {
   let game = newGame();
   const addUsers = [
     { type: "add-player", payload: "foo" },
@@ -89,7 +89,7 @@ describe("<Controls/>", () => {
     expect(spy).toHaveBeenCalledWith(20);
   });
 
-  test("third user sees raise / call / fold / all in buttons", () => {
+  test.skip("third user sees raise / call / fold / all in buttons", () => {
     game = gameReducer(game, { type: "bet", payload: { userId: "bar" } });
 
     const spy = jest.fn();

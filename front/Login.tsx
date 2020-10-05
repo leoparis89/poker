@@ -8,7 +8,7 @@ export function Login() {
     <div
       style={{
         textAlign: "center",
-        backgroundImage: `url("${url}")`,
+        // backgroundImage: `url("${url}")`,
         height: "100vh"
       }}
     >

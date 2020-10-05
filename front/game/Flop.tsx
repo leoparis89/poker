@@ -10,8 +10,8 @@ const Wrapper = styled("div")({
   // border: "3px solid lightgreen",
   boxShadow: `0 2px 10px 0 rgb(185 185 185)`,
   borderRadius: 25,
-  margin: "30px 0",
-  backgroundImage: `url("${require("./assets/table-background.jpg")}")`
+  margin: "30px 0"
+  // backgroundImage: `url("${require("./assets/table-background.jpg")}")`
 });
 
 export const Flop = ({ flop }) => {
