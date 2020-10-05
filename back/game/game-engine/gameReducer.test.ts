@@ -35,7 +35,7 @@ describe("makeNewGame", () => {
       flop: null,
       pot: 0,
       turn: 1,
-      startTurn: 1,
+      startTurn: 0,
       users: [
         {
           bet: null,
@@ -57,13 +57,7 @@ describe("makeNewGame", () => {
         }
       ]
     };
-    expect(makeNewGame("bar", ["foo", "bar", "baz"])).toEqual(expected);
-  });
-
-  it("should throw if game creator is not present in list", () => {
-    expect(() => makeNewGame("kuk", ["foo", "bar", "baz"])).toThrowError(
-      "Creator is not present in list."
-    );
+    expect(makeNewGame(["foo", "bar", "baz"])).toEqual(expected);
   });
 });
 
@@ -236,7 +230,7 @@ describe("playersAreEven", () => {
 
 describe("handleBet", () => {
   it("should apply flold to users", () => {
-    const game = makeNewGame("bar", ["foo", "bar", "baz"]);
+    const game = makeNewGame(["foo", "bar", "baz"]);
     const result = handleBet("fold")({ ...game, turn: 1 });
     expect(result.users).toEqual([
       {
@@ -261,7 +255,7 @@ describe("handleBet", () => {
   });
 
   it("should apply small blind to users", () => {
-    const game = makeNewGame("bar", ["foo", "bar", "baz"]);
+    const game = makeNewGame(["foo", "bar", "baz"]);
     const result = handleBet()(game);
     expect(result.users).toEqual([
       {
@@ -281,7 +275,7 @@ describe("handleBet", () => {
   });
 
   it("should apply big blind to users", () => {
-    const game = makeNewGame("bar", ["foo", "bar", "baz"]) as any;
+    const game = makeNewGame(["foo", "bar", "baz"]) as any;
 
     game.users[1].bet = 10;
     game.turn = 2;
@@ -304,7 +298,7 @@ describe("handleBet", () => {
   });
 
   it("should apply normal bet to users", () => {
-    const game = makeNewGame("foo", ["foo", "bar", "baz", "kuk"]) as any;
+    const game = makeNewGame(["foo", "bar", "baz", "kuk"]) as any;
 
     game.users[1].bet = 10;
     game.users[2].bet = 20;
@@ -334,7 +328,7 @@ describe("handleBet", () => {
   });
 
   it("should throw if normal bet is too low and user is not all in", () => {
-    const game = makeNewGame("foo", ["foo", "bar", "baz", "kuk"]) as any;
+    const game = makeNewGame(["foo", "bar", "baz", "kuk"]) as any;
 
     game.users[1].bet = 10;
     game.users[2].bet = 20;
@@ -345,7 +339,7 @@ describe("handleBet", () => {
   });
 
   it("should apply normal bet if it is too low and user is all in", () => {
-    const game = makeNewGame("foo", ["foo", "bar", "baz", "kuk"]) as any;
+    const game = makeNewGame(["foo", "bar", "baz", "kuk"]) as any;
 
     game.users[1].bet = 10;
     game.users[2].bet = 20;
@@ -377,18 +371,18 @@ describe("handleBet", () => {
 
 describe("gameReducer", () => {
   it("should throw if wrong user plays", () => {
-    const game = makeNewGame("foo", ["foo", "bar", "baz", "kuk"]);
+    const game = makeNewGame(["foo", "bar", "baz", "kuk"]);
     const expected =
-      'User "bar" of index 1 is not allowed to play on this turn.\n' +
-      'Expecting "foo" of index 0 to play.';
+      'User "baz" of index 2 is not allowed to play on this turn.\n' +
+      'Expecting "bar" of index 1 to play.';
 
     expect(() =>
-      gameReducer(game, toAction({ bet: 3, userId: "bar" }))
+      gameReducer(game, toAction({ bet: 3, userId: "baz" }))
     ).toThrowError(expected);
   });
 
   it("should throw if user plays and not enough users", () => {
-    const game = makeNewGame("foo", ["foo"]);
+    const game = makeNewGame(["foo"]);
 
     expect(() =>
       gameReducer(game, toAction({ bet: 3, userId: "foo" }))
@@ -396,31 +390,29 @@ describe("gameReducer", () => {
   });
 
   it("should increment turn", () => {
-    const game = makeNewGame("foo", ["foo", "bar", "baz"]);
-    const result = gameReducer(game, toAction({ userId: "foo" }));
-    expect(result.turn).toEqual(1);
+    const game = makeNewGame(["foo", "bar", "baz"]);
+    const result = gameReducer(game, toAction({ userId: "bar" }));
+    expect(result.turn).toEqual(2);
   });
 
   it("should increment turn and ignore folded users", () => {
-    const game = makeNewGame("foo", ["foo", "bar", "baz", "kuk"]);
+    const game = makeNewGame(["foo", "bar", "baz", "kuk"]);
 
     const moves: Move[] = [
-      { userId: "foo" },
       { userId: "bar" },
       { userId: "baz", bet: "fold" },
       { userId: "kuk", bet: 20 },
-      { userId: "foo", bet: 20 },
-      { userId: "bar", bet: 10 }
+      { userId: "foo", bet: 20 }
     ];
 
     const actions = moves.map(toAction);
 
     const result = actions.reduce(gameReducer, game);
-    expect(result.turn).toEqual(3);
+    expect(result.turn).toEqual(1);
   });
 
   it("should flop", () => {
-    const game = makeNewGame("bar", ["foo", "bar", "baz"]);
+    const game = makeNewGame(["foo", "bar", "baz"]);
 
     const moves: Move[] = [
       { userId: "bar" },
@@ -435,8 +427,8 @@ describe("gameReducer", () => {
     const expected = {
       flop: ["MockCard", "MockCard", "MockCard"],
       pot: 60,
-      turn: 2,
-      startTurn: 1,
+      turn: 1,
+      startTurn: 0,
       deck: new Array(11).fill("MockCard"),
       users: [
         {

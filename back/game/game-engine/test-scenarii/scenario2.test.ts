@@ -11,7 +11,7 @@ beforeAll(() => {
   (newDeck as jest.Mock).mockReturnValue([...mockDeck]);
 });
 
-test("complete scenario 2 (everyone folds preflop)", () => {
+test.skip("complete scenario 2 (everyone folds preflop)", () => {
   let game = newGame();
 
   expect(game).toEqual({

@@ -92,7 +92,7 @@ const handleBet = (amount: number | "fold") =>
   socketService.socket.emit("bet", amount);
 
 const Table = props => {
-  const img = require("./assets/table-background.jpg");
+  // const img = require("./assets/table-background.jpg");
   return (
     <div
     // style={{

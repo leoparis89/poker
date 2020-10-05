@@ -120,7 +120,8 @@ export const handleFlop = (gameData: GameDataCore): GameDataCore => {
     flop: newFlop,
     pot: gameData.pot + potTotal,
     deck: newDeck,
-    users: resetBlinds(users)
+    users: resetBlinds(users),
+    turn: gameData.startTurn! + 1
   };
 };
 

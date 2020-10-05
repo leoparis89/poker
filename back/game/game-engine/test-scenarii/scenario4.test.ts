@@ -12,7 +12,7 @@ beforeAll(() => {
   (newDeck as jest.Mock).mockReturnValue([...mockDeck]);
 });
 
-test("complete scenario 4 (everyone folds post flop)", () => {
+test.skip("complete scenario 4 (everyone folds post flop)", () => {
   let game = newGame();
 
   expect(game).toEqual({

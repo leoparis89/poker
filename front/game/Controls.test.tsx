@@ -24,21 +24,17 @@ const makeUserDataUI = (userId, tokens = 100, bet = null) => {
   } as UserGameData;
 };
 
-describe.skip("<Controls/>", () => {
+describe("<Controls/>", () => {
   let game = newGame();
   const addUsers = [
     { type: "add-player", payload: "foo" },
     { type: "add-player", payload: "bar" },
     { type: "add-player", payload: "baz" },
-    { type: "add-player", payload: "kuk" },
-    { type: "reset" }
+    { type: "add-player", payload: "kuk" }
+    // { type: "reset" }
   ] as Action[];
 
   game = addUsers.reduce(gameReducer, game);
-
-  test("all controls should be disabled if it's not players turn", () => {
-    // expect(makeControlStatus(toGameDataUI(game), "baz")).toEqual({});
-  });
 
   test("clicking deal button should call onDeal ", () => {
     const spy = jest.fn();
@@ -55,25 +51,8 @@ describe.skip("<Controls/>", () => {
     expect(spy).toHaveBeenCalled();
   });
 
-  test("first user sees small blind button should call onBet function", () => {
+  test("second user sees small blind button should call onBet function", () => {
     game = gameReducer(game, { type: "deal" });
-
-    const spy = jest.fn();
-    render(
-      <Controls
-        onDeal={jest.fn()}
-        onBet={spy}
-        myId="foo"
-        gameData={toGameDataUI(game)}
-      />
-    );
-
-    fireEvent.click(screen.getByRole("button", { name: /small blind/i }));
-    expect(spy).toHaveBeenCalledWith(10);
-  });
-
-  test("secons user sees  big blind button and it should call onBet function", () => {
-    game = gameReducer(game, { type: "bet", payload: { userId: "foo" } });
 
     const spy = jest.fn();
     render(
@@ -85,11 +64,11 @@ describe.skip("<Controls/>", () => {
       />
     );
 
-    fireEvent.click(screen.getByRole("button", { name: /big blind/i }));
-    expect(spy).toHaveBeenCalledWith(20);
+    fireEvent.click(screen.getByRole("button", { name: /small blind/i }));
+    expect(spy).toHaveBeenCalledWith(10);
   });
 
-  test.skip("third user sees raise / call / fold / all in buttons", () => {
+  test("third user sees  big blind button and it should call onBet function", () => {
     game = gameReducer(game, { type: "bet", payload: { userId: "bar" } });
 
     const spy = jest.fn();
@@ -102,6 +81,23 @@ describe.skip("<Controls/>", () => {
       />
     );
 
+    fireEvent.click(screen.getByRole("button", { name: /big blind/i }));
+    expect(spy).toHaveBeenCalledWith(20);
+  });
+
+  test("fourth user sees raise / call / fold / all in buttons", () => {
+    game = gameReducer(game, { type: "bet", payload: { userId: "baz" } });
+
+    const spy = jest.fn();
+    render(
+      <Controls
+        onDeal={jest.fn()}
+        onBet={spy}
+        myId="kuk"
+        gameData={toGameDataUI(game)}
+      />
+    );
+
     fireEvent.click(screen.getByRole("button", { name: /call/i }));
     expect(spy).toHaveBeenCalledWith(20);
     fireEvent.click(screen.getByRole("button", { name: /fold/i }));
@@ -109,21 +105,21 @@ describe.skip("<Controls/>", () => {
     fireEvent.click(screen.getByRole("button", { name: /all in/i }));
     expect(spy).toHaveBeenCalledWith(1000);
 
-    const raiseNode = screen.getByRole("spinbutton", { name: /raise/i });
-    fireEvent.change(raiseNode, { target: { value: "44" } });
+    // const raiseNode = screen.getByRole("spinbutton", { name: /raise/i });
+    // fireEvent.change(raiseNode, { target: { value: "44" } });
     // TODO finish test
     const raiseBtn = screen.getByRole("button", { name: /raise/i });
   });
 
   it("should diplay only all in / fold buttons if user doesnt have enough funds", () => {
     const clonedGame = cloneDeep(game);
-    (clonedGame.users[2] as any).tokens = 5;
+    (clonedGame.users[3] as any).tokens = 5;
     const spy = jest.fn();
     render(
       <Controls
         onDeal={jest.fn()}
         onBet={spy}
-        myId="baz"
+        myId="kuk"
         gameData={toGameDataUI(clonedGame)}
       />
     );
@@ -138,14 +134,14 @@ describe.skip("<Controls/>", () => {
 
   it("should display check / all in / raise buttons", () => {
     const gameWithCheck = cloneDeep(game);
-    (gameWithCheck.users[1] as any).bet = 0;
+    (gameWithCheck.users[2] as any).bet = 0;
 
     const spy = jest.fn();
     render(
       <Controls
         onDeal={jest.fn()}
         onBet={spy}
-        myId="baz"
+        myId="kuk"
         gameData={toGameDataUI(gameWithCheck)}
       />
     );

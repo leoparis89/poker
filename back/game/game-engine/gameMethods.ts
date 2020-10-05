@@ -1,5 +1,6 @@
 import { GameData } from "../../../common/models";
 import { allButOneFolded } from "./actionHandlers";
+import { UserGameData } from "./models";
 
 export const gameStarted = (game: GameData) =>
   !game.users.every(u => u.hand === null);
