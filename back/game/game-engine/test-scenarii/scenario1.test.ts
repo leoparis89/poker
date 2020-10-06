@@ -1,7 +1,7 @@
 import { Move } from "../models";
 import { makeNewGame, toAction, totalTokens } from "../_helpers.";
 import { gameReducer } from "../gameReducer.";
-import { getWinnerIdexes } from "../solver";
+import { getWinnerIndos, WinnerInfo } from "../solver";
 import { newDeck } from "../deck-service/deckService";
 import { mockDeck } from "../../../_fixtures";
 
@@ -85,7 +85,10 @@ test("complete scenario", () => {
     { userId: "foo", bet: 30 }
   ];
 
-  (getWinnerIdexes as jest.Mock).mockReturnValue([{ winnerIndex: 0 }]);
+  (getWinnerIndos as jest.Mock).mockReturnValue([
+    { winnerIndex: 0, descr: "Mock flush" }
+  ] as WinnerInfo[]);
+
   game = moves3.map(toAction).reduce(gameReducer, game);
   expect(game).toEqual({
     deck: [
@@ -103,6 +106,7 @@ test("complete scenario", () => {
     pot: 0,
     startTurn: 1,
     turn: 1,
+    winners: [{ winnerIndex: 0, descr: "Mock flush" }],
     users: [
       {
         bet: null,

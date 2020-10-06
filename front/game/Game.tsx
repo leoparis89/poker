@@ -8,6 +8,7 @@ import { ChatWindow } from "./ChatWindow";
 import { WrapperdControls } from "./Controls";
 import { Flop } from "./Flop";
 import { Players } from "./Players";
+import { Winners } from "./Winners";
 
 export function Game({ user, gameId }) {
   const [gameState, setGameState] = useState<GameStateUI | null>(null);
@@ -56,6 +57,11 @@ export function Game({ user, gameId }) {
           gameState && (
             <div>
               <Alert variant="success">Game ID: {gameState.gameData.id}</Alert>
+              <Winners
+                players={gameState.players}
+                winners={gameState.gameData.winners}
+                // winners={[{ descr: "Quinte flush", winnerIndex: 0 }]}
+              ></Winners>
               <h2>Pot: {gameState.gameData.pot}</h2>
               <Flop flop={gameState.gameData.flop} />
               <Players gameState={gameState} myId={user.id}></Players>

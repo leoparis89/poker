@@ -8,7 +8,7 @@ import {
 import { newDeck } from "./deck-service/deckService";
 import { gameReducer } from "./gameReducer.";
 import { Action, GameDataCore, Move, UserGameData } from "./models";
-import { getWinnerIdexes } from "./solver";
+import { getWinnerIndos } from "./solver";
 import { toAction, makeNewGame } from "./_helpers.";
 
 jest.mock("./deck-service/deckService");

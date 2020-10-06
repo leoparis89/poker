@@ -1,5 +1,5 @@
 import { Hand } from "pokersolver";
-import { getWinners, getWinnerIdexes } from ".";
+import { getWinners, getWinnerIndos } from ".";
 import { UserGameData, FullFlop } from "../models";
 
 test("poker solver smoke test", () => {
@@ -49,7 +49,7 @@ describe("getWinnerIndexes", () => {
 
     const fullFlop: FullFlop = ["JC", "TH", "AC", "3C", "KD"];
 
-    expect(getWinnerIdexes(users, fullFlop)).toEqual([
+    expect(getWinnerIndos(users, fullFlop)).toEqual([
       { descr: "Pair, A's", winnerIndex: 2 }
     ]);
   });
@@ -63,7 +63,7 @@ describe("getWinnerIndexes", () => {
 
     const fullFlop: FullFlop = ["JC", "TH", "AC", "3C", "KD"];
 
-    expect(getWinnerIdexes(users, fullFlop)).toEqual([
+    expect(getWinnerIndos(users, fullFlop)).toEqual([
       { descr: "Pair, A's", winnerIndex: 0 },
       { descr: "Pair, A's", winnerIndex: 2 }
     ]);

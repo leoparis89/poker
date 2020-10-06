@@ -16,16 +16,16 @@ export const getWinners = (
   return contenders.filter(c => winners.includes(c.result));
 };
 
-export type WinnerIndex = {
+export type WinnerInfo = {
   winnerIndex: number;
   descr: string;
 };
 
-export const getWinnerIdexes = (
+export const getWinnerIndos = (
   users: UserGameData[],
   flop: FullFlop
-): WinnerIndex[] => {
-  const result: WinnerIndex[] = [];
+): WinnerInfo[] => {
+  const result: WinnerInfo[] = [];
   const winningHands = getWinners(
     users.map(u => u.hand!),
     flop

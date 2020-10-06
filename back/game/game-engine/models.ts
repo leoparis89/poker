@@ -1,4 +1,5 @@
 import { RankSuit } from "../../../common/models";
+import { WinnerInfo } from "./solver";
 
 export type GameDataCore = ReadOnly<_GameDataCore>;
 export type UserGameData = ReadOnly<_UserGameData>;
@@ -32,6 +33,7 @@ interface _GameDataCore {
   startTurn: number;
   pot: number;
   deck: RankSuit[];
+  winners?: WinnerInfo[];
 }
 
 interface _UserGameData {
