@@ -14,14 +14,17 @@ export const makeNewGame = (userIds: string[]): GameDataCore => {
     type: "add-player",
     payload: u
   }));
-  actions.push({ type: "reset" });
-  actions.push({ type: "deal" });
+
+  actions.push({
+    type: "deal",
+    payload: userIds[0]
+  });
   return actions.reduce(gameReducer, game);
 };
 
-export const checkIntergrity = (gameData: GameDataCore) => {
+export const totalTokens = (gameData: GameDataCore) => {
   const total = gameData.users.reduce((acc, curr) => {
     return acc + curr.tokens;
   }, 0);
-  return total;
+  return total + gameData.pot;
 };

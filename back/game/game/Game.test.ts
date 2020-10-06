@@ -55,7 +55,7 @@ describe("Game", () => {
             flop: null,
             id: "id",
             pot: 0,
-            startTurn: null,
+            startTurn: 0,
             turn: 0,
             users: [
               { bet: null, hand: null, tokens: 1000, userId: "creatorId" },
@@ -81,7 +81,7 @@ describe("Game", () => {
             flop: null,
             id: "id",
             pot: 0,
-            startTurn: null,
+            startTurn: 0,
             turn: 0,
             users: [
               { bet: null, hand: null, tokens: 1000, userId: "creatorId" },
@@ -251,7 +251,7 @@ describe("Game", () => {
           flop: null,
           id: "id",
           pot: 0,
-          startTurn: null,
+          startTurn: 0,
           turn: 0,
           users: [
             { bet: null, hand: null, tokens: 1000, userId: "mockId1" },

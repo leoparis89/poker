@@ -20,16 +20,9 @@ export const handleReset = (gameData: GameDataCore): GameDataCore => {
     newUsers.push({ ...user, bet: null, hand: null });
   }
 
-  const newStartTurn =
-    gameData.startTurn === null
-      ? 0
-      : cycleNext(gameData.startTurn, gameData.users.length);
-
   return {
     ...gameData,
     users: newUsers,
-    startTurn: newStartTurn,
-    turn: newStartTurn,
     flop: null,
     deck: newDeck()
   };
@@ -54,7 +47,7 @@ export const handleAddPlayer = (
   userId
 ): GameDataCore => {
   if (gameStarted(gameData)) {
-    return gameData;
+    throw new Error("Can't add players when game started.");
   }
   const newuser: UserGameData = {
     bet: null,
@@ -65,8 +58,7 @@ export const handleAddPlayer = (
 
   return {
     ...gameData,
-    users: [...gameData.users, newuser],
-    turn: gameData.turn === null ? 0 : gameData.turn
+    users: [...gameData.users, newuser]
   };
 };
 
@@ -75,6 +67,7 @@ export const handleRemovePlayer = (
   userId
 ): GameDataCore => {
   if (gameStarted(gameData)) {
+    throw new Error("Can't remove players when game started.");
     return gameData;
   }
 
@@ -101,7 +94,7 @@ export const handleFlop = (gameData: GameDataCore): GameDataCore => {
     0
   );
 
-  if (allButOneFolded(users)) {
+  if (allFolded(users)) {
     return {
       ...gameData,
       pot: gameData.pot + potTotal,
@@ -115,13 +108,18 @@ export const handleFlop = (gameData: GameDataCore): GameDataCore => {
     ? [...gameData.flop, newDeck.shift()]
     : (newDeck.splice(0, 3) as any);
 
+  let resetTurn = gameData.startTurn;
+  do {
+    resetTurn = cycleNext(resetTurn, gameData.users.length);
+  } while (gameData.users[resetTurn].bet === "fold");
+
   return {
     ...gameData,
     flop: newFlop,
     pot: gameData.pot + potTotal,
     deck: newDeck,
     users: resetBlinds(users),
-    turn: gameData.startTurn! + 1
+    turn: resetTurn
   };
 };
 
@@ -156,7 +154,9 @@ export const handleGains = (gameData: GameDataCore): GameDataCore => {
     return gameData;
   }
 
-  if (allButOneFolded(gameData.users)) {
+  const nextStartTurn = cycleNext(gameData.startTurn, gameData.users.length);
+
+  if (allFolded(gameData.users)) {
     const newUsers: UserGameData[] = [];
     gameData.users.forEach((user, i) => {
       if (user.bet !== "fold") {
@@ -168,7 +168,9 @@ export const handleGains = (gameData: GameDataCore): GameDataCore => {
     return {
       ...gameData,
       users: newUsers,
-      pot: 0
+      pot: 0,
+      turn: nextStartTurn,
+      startTurn: nextStartTurn
     };
   }
 
@@ -190,7 +192,9 @@ export const handleGains = (gameData: GameDataCore): GameDataCore => {
   return {
     ...gameData,
     users: newUsers,
-    pot: 0
+    pot: 0,
+    turn: nextStartTurn,
+    startTurn: nextStartTurn
   };
 };
 
@@ -335,7 +339,7 @@ const isAllIn = (user: UserGameData) => user.tokens === 0;
 const isBigOrSmallBlind = (gameData: GameDataCore) =>
   isSmallBlind(gameData) || isBigBlind(gameData);
 
-export const allButOneFolded = (users: UserGameData[]) => {
+export const allFolded = (users: UserGameData[]) => {
   return (
     users.length >= 2 &&
     users.filter(u => u.bet === "fold").length === users.length - 1
@@ -344,8 +348,8 @@ export const allButOneFolded = (users: UserGameData[]) => {
 export const newGame = (): GameDataCore => {
   return {
     users: [],
-    turn: null,
-    startTurn: null,
+    turn: 0,
+    startTurn: 0,
     flop: null,
     pot: 0,
     deck: newDeck()

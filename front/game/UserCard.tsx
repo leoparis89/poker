@@ -24,12 +24,18 @@ export const UserCard: FunctionComponent<UserDataUI> = ({
   isDealer
 }) => {
   return (
-    <div role="listitem" style={{ height: 200 }}>
-      {isDealer && (
-        <Badge style={{ margin: 10 }} variant="success">
-          Dealer
-        </Badge>
-      )}
+    <div
+      data-testid={`user-card-${profile.id}`}
+      role="listitem"
+      style={{ height: 300 }}
+    >
+      <div style={{ height: 30 }}>
+        {isDealer && (
+          <Badge style={{ margin: 10 }} variant="success">
+            Dealer
+          </Badge>
+        )}
+      </div>
       {gameData && (
         <div style={{ display: "flex", margin: 10 }}>
           <Badge variant="primary">Tokens: {gameData.tokens}</Badge>

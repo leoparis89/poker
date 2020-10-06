@@ -17,13 +17,13 @@ beforeAll(() => {
   (newDeck as jest.Mock).mockReturnValue([...mockDeck]);
 });
 
-test("nexGame should return the right value", () => {
+test("newGame should return the right value", () => {
   expect(newGame()).toEqual({
     deck: new Array(20).fill("MockCard"),
     flop: null,
     pot: 0,
-    turn: null,
-    startTurn: null,
+    turn: 0,
+    startTurn: 0,
     users: []
   });
 });

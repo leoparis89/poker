@@ -38,7 +38,9 @@ export function Game({ user, gameId }) {
       setQuit(true);
     });
 
-    return () => {};
+    return () => {
+      socket.removeAllListeners();
+    };
   }, [user]);
 
   if (quit) {

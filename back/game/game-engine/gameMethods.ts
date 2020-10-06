@@ -1,12 +1,12 @@
 import { GameData } from "../../../common/models";
-import { allButOneFolded } from "./actionHandlers";
+import { allFolded } from "./actionHandlers";
 import { UserGameData } from "./models";
 
 export const gameStarted = (game: GameData) =>
   !game.users.every(u => u.hand === null);
 
 export const gameIsOver = (game: GameData) => {
-  return game.flop?.length === 5 || allButOneFolded(game.users);
+  return game.flop?.length === 5 || allFolded(game.users);
 };
 
 export const isSmallBlind = (gameData: GameData) =>

@@ -1,5 +1,5 @@
 import { Move } from "../models";
-import { makeNewGame, toAction, checkIntergrity } from "../_helpers.";
+import { makeNewGame, toAction, totalTokens } from "../_helpers.";
 import { gameReducer } from "../gameReducer.";
 import { getWinnerIdexes } from "../solver";
 import { newDeck } from "../deck-service/deckService";
@@ -101,7 +101,7 @@ test("complete scenario", () => {
     ],
     flop: ["MockCard", "MockCard", "MockCard", "MockCard", "MockCard"],
     pot: 0,
-    startTurn: 0,
+    startTurn: 1,
     turn: 1,
     users: [
       {
@@ -120,7 +120,7 @@ test("complete scenario", () => {
     ]
   });
 
-  expect(checkIntergrity(game)).toEqual(3000);
+  expect(totalTokens(game)).toEqual(3000);
 
   expect(() => {
     gameReducer(game, {

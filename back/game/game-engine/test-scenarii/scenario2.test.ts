@@ -1,58 +1,134 @@
+import { Move } from "../models";
+import { makeNewGame, toAction, totalTokens } from "../_helpers.";
+import { gameReducer } from "../gameReducer.";
+import { getWinnerIdexes } from "../solver";
 import { newDeck } from "../deck-service/deckService";
 import { mockDeck } from "../../../_fixtures";
-import { newGame } from "../actionHandlers";
-import { Action, Move } from "../models";
-import { gameReducer } from "../gameReducer.";
-import { toAction } from "../_helpers.";
+import { gameIsOver } from "../gameMethods";
 
 jest.mock("../deck-service/deckService");
+jest.mock("../solver");
 
 beforeAll(() => {
   (newDeck as jest.Mock).mockReturnValue([...mockDeck]);
 });
 
-test.skip("complete scenario 2 (everyone folds preflop)", () => {
-  let game = newGame();
-
-  expect(game).toEqual({
-    deck: new Array(20).fill("MockCard"),
-    flop: null,
-    pot: 0,
-    turn: null,
-    startTurn: null,
-    users: []
-  });
-  const addUsers = [
-    { type: "add-player", payload: "foo" },
-    { type: "add-player", payload: "bar" },
-    { type: "add-player", payload: "baz" },
-    { type: "reset" }
-  ] as Action[];
-
-  game = addUsers.reduce(gameReducer, game);
-
-  const moves: Move[] = [
-    { userId: "foo" },
+test("complete scenario 2 (edge case where small blind user folds)", () => {
+  let game = makeNewGame(["foo", "bar", "baz"]);
+  const moves1: Move[] = [
     { userId: "bar" },
-    { userId: "baz", bet: "fold" },
-    { userId: "foo", bet: "fold" }
+    { userId: "baz" },
+    { userId: "foo", bet: 20 },
+    { userId: "bar", bet: "fold" }
   ];
-  game = moves.map(toAction).reduce(gameReducer, game);
+  const actions = moves1.map(toAction);
 
+  game = actions.reduce(gameReducer, game);
   expect(game).toEqual({
-    deck: mockDeck,
-    flop: null,
-    pot: 0,
+    deck: [
+      "MockCard",
+      "MockCard",
+      "MockCard",
+      "MockCard",
+      "MockCard",
+      "MockCard",
+      "MockCard",
+      "MockCard",
+      "MockCard",
+      "MockCard",
+      "MockCard"
+    ],
+    flop: ["MockCard", "MockCard", "MockCard"],
+    pot: 50,
     startTurn: 0,
-    turn: 1,
+    turn: 2,
     users: [
-      { bet: "fold", hand: null, tokens: 990, userId: "foo" },
-      { bet: null, hand: null, tokens: 1010, userId: "bar" },
-      { bet: "fold", hand: null, tokens: 1000, userId: "baz" }
+      { bet: null, hand: ["MockCard", "MockCard"], tokens: 980, userId: "foo" },
+      {
+        bet: "fold",
+        hand: ["MockCard", "MockCard"],
+        tokens: 990,
+        userId: "bar"
+      },
+      { bet: null, hand: ["MockCard", "MockCard"], tokens: 980, userId: "baz" }
     ]
   });
 
-  expect(() =>
-    gameReducer(game, { type: "bet", payload: { userId: "bar", bet: 30 } })
-  ).toThrowError("Game is finished. No more turns allowed.");
+  const moves2: Move[] = [
+    { userId: "baz", bet: 0 },
+    { userId: "foo", bet: 0 }
+  ];
+
+  game = moves2.map(toAction).reduce(gameReducer, game);
+  expect(game).toEqual({
+    deck: [
+      "MockCard",
+      "MockCard",
+      "MockCard",
+      "MockCard",
+      "MockCard",
+      "MockCard",
+      "MockCard",
+      "MockCard",
+      "MockCard",
+      "MockCard"
+    ],
+    flop: ["MockCard", "MockCard", "MockCard", "MockCard"],
+    pot: 50,
+    startTurn: 0,
+    turn: 2,
+    users: [
+      { bet: null, hand: ["MockCard", "MockCard"], tokens: 980, userId: "foo" },
+      {
+        bet: "fold",
+        hand: ["MockCard", "MockCard"],
+        tokens: 990,
+        userId: "bar"
+      },
+      { bet: null, hand: ["MockCard", "MockCard"], tokens: 980, userId: "baz" }
+    ]
+  });
+
+  const moves3: Move[] = [
+    { userId: "baz", bet: 30 },
+    { userId: "foo", bet: 30 }
+  ];
+
+  (getWinnerIdexes as jest.Mock).mockReturnValue([{ winnerIndex: 0 }]);
+  game = moves3.map(toAction).reduce(gameReducer, game);
+  expect(game).toEqual({
+    deck: [
+      "MockCard",
+      "MockCard",
+      "MockCard",
+      "MockCard",
+      "MockCard",
+      "MockCard",
+      "MockCard",
+      "MockCard",
+      "MockCard"
+    ],
+    flop: ["MockCard", "MockCard", "MockCard", "MockCard", "MockCard"],
+    pot: 0,
+    startTurn: 1,
+    turn: 1,
+    users: [
+      {
+        bet: null,
+        hand: ["MockCard", "MockCard"],
+        tokens: 1060,
+        userId: "foo"
+      },
+      {
+        bet: "fold",
+        hand: ["MockCard", "MockCard"],
+        tokens: 990,
+        userId: "bar"
+      },
+      { bet: null, hand: ["MockCard", "MockCard"], tokens: 950, userId: "baz" }
+    ]
+  });
+
+  expect(totalTokens(game)).toEqual(3000);
+  expect(gameIsOver(game)).toEqual(true);
 });

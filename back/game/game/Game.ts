@@ -73,10 +73,8 @@ class GameCore {
 
   deal(userId: string) {
     this.applyAction({
-      type: "reset"
-    });
-    this.applyAction({
-      type: "deal"
+      type: "deal",
+      payload: userId
     });
   }
 

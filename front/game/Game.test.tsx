@@ -1,3 +1,5 @@
+import "@testing-library/jest-dom";
+
 import { render, act, screen } from "@testing-library/react";
 import React from "react";
 import { Game } from "./Game";
@@ -14,7 +16,7 @@ beforeAll(() => {
 
 const mockGame: GameDataUI = {
   id: "foo",
-  creatorId: "bar",
+  creatorId: "foo",
   flop: null,
   pot: 0,
   startTurn: 0,
@@ -61,5 +63,20 @@ describe("<Game/>", () => {
     });
 
     expect(screen.queryAllByRole("listitem").length).toEqual(3);
+  });
+
+  test("user at start turn should display dealer button", () => {
+    render(<Game user={{ id: "foo" } as any} gameId={"foo"} />);
+    act(() => {
+      socketService.socket.emit("game-data", gameState);
+    });
+
+    expect(screen.queryByTestId("user-card-foo")).toHaveTextContent("Dealer");
+    expect(screen.queryByTestId("user-card-bar")).not.toHaveTextContent(
+      "Dealer"
+    );
+    expect(screen.queryByTestId("user-card-baz")).not.toHaveTextContent(
+      "Dealer"
+    );
   });
 });

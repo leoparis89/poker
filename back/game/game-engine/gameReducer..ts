@@ -32,9 +32,12 @@ export const gameReducer = (gameData: GameDataCore, action: Action) => {
     case "remove-player":
       return handleRemovePlayer(gameData, action.payload);
     case "deal":
-      return flow(handleDeal, handleTurn)(gameData);
-    case "reset":
-      return handleReset(gameData);
+      return flow(
+        checkLegalTurn(action.payload),
+        handleReset,
+        handleDeal,
+        handleTurn
+      )(gameData);
     default:
       return gameData;
   }

@@ -52,7 +52,7 @@ describe("<Controls/>", () => {
   });
 
   test("second user sees small blind button should call onBet function", () => {
-    game = gameReducer(game, { type: "deal" });
+    game = gameReducer(game, { type: "deal", payload: "foo" });
 
     const spy = jest.fn();
     render(
