@@ -4,6 +4,7 @@ export class SocketService {
   private _socket: SocketIOClient.Socket | null = null;
 
   public init() {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     this._socket = Socket(require("./urls").socketIo);
     return this._socket;
   }

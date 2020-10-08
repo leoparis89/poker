@@ -13,6 +13,7 @@ interface ISessionContext {
 const initalContext: ISessionContext = {
   connected: false,
   user: undefined,
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   setUser: () => {}
 };
 

@@ -4,7 +4,7 @@ Just for fun.
 
 Try it out [Here](https://poker.levk.me/).
 
-# Project commands :computer:
+## Project commands :computer:
 
 Run tests.
 
@@ -25,3 +25,12 @@ Start back end dev server.
 Start storybook.
 
 `yarn storybook`
+
+## Env vars that you will need
+
+- CLIENT_ID
+- CLIENT_SECRET
+- CALLBACK_URL
+- REDIRECT_URL
+- POI_APP_GOOGLE_AUTH_URL
+- POI_APP_SOCKET_IO_URL
