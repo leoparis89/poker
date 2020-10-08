@@ -238,7 +238,7 @@ const applyBetOnUser = (gameData: GameDataCore, bet: number) => {
   const allIn = currentUser.tokens <= bet;
 
   if (!allIn) {
-    const prevBlind = getLastBlind(users, turn!);
+    const prevBlind = getLastBet(users, turn!);
 
     if (prevBlind && prevBlind > bet + currentBlind) {
       throw new Error(
@@ -275,35 +275,10 @@ const applyFold = (gameData: GameDataCore) => {
   return integrateUser(newGameData, updatedUser);
 };
 
-export const getLastBlind = (users: UserGameData[], currentTurn: number) => {
-  const turn = getLastTurnNotFoldAndNotAllIn(users, currentTurn);
-
-  return users[turn].bet as number | null;
-};
-
-const getLastTurnNotFoldAndNotAllIn = (
-  users: UserGameData[],
-  currentTurn: number
-) => {
-  let turn = currentTurn;
-
-  while (true) {
-    const prevTurn = cyclePrev(turn, users.length);
-    const prevUser = users[prevTurn];
-
-    if (prevUser.bet !== "fold" && !isAllIn(prevUser)) {
-      return prevTurn;
-    }
-
-    turn = prevTurn;
-  }
-};
-
-const cyclePrev = (current: number, total: number) => {
-  if (current === 0) {
-    return total - 1;
-  }
-  return current - 1;
+export const getLastBet = (users: UserGameData[], currentTurn: number) => {
+  const bets = users.map(user => user.bet).filter(bet => bet !== "fold");
+  const biggestBet = Math.max(...(bets as any));
+  return biggestBet;
 };
 
 const cycleNext = (current: number, total: number) => {
@@ -312,6 +287,7 @@ const cycleNext = (current: number, total: number) => {
   }
   return current + 1;
 };
+
 export const playsersAreEven = (users: UserGameData[]) => {
   if (!everybodyBidded(users)) {
     return false;

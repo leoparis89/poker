@@ -1,10 +1,8 @@
-import { Move } from "../models";
-import { makeNewGame, toAction, totalTokens } from "../_helpers.";
-import { gameReducer } from "../gameReducer.";
-import { getWinnerIndos, WinnerInfo } from "../solver";
-import { newDeck } from "../deck-service/deckService";
 import { mockDeck } from "../../../_fixtures";
-import { gameIsOver } from "../gameMethods";
+import { newDeck } from "../deck-service/deckService";
+import { gameReducer } from "../gameReducer.";
+import { Move } from "../models";
+import { makeNewGame, toAction, makeMockDeck } from "../_test-helpers.";
 
 jest.mock("../deck-service/deckService");
 jest.mock("../solver");
@@ -25,22 +23,7 @@ test("complete scenario 3 (everybody folds preflop)", () => {
 
   game = actions.reduce(gameReducer, game);
   expect(game).toEqual({
-    deck: [
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard"
-    ],
+    deck: makeMockDeck(14),
     flop: null,
     pot: 0,
     startTurn: 1,

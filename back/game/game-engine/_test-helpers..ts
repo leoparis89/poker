@@ -28,3 +28,5 @@ export const totalTokens = (gameData: GameDataCore) => {
   }, 0);
   return total + gameData.pot;
 };
+
+export const makeMockDeck = (size: number) => new Array(size).fill("MockCard");

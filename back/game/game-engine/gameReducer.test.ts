@@ -1,15 +1,14 @@
 import { mockDeck } from "../../_fixtures";
 import {
-  getLastBlind,
+  getLastBet,
   handleBet,
   newGame,
   playsersAreEven
 } from "./actionHandlers";
 import { newDeck } from "./deck-service/deckService";
 import { gameReducer } from "./gameReducer.";
-import { Action, GameDataCore, Move, UserGameData } from "./models";
-import { getWinnerIndos } from "./solver";
-import { toAction, makeNewGame } from "./_helpers.";
+import { Move, UserGameData } from "./models";
+import { toAction, makeNewGame } from "./_test-helpers.";
 
 jest.mock("./deck-service/deckService");
 
@@ -61,7 +60,7 @@ describe("makeNewGame", () => {
   });
 });
 
-describe("getLastBlind", () => {
+describe("getLastBet", () => {
   it("should return the right value", () => {
     const users = ([
       {
@@ -85,13 +84,32 @@ describe("getLastBlind", () => {
         tokens: 100
       }
     ] as UserGameData[]) as any;
-    expect(getLastBlind(users, 2)).toEqual(40);
-    expect(getLastBlind(users, 3)).toEqual(null);
+    expect(getLastBet(users, 2)).toEqual(40);
 
     users[1].bet = 80;
-    expect(getLastBlind(users, 2)).toEqual(80);
+    expect(getLastBet(users, 2)).toEqual(80);
   });
 
+  it("should return the right value (case all null)", () => {
+    const users = ([
+      {
+        userId: "foo",
+        bet: null,
+        tokens: 100
+      },
+      {
+        userId: "bar",
+        bet: null,
+        tokens: 100
+      },
+      {
+        userId: "baz",
+        bet: null,
+        tokens: 100
+      }
+    ] as UserGameData[]) as any;
+    expect(getLastBet(users, 2)).toEqual(0);
+  });
   it("should return the right value (case a user is all in)", () => {
     const users = [
       {
@@ -115,7 +133,7 @@ describe("getLastBlind", () => {
         tokens: 100
       }
     ] as UserGameData[];
-    expect(getLastBlind(users, 3)).toEqual(40);
+    expect(getLastBet(users, 3)).toEqual(40);
   });
 
   it("should return the right value (edge case with cycle)", () => {
@@ -141,7 +159,7 @@ describe("getLastBlind", () => {
         tokens: 100
       }
     ] as UserGameData[];
-    expect(getLastBlind(users, 2)).toEqual(50);
+    expect(getLastBet(users, 2)).toEqual(50);
   });
 });
 
@@ -455,61 +473,3 @@ describe("gameReducer", () => {
     expect(result).toEqual(expected);
   });
 });
-
-//   test("complete scenario 2", () => {
-//     const game = makeNewGame("foo", ["foo", "bar", "baz", "kuk", "boz"]);
-
-//     (game.users as any)[3].tokens = 100;
-//     const moves1 = [
-//       { userId: "foo" },
-//       { userId: "bar" },
-//       { userId: "baz", bet: 500 },
-//       { userId: "kuk", bet: 100 },
-//       { userId: "boz", bet: 500 },
-//       { userId: "foo", bet: 490 },
-//       { userId: "bar", bet: 480 }
-//     ];
-
-//     const result1 = moves1.map(toAction).reduce(gameReducer, game);
-//     expect(result1).toEqual({
-//       flop: ["MockCard", "MockCard", "MockCard"],
-//       pot: 2100,
-//       turn: 2,
-//       deck: newDeck,
-//       users: [
-//         {
-//           bet: null,
-//           hand: ["MockCard", "MockCard"],
-//           tokens: 500,
-//           userId: "foo"
-//         },
-//         {
-//           bet: null,
-//           hand: ["MockCard", "MockCard"],
-//           tokens: 500,
-//           userId: "bar"
-//         },
-//         {
-//           bet: null,
-//           hand: ["MockCard", "MockCard"],
-//           tokens: 500,
-//           userId: "baz"
-//         },
-//         {
-//           bet: null,
-//           hand: ["MockCard", "MockCard"],
-//           tokens: 0,
-//           userId: "kuk"
-//         },
-//         {
-//           bet: null,
-//           hand: ["MockCard", "MockCard"],
-//           tokens: 500,
-//           userId: "boz"
-//         }
-//       ]
-//     });
-//   });
-// });
-
-// describe("user reducers", () => {});

@@ -29,8 +29,8 @@ describe("<Controls/>", () => {
   const addUsers = [
     { type: "add-player", payload: "foo" },
     { type: "add-player", payload: "bar" },
-    { type: "add-player", payload: "baz" },
-    { type: "add-player", payload: "kuk" }
+    { type: "add-player", payload: "baz" }
+    // { type: "add-player", payload: "kuk" }
     // { type: "reset" }
   ] as Action[];
 
@@ -85,7 +85,7 @@ describe("<Controls/>", () => {
     expect(spy).toHaveBeenCalledWith(20);
   });
 
-  test("fourth user sees raise / call / fold / all in buttons", () => {
+  test("first user sees raise / call / fold / all in buttons", () => {
     game = gameReducer(game, { type: "bet", payload: { userId: "baz" } });
 
     const spy = jest.fn();
@@ -93,7 +93,7 @@ describe("<Controls/>", () => {
       <Controls
         onDeal={jest.fn()}
         onBet={spy}
-        myId="kuk"
+        myId="foo"
         gameData={toGameDataUI(game)}
       />
     );
@@ -113,13 +113,13 @@ describe("<Controls/>", () => {
 
   it("should diplay only all in / fold buttons if user doesnt have enough funds", () => {
     const clonedGame = cloneDeep(game);
-    (clonedGame.users[3] as any).tokens = 5;
+    (clonedGame.users[0] as any).tokens = 5;
     const spy = jest.fn();
     render(
       <Controls
         onDeal={jest.fn()}
         onBet={spy}
-        myId="kuk"
+        myId="foo"
         gameData={toGameDataUI(clonedGame)}
       />
     );
@@ -133,23 +133,29 @@ describe("<Controls/>", () => {
   });
 
   it("should display check / all in / raise buttons", () => {
-    const gameWithCheck = cloneDeep(game);
-    (gameWithCheck.users[2] as any).bet = 0;
+    game = gameReducer(game, {
+      type: "bet",
+      payload: { userId: "foo", bet: 20 }
+    });
 
+    game = gameReducer(game, {
+      type: "bet",
+      payload: { userId: "bar", bet: 10 }
+    });
     const spy = jest.fn();
     render(
       <Controls
         onDeal={jest.fn()}
         onBet={spy}
-        myId="kuk"
-        gameData={toGameDataUI(gameWithCheck)}
+        myId="bar"
+        gameData={toGameDataUI(game)}
       />
     );
 
     fireEvent.click(screen.getByRole("button", { name: /check/i }));
     expect(spy).toHaveBeenCalledWith(0);
     fireEvent.click(screen.getByRole("button", { name: /all in/i }));
-    expect(spy).toHaveBeenCalledWith(1000);
+    expect(spy).toHaveBeenCalledWith(980);
     screen.getByRole("button", { name: /raise/i });
   });
 });

@@ -3,7 +3,7 @@ import React, { FunctionComponent } from "react";
 import { useForm } from "react-hook-form";
 
 import { Button } from "react-bootstrap";
-import { getLastBlind } from "../../back/game/game-engine/actionHandlers";
+import { getLastBet } from "../../back/game/game-engine/actionHandlers";
 import { SMALL_BLIND } from "../../back/game/game-engine/config";
 import {
   gameStarted,
@@ -20,7 +20,7 @@ type ControlProps = {
   onDeal: () => any;
 };
 
-const StyledButton = styled(Button)({ width: 100, margin: 5 });
+const StyledButton = styled(Button)({ width: 150, margin: 5 });
 
 export const Controls: FunctionComponent<ControlProps> = ({
   gameData,
@@ -86,7 +86,7 @@ export const Controls: FunctionComponent<ControlProps> = ({
       all in
     </StyledButton>
   );
-  const lastBlind = getLastBlind(gameData.users, gameData.turn)!;
+  const lastBlind = getLastBet(gameData.users, gameData.turn)!;
 
   if (myTokens <= lastBlind) {
     return (
@@ -108,14 +108,19 @@ export const Controls: FunctionComponent<ControlProps> = ({
     onBet(val);
   };
 
-  const canCheck =
-    lastBlind === 0 || (lastBlind === null && gameData.flop !== null);
+  const checkBtn = <StyledButton onClick={handleCheck}>check</StyledButton>;
+
+  if (myTokens === 0) {
+    return <>{checkBtn}</>;
+  }
+
+  const canCheck = lastBlind === 0;
 
   return (
     <>
       {foldButton}
       {canCheck ? (
-        <StyledButton onClick={handleCheck}>check</StyledButton>
+        checkBtn
       ) : (
         <StyledButton onClick={handleCall}>call</StyledButton>
       )}

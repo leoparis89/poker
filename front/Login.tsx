@@ -14,7 +14,7 @@ export function Login() {
         height: "100vh"
       }}
     >
-      <h1 style={{ color: "white" }}>React Poker</h1>
+      <h1 style={{}}>React Poker</h1>
 
       <a href={require("./urls").googleAuth}>
         <img src={googleLogin} />

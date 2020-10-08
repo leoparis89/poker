@@ -1,5 +1,10 @@
 import { Move } from "../models";
-import { makeNewGame, toAction, totalTokens } from "../_helpers.";
+import {
+  makeNewGame,
+  toAction,
+  totalTokens,
+  makeMockDeck
+} from "../_test-helpers.";
 import { gameReducer } from "../gameReducer.";
 import { getWinnerIndos, WinnerInfo } from "../solver";
 import { newDeck } from "../deck-service/deckService";
@@ -25,19 +30,7 @@ test("complete scenario 2 (edge case where small blind user folds)", () => {
 
   game = actions.reduce(gameReducer, game);
   expect(game).toEqual({
-    deck: [
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard"
-    ],
+    deck: makeMockDeck(11),
     flop: ["MockCard", "MockCard", "MockCard"],
     pot: 50,
     startTurn: 0,
@@ -61,18 +54,7 @@ test("complete scenario 2 (edge case where small blind user folds)", () => {
 
   game = moves2.map(toAction).reduce(gameReducer, game);
   expect(game).toEqual({
-    deck: [
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard"
-    ],
+    deck: makeMockDeck(10),
     flop: ["MockCard", "MockCard", "MockCard", "MockCard"],
     pot: 50,
     startTurn: 0,
@@ -99,17 +81,7 @@ test("complete scenario 2 (edge case where small blind user folds)", () => {
   ] as WinnerInfo[]);
   game = moves3.map(toAction).reduce(gameReducer, game);
   expect(game).toEqual({
-    deck: [
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard"
-    ],
+    deck: makeMockDeck(9),
     flop: ["MockCard", "MockCard", "MockCard", "MockCard", "MockCard"],
     pot: 0,
     startTurn: 1,

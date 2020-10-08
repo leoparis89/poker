@@ -1,5 +1,10 @@
 import { Move } from "../models";
-import { makeNewGame, toAction, totalTokens } from "../_helpers.";
+import {
+  makeNewGame,
+  toAction,
+  totalTokens,
+  makeMockDeck
+} from "../_test-helpers.";
 import { gameReducer } from "../gameReducer.";
 import { getWinnerIndos, WinnerInfo } from "../solver";
 import { newDeck } from "../deck-service/deckService";
@@ -12,7 +17,7 @@ beforeAll(() => {
   (newDeck as jest.Mock).mockReturnValue([...mockDeck]);
 });
 
-test("complete scenario", () => {
+test("complete scenario 1 (simple)", () => {
   let game = makeNewGame(["foo", "bar", "baz"]);
   const moves1: Move[] = [
     { userId: "bar" },
@@ -24,19 +29,7 @@ test("complete scenario", () => {
 
   game = actions.reduce(gameReducer, game);
   expect(game).toEqual({
-    deck: [
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard",
-      "MockCard"
-    ],
+    deck: makeMockDeck(11),
     flop: ["MockCard", "MockCard", "MockCard"],
     pot: 60,
     startTurn: 0,
