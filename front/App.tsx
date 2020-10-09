@@ -24,7 +24,6 @@ export const App = function () {
         </Switch>
       </Router>
       <ToastContainer />
-      <Footer></Footer>
     </Session>
   );
 };

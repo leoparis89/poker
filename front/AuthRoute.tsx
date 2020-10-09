@@ -2,6 +2,7 @@ import Cookies from "js-cookie";
 import React from "react";
 import { Redirect, Route } from "react-router-dom";
 import { NavBar } from "./NavBar";
+import { Footer } from "./Footer";
 
 export function AuthRoute({ path, component: Comp, isPublic }) {
   const loggedIn = !!Cookies.get("loggedIn");
@@ -11,7 +12,7 @@ export function AuthRoute({ path, component: Comp, isPublic }) {
       <Redirect to="/home"></Redirect>
     ) : (
       <Route path={path}>
-        <Comp></Comp>
+        <Comp />
       </Route>
     );
   }
@@ -19,7 +20,8 @@ export function AuthRoute({ path, component: Comp, isPublic }) {
   return loggedIn ? (
     <Route path={path}>
       <NavBar />
-      <Comp></Comp>
+      <Comp />
+      <Footer dark />
     </Route>
   ) : (
     <Redirect to="/login"></Redirect>
