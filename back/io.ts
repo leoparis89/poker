@@ -4,7 +4,7 @@ import { myMiddleWare, server } from "./app";
 import { socketManager } from "./game/socket-manager/SocketManager";
 import { UserSocket } from "./models";
 import { handleJoinGame } from "./game/socket-handlers/handleJoinGame";
-import { gameManager } from "./game/game-manager/gameManager";
+import { gameManager } from "./game/game-manager/foo";
 
 const io = Socket.listen(server)
   .use((socket, next) => {

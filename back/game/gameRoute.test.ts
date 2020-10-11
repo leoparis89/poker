@@ -1,7 +1,7 @@
 import { Response } from "express";
 import MockExpressResponse from "mock-express-response";
 import { handleNewGame } from "./gameRoute";
-import { gameManager } from "./game-manager/gameManager";
+import { gameManager } from "./game-manager/foo";
 import { Game } from "./game/Game";
 import { newDeck } from "./game-engine/deck-service/deckService";
 import { mockDeck } from "../_fixtures";

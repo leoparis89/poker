@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import { GameManager } from "../game-manager/gameManager";
+import { GameManager } from "../game-manager/foo";
 
 export const handleJoinGame = (socket: Socket, gameManager: GameManager) => (
   gameId: string

@@ -1,7 +1,7 @@
 import shortid from "shortid";
 import { Socket } from "socket.io";
 import { Game } from "../game/Game";
-import { GameManager } from "./gameManager";
+import { GameManager } from "./foo";
 import { makeSocket } from "../../_fixtures";
 
 jest.mock("shortid");

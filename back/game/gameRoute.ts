@@ -1,5 +1,5 @@
 import { RequestHandler, Router } from "express";
-import { gameManager } from "./game-manager/gameManager";
+import { gameManager } from "./game-manager/foo";
 export const router = Router();
 
 export const handleNewGame: RequestHandler = (req, res) => {
