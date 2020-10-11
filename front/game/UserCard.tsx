@@ -53,7 +53,7 @@ export const UserCard: FunctionComponent<UserDataUI> = ({
       </Wrapper>
       {gameData?.hand && (
         <div
-          style={{ display: "flex", margin: 10 }}
+          className="hand hhand-compact"
           data-fan="spacing: 0.1; width: 80; radius: 80;"
         >
           <PlayingCard rankSuit={showCards ? gameData.hand[0] : "Blue_Back"} />

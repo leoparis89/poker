@@ -10,6 +10,10 @@ export const PlayingCard: FunctionComponent<PlayingCardProps> = ({
   rankSuit
 }) => {
   return (
-    <img className="card" src={require(`cardsJS/cards/${rankSuit}.svg`)} />
+    <img
+      style={{ display: "inline" }}
+      className="card"
+      src={require(`cardsJS/cards/${rankSuit}.svg`)}
+    />
   );
 };
