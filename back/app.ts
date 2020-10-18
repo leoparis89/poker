@@ -29,18 +29,28 @@ export const myMiddleWare = Router().use(
 
 app.use(myMiddleWare);
 
-app.get(
-  "/auth/google",
-  passport.authenticate("google", { scope: ["profile"] })
-);
+app.get("/auth/google", (req, res, next) => {
+  const { gameId } = req.query;
+
+  passport.authenticate("google", {
+    scope: ["profile"],
+    state: JSON.stringify({ gameId })
+  })(req, res, next);
+});
 
 app.get(
   "/auth/google/callback",
   passport.authenticate("google", { failureRedirect: "/login" }),
   (req, res) => {
-    // Successful authentication, redirect home.
     res.cookie("loggedIn", true);
-    res.redirect(redirectUrl);
+    const { state } = req.query;
+    const gameId = typeof state === "string" && JSON.parse(state).gameId;
+
+    if (gameId) {
+      res.redirect(redirectUrl + "/game/" + gameId);
+      return;
+    }
+    res.redirect(redirectUrl + "/home");
   }
 );
 

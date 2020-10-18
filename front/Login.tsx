@@ -4,6 +4,9 @@ import { Footer } from "./Footer";
 const googleLogin = require("./assets/googleSignIn/btn_google_signin_light_normal_web@2x.png");
 
 export function Login() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const gameId = urlParams.get("gameId");
+  const queryStr = gameId ? "?gameId=" + gameId : "";
   return (
     <div
       style={{
@@ -19,7 +22,7 @@ export function Login() {
 
       <a
         style={{ marginTop: 30, display: "block" }}
-        href={require("./urls").googleAuth}
+        href={require("./urls").googleAuth + queryStr}
       >
         <img src={googleLogin} />
       </a>

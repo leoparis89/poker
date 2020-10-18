@@ -9,7 +9,7 @@ export function AuthRoute({ path, component: Comp, isPublic }) {
 
   if (isPublic) {
     return loggedIn ? (
-      <Redirect to="/home"></Redirect>
+      <Redirect to="/home" />
     ) : (
       <Route path={path}>
         <Comp />
@@ -17,6 +17,11 @@ export function AuthRoute({ path, component: Comp, isPublic }) {
     );
   }
 
+  const { pathname } = window.location;
+  const regex = /^\/game\/(.{9})$/;
+  const match = regex.exec(pathname);
+  const gameId = match && match[1];
+  const gameIdQuery = gameId ? "?gameId=" + gameId : "";
   return loggedIn ? (
     <Route path={path}>
       <NavBar />
@@ -24,6 +29,6 @@ export function AuthRoute({ path, component: Comp, isPublic }) {
       <Footer dark />
     </Route>
   ) : (
-    <Redirect to="/login"></Redirect>
+    <Redirect to={"/login" + gameIdQuery}></Redirect>
   );
 }
