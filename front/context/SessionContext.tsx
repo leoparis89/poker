@@ -52,5 +52,5 @@ export function Session(props) {
 
 export const logout = () => {
   Cookies.set("loggedIn", "");
-  window.location.reload();
+  window.location.href = "/login";
 };
