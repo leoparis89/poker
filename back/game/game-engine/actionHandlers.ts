@@ -7,7 +7,7 @@ import {
   isSmallBlind
 } from "./gameMethods";
 import { FullFlop, GameDataCore, UserGameData } from "./models";
-import { getWinnerIndos, WinnerInfo } from "./solver";
+import { getWinnerIndos as getWinnerInfos, WinnerInfo } from "./solver";
 
 /**
  * Resets deck, hands, and user bets (could be folded).
@@ -24,7 +24,8 @@ export const handleReset = (gameData: GameDataCore): GameDataCore => {
     ...gameData,
     users: newUsers,
     flop: null,
-    deck: newDeck()
+    deck: newDeck(),
+    winners: undefined
   };
 };
 
@@ -183,7 +184,7 @@ export const handleGains = (gameData: GameDataCore): GameDataCore => {
     };
   }
 
-  const winnerInfos = getWinnerIndos(gameData.users, gameData.flop as FullFlop);
+  const winnerInfos = getWinnerInfos(gameData.users, gameData.flop as FullFlop);
   const winners = winnerInfos.map(e => e.winnerIndex);
 
   const prize = gameData.pot / winners.length;

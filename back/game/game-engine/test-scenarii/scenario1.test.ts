@@ -125,4 +125,42 @@ test("complete scenario 1 (simple)", () => {
       payload: { userId: "bar", bet: 4 }
     });
   }).toThrowError("Game is finished. No more turns allowed.");
+
+  game = gameReducer(game, {
+    type: "deal",
+    payload: "bar"
+  });
+
+  expect(game).toEqual({
+    deck: [
+      "MockCard",
+      "MockCard",
+      "MockCard",
+      "MockCard",
+      "MockCard",
+      "MockCard",
+      "MockCard",
+      "MockCard",
+      "MockCard",
+      "MockCard",
+      "MockCard",
+      "MockCard",
+      "MockCard",
+      "MockCard"
+    ],
+    flop: null,
+    pot: 0,
+    startTurn: 1,
+    turn: 2,
+    users: [
+      {
+        bet: null,
+        hand: ["MockCard", "MockCard"],
+        tokens: 1070,
+        userId: "foo"
+      },
+      { bet: null, hand: ["MockCard", "MockCard"], tokens: 950, userId: "bar" },
+      { bet: null, hand: ["MockCard", "MockCard"], tokens: 980, userId: "baz" }
+    ]
+  });
 });
