@@ -1,0 +1,12 @@
+.card {
+  position: initial;
+  display: initial;
+  flex-direction: initial;
+  min-width: initial;
+  height: initial;
+  word-wrap: initial;
+  background-color: initial;
+  background-clip: initial;
+  border: initial;
+  border-radius: initial;
+}
