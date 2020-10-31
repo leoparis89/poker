@@ -1,7 +1,6 @@
 import { Meta, Story } from "@storybook/react/types-6-0";
 import React from "react";
-import { UserCard } from "../front/game/UserCard";
-import { UserDataUI } from "../common/models";
+import { UserCard, UserDataUI } from "../front/game/UserCard";
 import { mockProfile } from "../back/_fixtures";
 
 export default {
@@ -33,6 +32,32 @@ NoHand.args = {
   gameData: {
     bet: null,
     hand: null,
+    tokens: 1000,
+    userId: "mockId1"
+  }
+};
+
+export const CurrentPlayer = Template.bind({});
+CurrentPlayer.args = {
+  profile: mockProfile,
+  online: true,
+  currentTurn: true,
+  gameData: {
+    bet: 30,
+    hand: ["10H", "JS"],
+    tokens: 1000,
+    userId: "mockId1"
+  }
+};
+
+export const Dealer = Template.bind({});
+Dealer.args = {
+  profile: mockProfile,
+  online: true,
+  isDealer: true,
+  gameData: {
+    bet: 30,
+    hand: ["10H", "JS"],
     tokens: 1000,
     userId: "mockId1"
   }
