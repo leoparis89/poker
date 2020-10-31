@@ -1,16 +1,11 @@
 import styled from "@emotion/styled";
 import moment from "moment";
-import React, {
-  FunctionComponent,
-  useEffect,
-  useState,
-  useContext
-} from "react";
+import React, { FunctionComponent, useContext, useEffect } from "react";
 import { Button, Card, FormControl, InputGroup } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { ChatMessage } from "../../common/models";
-import { socketService } from "../socketService";
 import { SessionContext } from "../context/SessionContext";
+import { socketService } from "../socketService";
 
 export const ChatWindow: FunctionComponent<{ messages: any }> = ({
   messages
@@ -55,9 +50,10 @@ export const ChatWindow: FunctionComponent<{ messages: any }> = ({
       <h2>Chatroom</h2>
       <Frame>
         <MessageFrame>
-          {messages.map(message => (
-            <Message message={message}></Message>
-          ))}
+          {[...messages].reverse().map(message => {
+            const myMessage = user?.id === message.user.id;
+            return <Message myMessage={myMessage} message={message}></Message>;
+          })}
         </MessageFrame>
         <form onSubmit={handleSubmit(onSubmit)}>
           <InputGroup>
@@ -82,25 +78,34 @@ export const ChatWindow: FunctionComponent<{ messages: any }> = ({
   );
 };
 
-const Message: FunctionComponent<{ message: ChatMessage }> = ({ message }) => (
-  <div key={message.date}>
-    <Card style={{ borderRadius: 10, margin: 10, display: "inline-block" }}>
-      <Card.Body>
-        <Card.Subtitle className="mb-2 text-muted">
-          {message.user.displayName}
-          <span style={{ margin: "0 10px" }}>
-            {moment(message.date).calendar()}
-          </span>
-        </Card.Subtitle>
-        <Card.Text>{message.text}</Card.Text>
-      </Card.Body>
-    </Card>
-  </div>
+const Wrapper = styled.div({
+  borderRadius: 10,
+  margin: 10,
+  boxShadow: "0 2px 10px 0 rgb(185 185 185)",
+  width: 400,
+  padding: 20
+});
+
+const Message: FunctionComponent<{
+  message: ChatMessage;
+  myMessage?: boolean;
+}> = ({ message, myMessage }) => (
+  <Wrapper style={!myMessage ? { alignSelf: "flex-end" } : {}}>
+    <Card.Subtitle className="mb-2 text-muted">
+      {message.user.displayName}
+      <span style={{ margin: "0 10px" }}>
+        {moment(message.date).calendar()}
+      </span>
+    </Card.Subtitle>
+    <Card.Text>{message.text}</Card.Text>
+  </Wrapper>
 );
 
 const MessageFrame = styled.div({
   height: 600,
-  overflow: "scroll"
+  overflow: "scroll",
+  display: "flex",
+  flexDirection: "column-reverse"
 });
 const Frame = styled.div({
   margin: "10px 0",
