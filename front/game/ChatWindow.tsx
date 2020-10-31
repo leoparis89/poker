@@ -15,7 +15,9 @@ import { SessionContext } from "../context/SessionContext";
 export const ChatWindow: FunctionComponent<{ messages: any }> = ({
   messages
 }) => {
-  const { register, handleSubmit, watch, errors, reset } = useForm();
+  const { register, handleSubmit, watch, errors, reset, formState } = useForm({
+    mode: "onChange"
+  });
 
   const { user, connected } = useContext(SessionContext);
   useEffect(() => {
@@ -25,6 +27,23 @@ export const ChatWindow: FunctionComponent<{ messages: any }> = ({
 
     return () => {};
   }, [user]);
+
+  useEffect(() => {
+    function submitOnEnter(event) {
+      if (!formState.isValid) {
+        return;
+      }
+      if (event.which === 13) {
+        event.target.form.dispatchEvent(
+          new Event("submit", { cancelable: true })
+        );
+        event.preventDefault(); // Prevents the addition of a new line in the text field (not needed in a lot of cases)
+      }
+    }
+    window.document
+      .getElementById("chat-text")!
+      .addEventListener("keypress", submitOnEnter);
+  }, []);
 
   const onSubmit = val => {
     socketService.socket.emit("chat-text", val.chatInput);
@@ -44,12 +63,17 @@ export const ChatWindow: FunctionComponent<{ messages: any }> = ({
           <InputGroup>
             <FormControl
               as="textarea"
+              id="chat-text"
               aria-label="With textarea"
-              ref={register}
+              ref={register({
+                required: "Required"
+              })}
               name="chatInput"
             />
             <InputGroup.Prepend>
-              <Button type="submit">Send</Button>
+              <Button disabled={!formState.isValid} type="submit">
+                Send
+              </Button>
             </InputGroup.Prepend>
           </InputGroup>
         </form>
@@ -79,8 +103,6 @@ const MessageFrame = styled.div({
   overflow: "scroll"
 });
 const Frame = styled.div({
-  // height: 300,
-  // border: "1pw black solid",
   margin: "10px 0",
   boxShadow: "0 2px 10px 0 rgb(185 185 185)"
 });
