@@ -4,6 +4,7 @@ import { Badge } from "react-bootstrap";
 import { UserGameData } from "../../back/game/game-engine/models";
 import { UserSession } from "../../common/models";
 import { PlayingCard } from "../cards/PlayingCard";
+import { Chip } from "./Chip";
 
 require("./ribbon.css");
 
@@ -25,6 +26,14 @@ export const UserCard: FunctionComponent<UserDataUI> = ({
 }) => {
   return (
     <>
+      <div style={{ height: 100 }}>
+        {gameData && gameData.bet !== null && (
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <Chip chipSize={60} />
+            <span style={{ fontSize: "1.8em" }}>{gameData.bet}</span>
+          </div>
+        )}
+      </div>
       <Wrapper
         data-testid={`user-card-${profile.id}`}
         role="listitem"
@@ -36,7 +45,12 @@ export const UserCard: FunctionComponent<UserDataUI> = ({
           </div>
         )}
         <UserInfo profile={profile} online={online} />
-        {gameData && <TokensAndBet gameData={gameData} />}
+        {gameData && (
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <Chip chipSize={30} />
+            {gameData.tokens}
+          </div>
+        )}
       </Wrapper>
       {gameData?.hand && <Hand showCards={showCards} hand={gameData.hand} />}
     </>
