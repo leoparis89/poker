@@ -1,7 +1,12 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, {
+  useContext,
+  useEffect,
+  useState,
+  FunctionComponent
+} from "react";
 import { Alert, Button, Container } from "react-bootstrap";
 import { Redirect, useRouteMatch } from "react-router-dom";
-import { ChatMessage, GameStateUI } from "../../common/models";
+import { ChatMessage, GameStateUI, UserSession } from "../../common/models";
 import { SessionContext } from "../context/SessionContext";
 import { socketService } from "../socketService";
 import { ChatWindow } from "./ChatWindow";
@@ -9,6 +14,10 @@ import { WrapperdControls } from "./Controls";
 import { Flop } from "./Flop";
 import { Players } from "./Players";
 import { Winners } from "./Winners";
+import { gameStarted } from "../../back/game/game-engine/gameMethods";
+import { WinnerInfo } from "../../back/game/game-engine/solver";
+import styled from "@emotion/styled";
+import { Chip } from "./Chip";
 
 export function Game({ user, gameId }) {
   const [gameState, setGameState] = useState<GameStateUI | null>(null);
@@ -57,12 +66,10 @@ export function Game({ user, gameId }) {
           gameState && (
             <div>
               <Alert variant="success">Game ID: {gameState.gameData.id}</Alert>
-              <Winners
+              <Info
                 players={gameState.players}
-                winners={gameState.gameData.winners}
-                // winners={[{ descr: "Quinte flush", winnerIndex: 0 }]}
-              ></Winners>
-              <h2>Pot: {gameState.gameData.pot}</h2>
+                gameData={gameState.gameData}
+              ></Info>
               <Flop flop={gameState.gameData.flop} />
               <Players gameState={gameState} myId={user.id}></Players>
               <WrapperdControls
@@ -82,6 +89,54 @@ export function Game({ user, gameId }) {
     </Table>
   );
 }
+
+const Info = ({ gameData, players }) => {
+  return (
+    <InfoDisplay
+      gameStarted={gameStarted(gameData)}
+      winners={gameData.winners}
+      pot={gameData.pot}
+      players={players}
+    />
+  );
+};
+
+export interface InfoDisplayProps {
+  gameStarted: boolean;
+  pot: number;
+  winners: WinnerInfo[];
+  players: UserSession[];
+}
+
+export const Label = styled.div({ fontSize: "1.8em" });
+
+export const InfoDisplay: FunctionComponent<InfoDisplayProps> = ({
+  gameStarted,
+  winners,
+  pot,
+  players
+}) => {
+  if (!gameStarted) {
+    return (
+      <div style={{ height: 100 }}>
+        <Label>Game not started yet...</Label>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ height: 100 }}>
+      {winners ? (
+        <Winners players={players} winners={winners}></Winners>
+      ) : (
+        <Label style={{ display: "flex", alignItems: "center" }}>
+          Pot: {pot}
+          <Chip chipSize={30} />
+        </Label>
+      )}
+    </div>
+  );
+};
 
 export const ConnectedGame = props => {
   const { user, connected } = useContext(SessionContext);
