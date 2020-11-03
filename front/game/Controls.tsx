@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { Button } from "react-bootstrap";
@@ -13,7 +13,7 @@ import {
 } from "../../back/game/game-engine/gameMethods";
 import { GameDataUI } from "../../common/models";
 
-type ControlProps = {
+export type ControlProps = {
   gameData: GameDataUI;
   myId: string;
   onBet: (a: number | "fold") => any;
@@ -131,20 +131,26 @@ export const Controls: FunctionComponent<ControlProps> = ({
 };
 
 export const RaiseBtn = ({ myTokens, onRaise }) => {
-  const { handleSubmit, register, errors, formState } = useForm();
+  const form = useForm();
+  const [raise, setRaise] = useState(0);
+  const { handleSubmit, register, errors, formState } = form;
   const onSubmit = val => {
-    onRaise(Number(val.raise)); //wtf
+    onRaise(Number(val.raise));
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <StyledButton type="submit" variant="warning" disabled={!formState.dirty}>
-        raise
+        raise {raise}
       </StyledButton>
-      <label htmlFor="raise">amount</label>
       <input
+        value={raise}
+        onChange={e => {
+          setRaise(Number(e.target.value));
+        }}
         ref={register({ required: true })}
-        type="number"
+        type="range"
+        step={5}
         id="raise"
         name="raise"
         min={0}
