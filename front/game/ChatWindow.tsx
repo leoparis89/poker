@@ -52,7 +52,13 @@ export const ChatWindow: FunctionComponent<{ messages: any }> = ({
         <MessageFrame>
           {[...messages].reverse().map(message => {
             const myMessage = user?.id === message.user.id;
-            return <Message myMessage={myMessage} message={message}></Message>;
+            return (
+              <Message
+                key={message.date + message.user.id}
+                myMessage={myMessage}
+                message={message}
+              ></Message>
+            );
           })}
         </MessageFrame>
         <form onSubmit={handleSubmit(onSubmit)}>

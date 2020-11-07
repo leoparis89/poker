@@ -143,10 +143,11 @@ export const InfoDisplay: FunctionComponent<InfoDisplayProps> = ({
 
 export const ConnectedGame = props => {
   const { user, connected } = useContext(SessionContext);
+  const gameId = useRouteMatch<{ id: string }>().params.id;
+
   if (!user) {
     return <div>No User</div>;
   }
-  const gameId = useRouteMatch<{ id: string }>().params.id;
   return <Game {...props} user={user} gameId={gameId} />;
 };
 
