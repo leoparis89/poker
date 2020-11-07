@@ -7,7 +7,11 @@ import {
   isSmallBlind
 } from "./gameMethods";
 import { FullFlop, GameDataCore, UserGameData } from "./models";
-import { getWinnerIndos as getWinnerInfos, WinnerInfo } from "./solver";
+import {
+  getWinnerIndos as getWinnerInfos,
+  WinnerInfo,
+  WinnerInfoWithAmount
+} from "./solver";
 
 /**
  * Resets deck, hands, and user bets (could be folded).
@@ -155,39 +159,17 @@ export const handleGains = (gameData: GameDataCore): GameDataCore => {
     return gameData;
   }
 
-  const nextStartTurn = cycleNext(gameData.startTurn, gameData.users.length);
-
   if (allFolded(gameData.users)) {
-    const newUsers: UserGameData[] = [];
-    gameData.users.forEach((user, i) => {
-      if (user.bet !== "fold") {
-        newUsers.push({ ...user, tokens: user.tokens + gameData.pot });
-        return;
-      }
-      newUsers.push(user);
-    });
-
-    const winners: WinnerInfo[] = [
-      {
-        descr: "Everyone folded",
-        winnerIndex: gameData.users.findIndex(u => u.bet !== "fold")
-      }
-    ];
-
-    return {
-      ...gameData,
-      users: newUsers,
-      pot: 0,
-      turn: nextStartTurn,
-      startTurn: nextStartTurn,
-      winners
-    };
+    return handleAllFolded(gameData);
   }
 
+  const nextStartTurn = cycleNext(gameData.startTurn, gameData.users.length);
   const winnerInfos = getWinnerInfos(gameData.users, gameData.flop as FullFlop);
   const winners = winnerInfos.map(e => e.winnerIndex);
-
   const prize = gameData.pot / winners.length;
+  const winnerInfoWIthAmount: WinnerInfoWithAmount[] = winnerInfos.map(w => {
+    return { ...w, amount: prize };
+  });
   const newUsers: UserGameData[] = [];
 
   gameData.users.forEach((user, i) => {
@@ -203,7 +185,37 @@ export const handleGains = (gameData: GameDataCore): GameDataCore => {
     pot: 0,
     turn: nextStartTurn,
     startTurn: nextStartTurn,
-    winners: winnerInfos
+    winners: winnerInfoWIthAmount
+  };
+};
+
+const handleAllFolded = (gameData: GameDataCore): GameDataCore => {
+  const nextStartTurn = cycleNext(gameData.startTurn, gameData.users.length);
+  const newUsers: UserGameData[] = [];
+  const prize = gameData.pot;
+  gameData.users.forEach((user, i) => {
+    if (user.bet !== "fold") {
+      newUsers.push({ ...user, tokens: user.tokens + gameData.pot });
+      return;
+    }
+    newUsers.push(user);
+  });
+
+  const winners: WinnerInfoWithAmount[] = [
+    {
+      descr: "Everyone folded",
+      winnerIndex: gameData.users.findIndex(u => u.bet !== "fold"),
+      amount: prize
+    }
+  ];
+
+  return {
+    ...gameData,
+    users: newUsers,
+    pot: 0,
+    turn: nextStartTurn,
+    startTurn: nextStartTurn,
+    winners
   };
 };
 

@@ -15,7 +15,10 @@ import { Flop } from "./Flop";
 import { Players } from "./Players";
 import { Winners } from "./Winners";
 import { gameStarted } from "../../back/game/game-engine/gameMethods";
-import { WinnerInfo } from "../../back/game/game-engine/solver";
+import {
+  WinnerInfo,
+  WinnerInfoWithAmount
+} from "../../back/game/game-engine/solver";
 import styled from "@emotion/styled";
 import { Chip } from "./Chip";
 
@@ -104,7 +107,7 @@ const Info = ({ gameData, players }) => {
 export interface InfoDisplayProps {
   gameStarted: boolean;
   pot: number;
-  winners: WinnerInfo[];
+  winners: WinnerInfoWithAmount[];
   players: UserSession[];
 }
 

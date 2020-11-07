@@ -43,6 +43,6 @@ test("complete scenario 3 (everybody folds preflop)", () => {
       },
       { bet: null, hand: ["MockCard", "MockCard"], tokens: 1010, userId: "baz" }
     ],
-    winners: [{ descr: "Everyone folded", winnerIndex: 2 }]
+    winners: [{ descr: "Everyone folded", winnerIndex: 2, amount: 30 }]
   });
 });

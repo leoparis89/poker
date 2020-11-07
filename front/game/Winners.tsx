@@ -1,11 +1,11 @@
-import React, { FunctionComponent } from "react";
-import { WinnerInfo } from "../../back/game/game-engine/solver";
-import { UserSession } from "../../common/models";
 import styled from "@emotion/styled";
+import React, { FunctionComponent } from "react";
+import { WinnerInfoWithAmount } from "../../back/game/game-engine/solver";
+import { UserSession } from "../../common/models";
 import { Label } from "./Game";
 
 interface WinnersProps {
-  winners?: WinnerInfo[];
+  winners?: WinnerInfoWithAmount[];
   players: UserSession[];
 }
 const Wrapper = styled.div({});
@@ -16,11 +16,11 @@ export const Winners: FunctionComponent<WinnersProps> = ({
 }) => {
   return (
     <Wrapper>
-      {winners?.map(e => {
-        const player = players[e.winnerIndex];
+      {winners?.map(info => {
+        const player = players[info.winnerIndex];
         return (
           <Label>
-            {player.profile.displayName} wins with {e.descr}!
+            {player.profile.displayName} wins {info.amount} with {info.descr}!
           </Label>
         );
       })}

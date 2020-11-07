@@ -99,7 +99,7 @@ test("complete scenario 1 (simple)", () => {
     pot: 0,
     startTurn: 1,
     turn: 1,
-    winners: [{ winnerIndex: 0, descr: "Mock flush" }],
+    winners: [{ winnerIndex: 0, descr: "Mock flush", amount: 120 }],
     users: [
       {
         bet: null,

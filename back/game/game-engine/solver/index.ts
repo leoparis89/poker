@@ -20,6 +20,7 @@ export type WinnerInfo = {
   winnerIndex: number;
   descr: string;
 };
+export type WinnerInfoWithAmount = WinnerInfo & { amount: number };
 
 export const getWinnerIndos = (
   users: UserGameData[],

@@ -86,7 +86,7 @@ test("complete scenario 2 (edge case where small blind user folds)", () => {
     pot: 0,
     startTurn: 1,
     turn: 1,
-    winners: [{ winnerIndex: 0, descr: "Mock flush" }],
+    winners: [{ winnerIndex: 0, descr: "Mock flush", amount: 110 }],
     users: [
       {
         bet: null,
