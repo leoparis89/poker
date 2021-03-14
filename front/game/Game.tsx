@@ -1,28 +1,23 @@
+import { Box, Button, Chip, Container } from "@material-ui/core";
+import { Alert } from "@material-ui/lab";
 import React, {
+  FunctionComponent,
   useContext,
   useEffect,
   useState,
-  FunctionComponent,
 } from "react";
-import { Alert } from "@material-ui/lab";
 import { Redirect, useRouteMatch } from "react-router-dom";
+import { gameStarted } from "../../back/game/game-engine/gameMethods";
+import { WinnerInfoWithAmount } from "../../back/game/game-engine/solver";
 import { ChatMessage, GameStateUI, UserSession } from "../../common/models";
 import { SessionContext } from "../context/SessionContext";
 import { socketService } from "../socketService";
 import { ChatWindow } from "./ChatWindow";
+import { Chip as PokerChip } from "./Chip";
 import { WrapperdControls } from "./Controls";
 import { Flop } from "./Flop";
 import { Players } from "./Players";
 import { Winners } from "./Winners";
-import { gameStarted } from "../../back/game/game-engine/gameMethods";
-import {
-  WinnerInfo,
-  WinnerInfoWithAmount,
-} from "../../back/game/game-engine/solver";
-import { Button, Chip } from "@material-ui/core";
-import styled from "@emotion/styled";
-import { Chip as PokerChip } from "./Chip";
-import { Container } from "@material-ui/core";
 
 export function Game({ user, gameId }) {
   const [gameState, setGameState] = useState<GameStateUI | null>(null);
@@ -113,8 +108,6 @@ export interface InfoDisplayProps {
   players: UserSession[];
 }
 
-export const Label = styled.div({ fontSize: "1.8em" });
-
 export const InfoDisplay: FunctionComponent<InfoDisplayProps> = ({
   gameStarted,
   winners,
@@ -130,10 +123,10 @@ export const InfoDisplay: FunctionComponent<InfoDisplayProps> = ({
       {winners ? (
         <Winners players={players} winners={winners}></Winners>
       ) : (
-        <Label style={{ display: "flex", alignItems: "center" }}>
+        <Box display="flex" alignItems="center">
           Pot: {pot}
           <PokerChip chipSize={30} />
-        </Label>
+        </Box>
       )}
     </div>
   );

@@ -1,29 +1,28 @@
 import React from "react";
 import { PlayingCard } from "../cards/PlayingCard";
-import styled from "@emotion/styled";
+import { Paper, styled } from "@material-ui/core";
 
-const Wrapper = styled("div")({
+const StyledPaper = styled(Paper)(({ theme }) => ({
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
   height: 200,
-  boxShadow: `0 2px 10px 0 rgb(185 185 185)`,
+  margin: theme.spacing(2),
   borderRadius: 25,
-  margin: "30px 0",
   ...(process.env.NODE_ENV !== "test" && {
-    backgroundImage: `url(${require("./assets/table-background.jpg")})`
-  })
-});
+    backgroundImage: `url(${require("./assets/table-background.jpg")})`,
+  }),
+}));
 
 export const Flop = ({ flop }) => {
   return (
-    <Wrapper>
+    <StyledPaper elevation={5}>
       {flop &&
-        flop.map(rankSuit => (
+        flop.map((rankSuit) => (
           <div style={{ margin: 10 }}>
             <PlayingCard rankSuit={rankSuit} />
           </div>
         ))}
-    </Wrapper>
+    </StyledPaper>
   );
 };
