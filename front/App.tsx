@@ -7,23 +7,26 @@ import { Footer } from "./Footer";
 import { ConnectedGame } from "./game/Game";
 import { Home } from "./home/Home";
 import { Login } from "./Login";
+import { PokerTheme } from "./theme/PokerTheme";
 
 export const App = function () {
   return (
-    <Session>
-      <Router>
-        <Switch>
-          <AuthRoute path={"/home"} component={Home} isPublic={false} />
-          <AuthRoute
-            path={"/game/:id"}
-            component={ConnectedGame}
-            isPublic={false}
-          />
-          <AuthRoute path={"/login"} component={Login} isPublic={true} />
-          <Redirect exact to="/home" />
-        </Switch>
-      </Router>
-      <ToastContainer />
-    </Session>
+    <PokerTheme>
+      <Session>
+        <Router>
+          <Switch>
+            <AuthRoute path={"/home"} component={Home} isPublic={false} />
+            <AuthRoute
+              path={"/game/:id"}
+              component={ConnectedGame}
+              isPublic={false}
+            />
+            <AuthRoute path={"/login"} component={Login} isPublic={true} />
+            <Redirect exact to="/home" />
+          </Switch>
+        </Router>
+        <ToastContainer />
+      </Session>
+    </PokerTheme>
   );
 };
