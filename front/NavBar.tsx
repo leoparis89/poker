@@ -15,6 +15,7 @@ import {
   styled,
   colors,
 } from "@material-ui/core";
+import { ThemeToggle } from "./theme/ThemeToggle";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -88,6 +89,7 @@ export function NavBar() {
               <Button color="inherit" onClick={logout}>
                 Logout
               </Button>
+              <ThemeToggle />
             </>
           )}
         </Toolbar>
