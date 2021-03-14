@@ -1,3 +1,4 @@
+import FaceIcon from "@material-ui/icons/Face";
 import React, { useContext } from "react";
 import { SessionContext, logout } from "./context/SessionContext";
 import MenuIcon from "@material-ui/icons/Menu";
@@ -10,6 +11,9 @@ import {
   Typography,
   Button,
   Avatar,
+  Chip,
+  styled,
+  colors,
 } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
@@ -17,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
     // flexGrow: 1,
   },
   menuButton: {
-    // marginRight: theme.spacing(2),
+    marginRight: theme.spacing(2),
   },
   title: {
     flexGrow: 1,
@@ -72,19 +76,35 @@ export function NavBar() {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" className={classes.title}>
-            News
-          </Typography>
-          <Button color="inherit">Login</Button>
-          <Avatar src={user?.photos?.[0].value as any} />
+          <Link to="/home" className={classes.title}>
+            <Typography variant="h6">Home</Typography>
+          </Link>
+          {user && (
+            <>
+              <Avatar src={user?.photos?.[0].value as any} />
+              <Online online={connected} />
+              <Button color="inherit" onClick={logout}>
+                Logout
+              </Button>
+            </>
+          )}
         </Toolbar>
       </AppBar>
     </div>
   );
 }
 
-const Online = ({ online }) => (
-  <div style={{ color: online ? "green" : "red", marginRight: 20 }}>
-    {online ? "Online" : "Offline"}
-  </div>
-);
+const Online = ({ online }) => {
+  const StyledChip = styled(Chip)(({ theme }) => ({
+    margin: theme.spacing(1),
+    background: online ? colors.green[600] : colors.red[500],
+  }));
+
+  return (
+    <StyledChip
+      icon={<FaceIcon />}
+      label={online ? "Online" : "Offline"}
+      color="secondary"
+    />
+  );
+};
