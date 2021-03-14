@@ -1,4 +1,5 @@
 import styled from "@emotion/styled";
+import { Box, Paper } from "@material-ui/core";
 import React, { FunctionComponent } from "react";
 import { Badge } from "react-bootstrap";
 import { UserGameData } from "../../back/game/game-engine/models";
@@ -8,32 +9,33 @@ import { Chip } from "./Chip";
 
 require("./ribbon.css");
 
-const Wrapper = styled("div")((props: any) => ({
+const Wrapper = styled(Paper)((props: any) => ({
   minHeight: 150,
   boxShadow: `0 2px 10px 0 ${props.currentTurn ? "green" : "rgb(185 185 185)"}`,
   padding: 20,
   borderRadius: 10,
   overflow: "hidden",
-  position: "relative"
+  position: "relative",
 }));
+
 export const UserCard: FunctionComponent<UserDataUI> = ({
   profile,
   online,
   gameData,
   currentTurn,
   showCards,
-  isDealer
+  isDealer,
 }) => {
   return (
     <>
-      <div style={{ height: 100 }}>
+      <Box height={100}>
         {gameData && gameData.bet !== null && (
           <div style={{ display: "flex", alignItems: "center" }}>
             <Chip chipSize={60} />
             <span style={{ fontSize: "1.8em" }}>{gameData.bet}</span>
           </div>
         )}
-      </div>
+      </Box>
       <Wrapper
         data-testid={`user-card-${profile.id}`}
         role="listitem"
@@ -98,7 +100,7 @@ export const Online = ({ online }) => (
       borderRadius: "50%",
       display: "inline-block",
       margin: 10,
-      boxShadow: `0 2px 10px 0 ${online ? "green" : "red"}`
+      boxShadow: `0 2px 10px 0 ${online ? "green" : "red"}`,
     }}
   ></span>
 );
