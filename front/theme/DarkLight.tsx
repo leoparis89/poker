@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-enum Theme {
+export enum Theme {
   Dark = "dark",
   Light = "light",
 }
@@ -11,7 +11,7 @@ export const ThemeContext = React.createContext({
 });
 
 export const DarkLight: React.FC = (props) => {
-  const [theme, setTheme] = useState<Theme>(Theme.Dark);
+  const [theme, setTheme] = useState<Theme>(Theme.Light);
 
   const toggleTheme = () => {
     setTheme((prevTheme) =>
