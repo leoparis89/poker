@@ -35,7 +35,7 @@ export function Game({ user, gameId }) {
 
     socket.on("chat-history", (messages: ChatMessage[]) => {
       setMessages(messages);
-      socketService.socket.on("cht-message", (message: ChatMessage) => {
+      socketService.socket.on("chat-message", (message: ChatMessage) => {
         setMessages((prevMessages) => [...prevMessages, message]);
       });
     });

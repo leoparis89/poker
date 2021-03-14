@@ -1,17 +1,18 @@
 import styled from "@emotion/styled";
+import { Paper, TextField, Button } from "@material-ui/core";
 import moment from "moment";
 import React, { FunctionComponent, useContext, useEffect } from "react";
-import { Button, Card, FormControl, InputGroup } from "react-bootstrap";
+import { Card, FormControl, InputGroup } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { ChatMessage } from "../../common/models";
 import { SessionContext } from "../context/SessionContext";
 import { socketService } from "../socketService";
 
 export const ChatWindow: FunctionComponent<{ messages: any }> = ({
-  messages
+  messages,
 }) => {
   const { register, handleSubmit, watch, errors, reset, formState } = useForm({
-    mode: "onChange"
+    mode: "onChange",
   });
 
   const { user, connected } = useContext(SessionContext);
@@ -40,7 +41,7 @@ export const ChatWindow: FunctionComponent<{ messages: any }> = ({
       .addEventListener("keypress", submitOnEnter);
   }, []);
 
-  const onSubmit = val => {
+  const onSubmit = (val) => {
     socketService.socket.emit("chat-text", val.chatInput);
     reset();
   };
@@ -48,38 +49,45 @@ export const ChatWindow: FunctionComponent<{ messages: any }> = ({
   return (
     <div>
       <h2>Chatroom</h2>
-      <Frame>
+      <Paper elevation={3}>
         <MessageFrame>
-          {[...messages].reverse().map(message => {
-            const myMessage = user?.id === message.user.id;
+          {[...messages].reverse().map((message) => {
+            const isMyMessage = user?.id === message.user.id;
             return (
               <Message
                 key={message.date + message.user.id}
-                myMessage={myMessage}
+                myMessage={isMyMessage}
                 message={message}
-              ></Message>
+              />
             );
           })}
         </MessageFrame>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <InputGroup>
-            <FormControl
-              as="textarea"
-              id="chat-text"
-              aria-label="With textarea"
-              ref={register({
-                required: "Required"
-              })}
-              name="chatInput"
-            />
-            <InputGroup.Prepend>
-              <Button disabled={!formState.isValid} type="submit">
-                Send
-              </Button>
-            </InputGroup.Prepend>
-          </InputGroup>
+          <TextField
+            // as="textarea"
+            // label="chat"
+            variant="outlined"
+            multiline
+            rows={3}
+            id="chat-text"
+            name="chatInput"
+            aria-label="With textarea"
+            inputRef={register({
+              required: "Required",
+            })}
+          />
+          {/* <InputGroup.Prepend> */}
+          <Button
+            variant="contained"
+            disabled={!formState.isValid}
+            type="submit"
+            color="primary"
+          >
+            Send
+          </Button>
+          {/* </InputGroup.Prepend> */}
         </form>
-      </Frame>
+      </Paper>
     </div>
   );
 };
@@ -89,7 +97,7 @@ const Wrapper = styled.div({
   margin: 10,
   boxShadow: "0 2px 10px 0 rgb(185 185 185)",
   width: 400,
-  padding: 20
+  padding: 20,
 });
 
 const Message: FunctionComponent<{
@@ -111,9 +119,5 @@ const MessageFrame = styled.div({
   height: 600,
   overflow: "scroll",
   display: "flex",
-  flexDirection: "column-reverse"
-});
-const Frame = styled.div({
-  margin: "10px 0",
-  boxShadow: "0 2px 10px 0 rgb(185 185 185)"
+  flexDirection: "column-reverse",
 });
