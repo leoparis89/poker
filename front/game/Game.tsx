@@ -4,7 +4,7 @@ import React, {
   useState,
   FunctionComponent,
 } from "react";
-import { Alert, Button } from "react-bootstrap";
+import { Alert } from "@material-ui/lab";
 import { Redirect, useRouteMatch } from "react-router-dom";
 import { ChatMessage, GameStateUI, UserSession } from "../../common/models";
 import { SessionContext } from "../context/SessionContext";
@@ -19,7 +19,7 @@ import {
   WinnerInfo,
   WinnerInfoWithAmount,
 } from "../../back/game/game-engine/solver";
-import { Chip } from "@material-ui/core";
+import { Button, Chip } from "@material-ui/core";
 import styled from "@emotion/styled";
 import { Chip as PokerChip } from "./Chip";
 import { Container } from "@material-ui/core";
@@ -66,7 +66,7 @@ export function Game({ user, gameId }) {
     <Container>
       <Table>
         {error ? (
-          <Alert variant="danger">{error}</Alert>
+          <Alert severity="error">{error}</Alert>
         ) : (
           gameState && (
             <div>
@@ -84,7 +84,7 @@ export function Game({ user, gameId }) {
                 onBet={handleBet}
               ></WrapperdControls>
               <ChatWindow messages={messages}></ChatWindow>
-              <Button onClick={quitGame} variant="danger">
+              <Button variant="contained" onClick={quitGame} color="secondary">
                 Leave game
               </Button>
             </div>
@@ -122,11 +122,7 @@ export const InfoDisplay: FunctionComponent<InfoDisplayProps> = ({
   players,
 }) => {
   if (!gameStarted) {
-    return (
-      <div style={{ height: 100 }}>
-        <Label>Game not started yet...</Label>
-      </div>
-    );
+    return <Alert severity="info">Game not started yet...</Alert>;
   }
 
   return (
