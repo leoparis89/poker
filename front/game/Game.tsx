@@ -1,4 +1,4 @@
-import { Box, Button, Chip, Container } from "@material-ui/core";
+import { Box, Button, Chip, Container, Typography } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 import React, {
   FunctionComponent,
@@ -66,10 +66,7 @@ export function Game({ user, gameId }) {
           gameState && (
             <div>
               <Chip label={`Game ID: ${gameState.gameData.id}`} />
-              <Info
-                players={gameState.players}
-                gameData={gameState.gameData}
-              ></Info>
+              <Info players={gameState.players} gameData={gameState.gameData} />
               <Flop flop={gameState.gameData.flop} />
               <Players gameState={gameState} myId={user.id}></Players>
               <WrapperdControls
@@ -119,16 +116,18 @@ export const InfoDisplay: FunctionComponent<InfoDisplayProps> = ({
   }
 
   return (
-    <div style={{ height: 100 }}>
+    <Box height={100}>
       {winners ? (
         <Winners players={players} winners={winners}></Winners>
       ) : (
         <Box display="flex" alignItems="center">
-          Pot: {pot}
+          <Typography variant="h4" component="h4">
+            Pot: {pot}
+          </Typography>
           <PokerChip chipSize={30} />
         </Box>
       )}
-    </div>
+    </Box>
   );
 };
 
