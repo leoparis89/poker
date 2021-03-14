@@ -1,18 +1,22 @@
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import React from "react";
+import React, { useContext } from "react";
+import { ThemeContext } from "./DarkLight";
 
-const darkTheme = createMuiTheme({
-  palette: {
-    // type: "dark",
-    // primary: { main: colors.blue },
-    // secondary: { main: colors.darkGray },
-  },
-});
+export const PokerTheme: React.FC = ({ children }) => {
+  const { theme } = useContext(ThemeContext);
 
-export const PokerTheme: React.FC = ({ children }) => (
-  <ThemeProvider theme={darkTheme}>
-    <CssBaseline />
-    {children}
-  </ThemeProvider>
-);
+  const darkTheme = createMuiTheme({
+    palette: {
+      type: theme,
+      // primary: { main: colors.blue },
+      // secondary: { main: colors.darkGray },
+    },
+  });
+  return (
+    <ThemeProvider theme={darkTheme}>
+      <CssBaseline />
+      {children}
+    </ThemeProvider>
+  );
+};
