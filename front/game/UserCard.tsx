@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { Box, Paper } from "@material-ui/core";
+import { Box, colors, Paper } from "@material-ui/core";
 import React, { FunctionComponent } from "react";
 import { Badge } from "react-bootstrap";
 import { UserGameData } from "../../back/game/game-engine/models";
@@ -11,7 +11,9 @@ require("./ribbon.css");
 
 const Wrapper = styled(Paper)((props: any) => ({
   minHeight: 150,
-  boxShadow: `0 2px 10px 0 ${props.currentTurn ? "green" : "rgb(185 185 185)"}`,
+  ...(props.currentTurn && {
+    boxShadow: `0 2px 10px 0 ${colors.green[500]}`,
+  }),
   padding: 20,
   borderRadius: 10,
   overflow: "hidden",
