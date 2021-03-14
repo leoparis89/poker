@@ -1,8 +1,7 @@
-import React, { useContext, useEffect, useState } from "react";
-// import { Button } from "react-bootstrap";
 import Button from "@material-ui/core/Button";
+import React, { useContext, useEffect, useState } from "react";
 import { Redirect } from "react-router-dom";
-import { logout, SessionContext } from "../context/SessionContext";
+import { SessionContext } from "../context/SessionContext";
 import { gameService } from "../gameService";
 import Join from "./Join";
 

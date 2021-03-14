@@ -1,9 +1,8 @@
-import React, { FunctionComponent } from "react";
-import { Row, Col } from "react-bootstrap";
-import { UserCard } from "./UserCard";
-import { GameStateUI } from "../../common/models";
-import { gameIsOver } from "../../back/game/game-engine/gameMethods";
 import { Grid } from "@material-ui/core";
+import React, { FunctionComponent } from "react";
+import { gameIsOver } from "../../back/game/game-engine/gameMethods";
+import { GameStateUI } from "../../common/models";
+import { UserCard } from "./UserCard";
 
 export const Players: FunctionComponent<{
   gameState: GameStateUI;
