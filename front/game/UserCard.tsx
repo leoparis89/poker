@@ -50,10 +50,10 @@ export const UserCard: FunctionComponent<UserDataUI> = ({
         )}
         <UserInfo profile={profile} online={online} />
         {gameData && (
-          <div style={{ display: "flex", alignItems: "center" }}>
+          <Box display="flex" alignItems="center">
             <Chip chipSize={30} />
             {gameData.tokens}
-          </div>
+          </Box>
         )}
       </Wrapper>
       {gameData?.hand && <Hand showCards={showCards} hand={gameData.hand} />}
