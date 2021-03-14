@@ -19,8 +19,9 @@ import {
   WinnerInfo,
   WinnerInfoWithAmount,
 } from "../../back/game/game-engine/solver";
+import { Chip } from "@material-ui/core";
 import styled from "@emotion/styled";
-import { Chip } from "./Chip";
+import { Chip as PokerChip } from "./Chip";
 import { Container } from "@material-ui/core";
 
 export function Game({ user, gameId }) {
@@ -69,7 +70,7 @@ export function Game({ user, gameId }) {
         ) : (
           gameState && (
             <div>
-              <Alert variant="success">Game ID: {gameState.gameData.id}</Alert>
+              <Chip label={`Game ID: ${gameState.gameData.id}`} />
               <Info
                 players={gameState.players}
                 gameData={gameState.gameData}
@@ -135,7 +136,7 @@ export const InfoDisplay: FunctionComponent<InfoDisplayProps> = ({
       ) : (
         <Label style={{ display: "flex", alignItems: "center" }}>
           Pot: {pot}
-          <Chip chipSize={30} />
+          <PokerChip chipSize={30} />
         </Label>
       )}
     </div>
