@@ -11,14 +11,14 @@ export function Login() {
     <div
       style={{
         textAlign: "center",
-        backgroundPosition: "cover",
-        backgroundRepeat: "no-repeat",
+        // backgroundPosition: "cover",
+        // backgroundRepeat: "no-repeat",
         height: "100vh",
-        background:
-          "linear-gradient(217deg, rgb(9, 6, 37), rgb(75, 46, 110), rgb(43, 118, 142))"
+        // background:
+        //   "linear-gradient(217deg, rgb(9, 6, 37), rgb(75, 46, 110), rgb(43, 118, 142))",
       }}
     >
-      <h1 style={{ color: "white" }}>React Poker</h1>
+      <h1>React Poker</h1>
 
       <a
         style={{ marginTop: 30, display: "block" }}
