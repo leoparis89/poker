@@ -2,9 +2,9 @@ import React, {
   useContext,
   useEffect,
   useState,
-  FunctionComponent
+  FunctionComponent,
 } from "react";
-import { Alert, Button, Container } from "react-bootstrap";
+import { Alert, Button } from "react-bootstrap";
 import { Redirect, useRouteMatch } from "react-router-dom";
 import { ChatMessage, GameStateUI, UserSession } from "../../common/models";
 import { SessionContext } from "../context/SessionContext";
@@ -17,10 +17,11 @@ import { Winners } from "./Winners";
 import { gameStarted } from "../../back/game/game-engine/gameMethods";
 import {
   WinnerInfo,
-  WinnerInfoWithAmount
+  WinnerInfoWithAmount,
 } from "../../back/game/game-engine/solver";
 import styled from "@emotion/styled";
 import { Chip } from "./Chip";
+import { Container } from "@material-ui/core";
 
 export function Game({ user, gameId }) {
   const [gameState, setGameState] = useState<GameStateUI | null>(null);
@@ -32,14 +33,14 @@ export function Game({ user, gameId }) {
     const { socket } = socketService;
 
     socket.emit("joinGame", gameId);
-    socket.on("join-failure", message => {
+    socket.on("join-failure", (message) => {
       setError(message);
     });
 
     socket.on("chat-history", (messages: ChatMessage[]) => {
       setMessages(messages);
-      socketService.socket.on("chat-message", (message: ChatMessage) => {
-        setMessages(prevMessages => [...prevMessages, message]);
+      socketService.socket.on("cht-message", (message: ChatMessage) => {
+        setMessages((prevMessages) => [...prevMessages, message]);
       });
     });
 
@@ -61,8 +62,8 @@ export function Game({ user, gameId }) {
   }
 
   return (
-    <Table>
-      <Container>
+    <Container>
+      <Table>
         {error ? (
           <Alert variant="danger">{error}</Alert>
         ) : (
@@ -88,8 +89,8 @@ export function Game({ user, gameId }) {
             </div>
           )
         )}
-      </Container>
-    </Table>
+      </Table>
+    </Container>
   );
 }
 
@@ -117,7 +118,7 @@ export const InfoDisplay: FunctionComponent<InfoDisplayProps> = ({
   gameStarted,
   winners,
   pot,
-  players
+  players,
 }) => {
   if (!gameStarted) {
     return (
@@ -141,7 +142,7 @@ export const InfoDisplay: FunctionComponent<InfoDisplayProps> = ({
   );
 };
 
-export const ConnectedGame = props => {
+export const ConnectedGame = (props) => {
   const { user, connected } = useContext(SessionContext);
   const gameId = useRouteMatch<{ id: string }>().params.id;
 
@@ -158,7 +159,7 @@ const handleDeal = () => socketService.socket.emit("deal");
 const handleBet = (amount: number | "fold") =>
   socketService.socket.emit("bet", amount);
 
-const Table = props => {
+const Table = (props) => {
   // const img = require("./assets/table-background.jpg");
   return (
     <div
