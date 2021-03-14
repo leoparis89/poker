@@ -1,5 +1,4 @@
-import styled from "@emotion/styled";
-import { Box, colors, Paper } from "@material-ui/core";
+import { Box, colors, Paper, styled } from "@material-ui/core";
 import React, { FunctionComponent } from "react";
 import { UserGameData } from "../../back/game/game-engine/models";
 import { UserSession } from "../../common/models";
