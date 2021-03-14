@@ -1,8 +1,17 @@
-import styled from "@emotion/styled";
-import { Paper, TextField, Button } from "@material-ui/core";
+import {
+  Avatar,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  Paper,
+  styled,
+  TextField,
+  Typography,
+} from "@material-ui/core";
 import moment from "moment";
 import React, { FunctionComponent, useContext, useEffect } from "react";
-import { Card, FormControl, InputGroup } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { ChatMessage } from "../../common/models";
 import { SessionContext } from "../context/SessionContext";
@@ -62,7 +71,7 @@ export const ChatWindow: FunctionComponent<{ messages: any }> = ({
             );
           })}
         </MessageFrame>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit)} style={{ display: "flex" }}>
           <TextField
             // as="textarea"
             // label="chat"
@@ -75,6 +84,7 @@ export const ChatWindow: FunctionComponent<{ messages: any }> = ({
             inputRef={register({
               required: "Required",
             })}
+            style={{ flexGrow: 1 }}
           />
           {/* <InputGroup.Prepend> */}
           <Button
@@ -92,30 +102,37 @@ export const ChatWindow: FunctionComponent<{ messages: any }> = ({
   );
 };
 
-const Wrapper = styled.div({
+const Wrapper = styled(Card)(({ theme }) => ({
   borderRadius: 10,
-  margin: 10,
-  boxShadow: "0 2px 10px 0 rgb(185 185 185)",
-  width: 400,
-  padding: 20,
-});
+  margin: theme.spacing(1),
+  minHeight: 150,
+  width: 300,
+  // padding: 20,
+}));
 
 const Message: FunctionComponent<{
   message: ChatMessage;
   myMessage?: boolean;
-}> = ({ message, myMessage }) => (
-  <Wrapper style={!myMessage ? { alignSelf: "flex-end" } : {}}>
-    <Card.Subtitle className="mb-2 text-muted">
-      {message.user.displayName}
-      <span style={{ margin: "0 10px" }}>
-        {moment(message.date).calendar()}
-      </span>
-    </Card.Subtitle>
-    <Card.Text>{message.text}</Card.Text>
-  </Wrapper>
-);
+}> = ({ message, myMessage }) => {
+  const avatarUrl = message.user.photos?.[0].value;
 
-const MessageFrame = styled.div({
+  return (
+    <Wrapper style={!myMessage ? { alignSelf: "flex-end" } : {}}>
+      <CardHeader
+        title={message.user.displayName}
+        subheader={moment(message.date).calendar()}
+        avatar={<Avatar src={avatarUrl} />}
+      />
+      <CardContent>
+        <Typography color="textSecondary" component="p">
+          {message.text}
+        </Typography>
+      </CardContent>
+    </Wrapper>
+  );
+};
+
+const MessageFrame = styled(Box)({
   height: 600,
   overflow: "scroll",
   display: "flex",
