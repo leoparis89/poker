@@ -28,6 +28,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const UnstyledLink = styled(Link)({ textDecoration: "none", color: "inherit" });
+
 export function NavBar() {
   const classes = useStyles();
   const { user, connected } = useContext(SessionContext);
@@ -76,9 +78,9 @@ export function NavBar() {
           >
             <MenuIcon />
           </IconButton>
-          <Link to="/home" className={classes.title}>
+          <UnstyledLink to="/home" className={classes.title}>
             <Typography variant="h6">Home</Typography>
-          </Link>
+          </UnstyledLink>
           {user && (
             <>
               <Avatar src={user?.photos?.[0].value as any} />
