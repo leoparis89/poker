@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Button } from "react-bootstrap";
+// import { Button } from "react-bootstrap";
+import Button from "@material-ui/core/Button";
 import { Redirect } from "react-router-dom";
 import { logout, SessionContext } from "../context/SessionContext";
 import { gameService } from "../gameService";
@@ -20,7 +21,7 @@ export const Home = function () {
   const handleShow = () => setShow(true);
 
   const newGame = () =>
-    gameService.new().then(result => {
+    gameService.new().then((result) => {
       setActiveGameId(result.id);
     });
 
@@ -28,7 +29,9 @@ export const Home = function () {
     <div style={{ textAlign: "center" }}>
       <h1>Home</h1>
       <h2>Welcome {user?.displayName} !</h2>
-      <Button onClick={newGame}>New Game</Button>
+      <Button variant="contained" color="primary" onClick={newGame}>
+        New Game
+      </Button>
       {/* <Button onClick={() => setShow(true)}>Join</Button>
       <Button onClick={logout}>Logout</Button> */}
       {activeGameId && <Redirect to={`/game/${activeGameId}`}></Redirect>}

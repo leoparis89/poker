@@ -20,7 +20,7 @@ const initalContext: ISessionContext = {
 export const SessionContext = React.createContext(initalContext);
 
 export function Session(props) {
-  const [user, setUser] = useState(undefined);
+  const [user, setUser] = useState<Profile>();
   const [connected, setConnected] = useState(false);
   useEffect(() => {
     if (window.location.pathname === "/login" || user) {
@@ -34,7 +34,7 @@ export function Session(props) {
           .on("disconnect", () => setConnected(false))
           .on("connect", () => setConnected(true));
 
-        setUser(profile as any);
+        setUser(profile);
       })
       .catch(err => {
         if (err.response.status === 401) {
