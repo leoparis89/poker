@@ -1,7 +1,6 @@
 import styled from "@emotion/styled";
 import { Box, colors, Paper } from "@material-ui/core";
 import React, { FunctionComponent } from "react";
-import { Badge } from "react-bootstrap";
 import { UserGameData } from "../../back/game/game-engine/models";
 import { UserSession } from "../../common/models";
 import { PlayingCard } from "../cards/PlayingCard";
@@ -58,15 +57,6 @@ export const UserCard: FunctionComponent<UserDataUI> = ({
       </Wrapper>
       {gameData?.hand && <Hand showCards={showCards} hand={gameData.hand} />}
     </>
-  );
-};
-
-const TokensAndBet = ({ gameData }) => {
-  return (
-    <div style={{ display: "flex", margin: 10 }}>
-      <Badge variant="primary">Tokens: {gameData.tokens}</Badge>
-      {gameData.bet && <Badge variant="warning">Bet: {gameData.bet}</Badge>}
-    </div>
   );
 };
 
