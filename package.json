@@ -1,6 +1,6 @@
 {
   "name": "poker",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "private": true,
   "workspaces": [
     "front",
@@ -12,24 +12,23 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test": "jest",
-    "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook",
-    "lint": "eslint . --ext .ts,.tsx"
+    "lint": "eslint . --ext .ts,.tsx",
+    "front:dev": "yarn workspace front dev",
+    "front:build": "yarn workspace front build",
+    "back:watch": "yarn workspace back watch",
+    "back:dev": "yarn workspace back dev",
+    "back:build": "yarn workspace back build",
+    "start": "yarn workspace back start"
   },
   "devDependencies": {
     "@types/jest": "^26.0.10",
-    "babel-loader": "^8.1.0",
     "eslint": "^7.10.0",
     "eslint-plugin-jest": "^24.1.0",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^26.5.3",
     "mock-express-response": "^0.2.2",
     "mockdate": "^3.0.2",
-    "nodemon": "^2.0.4",
-    "poi": "^12.8.0",
     "prettier": "^2.0.5",
-    "react-is": "^16.13.1",
-    "storybook": "^6.0.21",
     "ts-jest": "^26.4.1",
     "ts-node": "^8.10.2",
     "typescript": "^4.2.3"

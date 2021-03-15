@@ -15,8 +15,8 @@ ENV POI_APP_SOCKET_IO_URL="https://poker.levk.me"
 
 
 RUN yarn test && \
-    yarn workspace back build && \
-    yarn workspace front build
+    yarn back:build && \
+    yarn front:build
 
 EXPOSE 3000
-CMD [ "yarn", "workspace", "back", "start" ]
+CMD [ "yarn","start" ]
