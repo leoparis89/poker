@@ -67,6 +67,16 @@
     /* Advanced Options */
     "forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */,
     "noImplicitAny": false,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "baseUrl": "./",
+    "paths": {
+      "back/*": [
+        "./back/src/*"
+      ],
+      "front/*": [
+        "./front/src/*"
+      ],
+    }
+
   }
 }

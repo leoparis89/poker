@@ -1,7 +1,0 @@
-{
-  "extends": "./tsconfig",
-  "include": ["./back/**/*.ts*", "./common/**/*.ts"],
-  "compilerOptions": {
-    "outDir": "dist"
-  }
-}
