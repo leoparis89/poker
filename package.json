@@ -1,6 +1,6 @@
 {
   "name": "poker",
-  "version": "1.6.1",
+  "version": "1.7.0",
   "private": true,
   "workspaces": [
     "front",
@@ -17,12 +17,12 @@
     "lint": "eslint . --ext .ts,.tsx"
   },
   "devDependencies": {
+    "@types/jest": "^26.0.10",
     "babel-loader": "^8.1.0",
     "eslint": "^7.10.0",
     "eslint-plugin-jest": "^24.1.0",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^26.5.3",
-    "@types/jest": "^26.0.10",
     "mock-express-response": "^0.2.2",
     "mockdate": "^3.0.2",
     "nodemon": "^2.0.4",
