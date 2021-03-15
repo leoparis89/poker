@@ -5,16 +5,18 @@ import { authGuard } from "./authGuard";
 import { router } from "./game/gameRoute";
 import passport from "./passport";
 import { settings } from "./settings";
+import appRoot from 'app-root-path'
+import path from 'path'
 
 const {
   port,
   version,
-  oAuth: { redirectUrl }
+  oAuth: { redirectUrl },
 } = settings;
 const session = expressSession({
   secret: "coconut",
   resave: true,
-  saveUninitialized: true
+  saveUninitialized: true,
 });
 const app = express();
 
@@ -34,7 +36,7 @@ app.get("/auth/google", (req, res, next) => {
 
   passport.authenticate("google", {
     scope: ["profile"],
-    state: JSON.stringify({ gameId })
+    state: JSON.stringify({ gameId }),
   })(req, res, next);
 });
 
@@ -72,10 +74,11 @@ app.get("/healthcheck", (req, res) => {
 /**
  * serve static front end files
  */
-app.use(express.static(__dirname + "/../front"));
+app.use(express.static(appRoot + "/front/dist"));
 app.use((req, res) => {
-  var path = require("path");
-  res.sendFile(path.resolve(__dirname + "/../front/index.html"));
+  res.sendFile(
+    path.resolve(appRoot + "/front/dist/index.html")
+  );
 });
 
 export const server = http.createServer(app);
