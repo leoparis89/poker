@@ -1,20 +1,19 @@
-import FaceIcon from "@material-ui/icons/Face";
-import React, { useContext } from "react";
-import { SessionContext, logout } from "./context/SessionContext";
-import MenuIcon from "@material-ui/icons/Menu";
-import { Link } from "react-router-dom";
 import {
   AppBar,
+  Chip,
+  colors,
   IconButton,
   makeStyles,
+  styled,
   Toolbar,
   Typography,
-  Button,
-  Avatar,
-  Chip,
-  styled,
-  colors,
 } from "@material-ui/core";
+import FaceIcon from "@material-ui/icons/Face";
+import MenuIcon from "@material-ui/icons/Menu";
+import React, { useContext } from "react";
+import { Link } from "react-router-dom";
+import { AvatarMenu } from "./AvatarMenu";
+import { SessionContext } from "./context/SessionContext";
 import { ThemeToggle } from "./theme/ThemeToggle";
 
 const useStyles = makeStyles((theme) => ({
@@ -84,11 +83,8 @@ export function NavBar() {
           </UnstyledLink>
           {user && (
             <>
-              <Avatar src={user?.photos?.[0].value as any} />
+              <AvatarMenu avatarUrl={user?.photos?.[0].value as any} />
               <Online online={connected} />
-              <Button color="inherit" onClick={logout}>
-                Logout
-              </Button>
               <ThemeToggle />
             </>
           )}
