@@ -5,8 +5,9 @@ import { authGuard } from "./authGuard";
 import { router } from "./game/gameRoute";
 import passport from "./passport";
 import { settings } from "./settings";
-import appRoot from 'app-root-path'
-import path from 'path'
+import appRoot from "app-root-path";
+import path from "path";
+import morgan from "morgan";
 
 const {
   port,
@@ -20,6 +21,7 @@ const session = expressSession({
 });
 const app = express();
 
+app.use(morgan('tiny'))
 app.use(require("cookie-parser")());
 app.use(require("body-parser").urlencoded({ extended: true }));
 
@@ -65,6 +67,7 @@ app.get(root + "/connect/:id", function (req, res) {
 app.use("/game", router);
 
 app.get("/profile", authGuard, (req, res) => {
+  debugger;
   res.send(req.user);
 });
 
@@ -76,9 +79,7 @@ app.get("/healthcheck", (req, res) => {
  */
 app.use(express.static(appRoot + "/front/dist"));
 app.use((req, res) => {
-  res.sendFile(
-    path.resolve(appRoot + "/front/dist/index.html")
-  );
+  res.sendFile(path.resolve(appRoot + "/front/dist/index.html"));
 });
 
 export const server = http.createServer(app);
