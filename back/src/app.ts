@@ -21,7 +21,7 @@ const session = expressSession({
 });
 const app = express();
 
-app.use(morgan('tiny'))
+app.use(morgan("tiny"));
 app.use(require("cookie-parser")());
 app.use(require("body-parser").urlencoded({ extended: true }));
 
@@ -67,7 +67,6 @@ app.get(root + "/connect/:id", function (req, res) {
 app.use("/game", router);
 
 app.get("/profile", authGuard, (req, res) => {
-  debugger;
   res.send(req.user);
 });
 

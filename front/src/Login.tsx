@@ -1,5 +1,4 @@
 import React from "react";
-import { Footer } from "./Footer";
 
 const googleLogin = require("./assets/googleSignIn/btn_google_signin_light_normal_web@2x.png");
 
@@ -13,7 +12,6 @@ export function Login() {
         textAlign: "center",
         // backgroundPosition: "cover",
         // backgroundRepeat: "no-repeat",
-        height: "100vh",
         // background:
         //   "linear-gradient(217deg, rgb(9, 6, 37), rgb(75, 46, 110), rgb(43, 118, 142))",
       }}
@@ -26,7 +24,6 @@ export function Login() {
       >
         <img src={googleLogin} />
       </a>
-      <Footer />
     </div>
   );
 }

@@ -2,7 +2,6 @@ import Cookies from "js-cookie";
 import React from "react";
 import { Redirect, Route } from "react-router-dom";
 import { NavBar } from "./NavBar";
-import { Footer } from "./Footer";
 
 export function AuthRoute({ path, component: Comp, isPublic }) {
   const loggedIn = !!Cookies.get("loggedIn");
@@ -26,7 +25,6 @@ export function AuthRoute({ path, component: Comp, isPublic }) {
     <Route path={path}>
       <NavBar />
       <Comp />
-      <Footer dark />
     </Route>
   ) : (
     <Redirect to={"/login" + gameIdQuery}></Redirect>
