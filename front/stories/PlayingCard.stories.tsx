@@ -1,6 +1,6 @@
 import { Meta, Story } from "@storybook/react/types-6-0";
 import React from "react";
-import { PlayingCard, PlayingCardProps } from "front/cards/PlayingCard";
+import { PlayingCard, PlayingCardProps } from "front/src/cards/PlayingCard";
 
 export default {
   title: "Poker/PlayingCard",

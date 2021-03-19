@@ -1,6 +1,6 @@
 import { Meta, Story } from "@storybook/react/types-6-0";
 import React from "react";
-import { InfoDisplay, InfoDisplayProps } from "front/game/Game";
+import { InfoDisplay, InfoDisplayProps } from "front/src/game/Game";
 
 export default {
   title: "Poker/GameInfoDisplay",

@@ -1,6 +1,6 @@
 import { Meta, Story } from "@storybook/react/types-6-0";
 import React from "react";
-import { Controls } from "front/game/Controls";
+import { Controls } from "front/src/game/Controls";
 
 export default {
   title: "Poker/Controls",

@@ -1,7 +1,7 @@
 import { Meta, Story } from "@storybook/react/types-6-0";
 import React from "react";
-import { UserCard, UserDataUI } from "front/game/UserCard";
-import { mockProfile } from "back/_fixtures";
+import { UserCard, UserDataUI } from "front/src/game/UserCard";
+import { mockProfile } from "back/src/_fixtures";
 
 export default {
   title: "Poker/UserCard",
