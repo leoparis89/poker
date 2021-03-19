@@ -1,16 +1,16 @@
-import { Button, styled } from "@material-ui/core";
+import { Button, Slider, styled } from "@material-ui/core";
 import React, { FunctionComponent, useState } from "react";
 import { useForm } from "react-hook-form";
 
-import { getLastBet } from "../../../back/src/game/game-engine/actionHandlers";
-import { SMALL_BLIND } from "../../../back/src/game/game-engine/config";
+import { getLastBet } from "back/src/game/game-engine/actionHandlers";
+import { SMALL_BLIND } from "back/src/game/game-engine/config";
 import {
   gameStarted,
   isBigBlind,
   isSmallBlind,
   gameIsOver,
-} from "../../../back/src/game/game-engine/gameMethods";
-import { GameDataUI } from "../../../common/models";
+} from "back/src/game/game-engine/gameMethods";
+import { GameDataUI } from "common/models";
 
 export type ControlProps = {
   gameData: GameDataUI;
@@ -19,7 +19,10 @@ export type ControlProps = {
   onDeal: () => any;
 };
 
-const Btn = styled(Button)({ width: 150, margin: 5 });
+const Btn = styled(Button)(({ theme }) => ({
+  width: 150,
+  margin: theme.spacing(1),
+}));
 
 const StyledButton: typeof Btn = (props) => (
   <Btn color="primary" variant="contained" {...props} />

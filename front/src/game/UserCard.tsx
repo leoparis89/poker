@@ -3,7 +3,7 @@ import React, { FunctionComponent } from "react";
 import { UserGameData } from "back/game/game-engine/models";
 import { UserSession } from "common/models";
 import { PlayingCard } from "../cards/PlayingCard";
-import { Chip } from "./Chip";
+import { PokerChip } from "./PokerChip";
 
 require("./ribbon.css");
 
@@ -31,7 +31,7 @@ export const UserCard: FunctionComponent<UserDataUI> = ({
       <Box height={100}>
         {gameData && gameData.bet !== null && (
           <div style={{ display: "flex", alignItems: "center" }}>
-            <Chip chipSize={60} />
+            <PokerChip chipSize={60} />
             <span style={{ fontSize: "1.8em" }}>{gameData.bet}</span>
           </div>
         )}
@@ -49,7 +49,7 @@ export const UserCard: FunctionComponent<UserDataUI> = ({
         <UserInfo profile={profile} online={online} />
         {gameData && (
           <Box display="flex" alignItems="center">
-            <Chip chipSize={30} />
+            <PokerChip chipSize={30} />
             {gameData.tokens}
           </Box>
         )}
@@ -73,10 +73,7 @@ const UserInfo = ({ profile, online }) => {
 };
 
 const Hand = ({ hand, showCards }) => (
-  <div
-    className="hand hhand-compact"
-    data-fan="spacing: 0.1; width: 80; radius: 80;"
-  >
+  <div className="hand hhand-compact">
     <PlayingCard rankSuit={showCards ? hand[0] : "Blue_Back"} />
     <PlayingCard rankSuit={showCards ? hand[1] : "Blue_Back"} />
   </div>

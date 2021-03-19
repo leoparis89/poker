@@ -1,3 +1,4 @@
+import { styled, Typography, useTheme } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import React, { useContext, useEffect, useState } from "react";
 import { Redirect } from "react-router-dom";
@@ -9,6 +10,7 @@ export const Home = function () {
   const { user } = useContext(SessionContext);
   const [activeGameId, setActiveGameId] = useState("");
   const [show, setShow] = useState(false);
+  const theme = useTheme();
 
   useEffect(() => {
     // if (user) {
@@ -26,8 +28,13 @@ export const Home = function () {
 
   return (
     <div style={{ textAlign: "center" }}>
-      <h1>Home</h1>
-      <h2>Welcome {user?.displayName} !</h2>
+      <Typography
+        variant="h2"
+        component="div"
+        style={{ margin: theme.spacing(2) }}
+      >
+        Welcome {user?.displayName} !
+      </Typography>
       <Button variant="contained" color="primary" onClick={newGame}>
         New Game
       </Button>

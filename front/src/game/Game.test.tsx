@@ -6,7 +6,7 @@ import { Game } from "./Game";
 
 import { EventEmitter } from "events";
 import { socketService } from "../socketService";
-import { GameDataUI, UserSession, GameStateUI } from "common/models";
+import { GameDataUI, UserSession, GameStateUI } from "../../../common/models";
 
 jest.mock("../socketService");
 

@@ -57,7 +57,6 @@ export const ChatWindow: FunctionComponent<{ messages: any }> = ({
 
   return (
     <div>
-      <h2>Chatroom</h2>
       <Paper elevation={3}>
         <MessageFrame>
           {[...messages].reverse().map((message) => {
@@ -86,7 +85,6 @@ export const ChatWindow: FunctionComponent<{ messages: any }> = ({
             })}
             style={{ flexGrow: 1 }}
           />
-          {/* <InputGroup.Prepend> */}
           <Button
             variant="contained"
             disabled={!formState.isValid}
@@ -95,7 +93,6 @@ export const ChatWindow: FunctionComponent<{ messages: any }> = ({
           >
             Send
           </Button>
-          {/* </InputGroup.Prepend> */}
         </form>
       </Paper>
     </div>
@@ -107,7 +104,6 @@ const Wrapper = styled(Card)(({ theme }) => ({
   margin: theme.spacing(1),
   minHeight: 150,
   width: 300,
-  // padding: 20,
 }));
 
 const Message: FunctionComponent<{

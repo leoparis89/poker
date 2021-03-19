@@ -1,7 +1,7 @@
 import Cookies from "js-cookie";
 import React from "react";
 import { Redirect, Route } from "react-router-dom";
-import { NavBar } from "./NavBar";
+import { NavBar } from "./components/NavBar";
 
 export function AuthRoute({ path, component: Comp, isPublic }) {
   const loggedIn = !!Cookies.get("loggedIn");

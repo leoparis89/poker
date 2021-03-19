@@ -7,7 +7,8 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   justifyContent: "center",
   alignItems: "center",
   height: 200,
-  margin: theme.spacing(2),
+  marginTop: theme.spacing(2),
+  marginBottom: theme.spacing(2),
   borderRadius: 25,
   ...(process.env.NODE_ENV !== "test" && {
     backgroundImage: `url(${require("./assets/table-background.jpg")})`,

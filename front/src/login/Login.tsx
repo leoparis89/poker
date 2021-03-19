@@ -1,6 +1,7 @@
+import { Button, Typography } from "@material-ui/core";
 import React from "react";
 
-const googleLogin = require("./assets/googleSignIn/btn_google_signin_light_normal_web@2x.png");
+// const googleLogin = require("./assets/googleSignIn/btn_google_signin_light_normal_web@2x.png");
 
 export function Login() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -16,13 +17,15 @@ export function Login() {
         //   "linear-gradient(217deg, rgb(9, 6, 37), rgb(75, 46, 110), rgb(43, 118, 142))",
       }}
     >
-      <h1>React Poker</h1>
+      <Typography variant="h1">React Poker &#9824;&#65039;</Typography>
 
       <a
-        style={{ marginTop: 30, display: "block" }}
-        href={require("./urls").googleAuth + queryStr}
+        style={{ marginTop: 30, display: "block", textDecoration: "none" }}
+        href={require("../urls").googleAuth + queryStr}
       >
-        <img src={googleLogin} />
+        <Button variant="contained" color="primary">
+          Login with google
+        </Button>
       </a>
     </div>
   );
