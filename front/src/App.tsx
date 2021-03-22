@@ -10,27 +10,28 @@ import { Home } from "./home";
 import { Login } from "./login";
 import { DarkLight } from "./theme/DarkLight";
 import { PokerTheme } from "./theme/PokerTheme";
+import { GameContextProvider } from "./game/GameContext";
 
 export const App = function () {
   return (
     <FullHeightWrapper>
       <DarkLight>
         <PokerTheme>
-          <Session>
-            <Router>
+          <Router>
+            <GameContextProvider>
               <Switch>
                 <AuthRoute path={"/home"} component={Home} isPublic={false} />
                 <AuthRoute
-                  path={"/game/:id"}
+                  path={"/game/:gameId"}
                   component={Game}
                   isPublic={false}
                 />
                 <AuthRoute path={"/login"} component={Login} isPublic={true} />
                 <Redirect exact to="/home" />
               </Switch>
-            </Router>
-            <ToastContainer />
-          </Session>
+            </GameContextProvider>
+          </Router>
+          <ToastContainer />
         </PokerTheme>
       </DarkLight>
       <Footer />

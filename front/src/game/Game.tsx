@@ -1,65 +1,28 @@
-import {
-  Box,
-  Button,
-  Chip,
-  Container,
-  styled,
-  Typography,
-} from "@material-ui/core";
+import { Button, Chip, Container, styled } from "@material-ui/core";
+import { flow } from "lodash";
 import { Alert } from "@material-ui/lab";
-import { Theme } from "front/theme/DarkLight";
-import React, {
-  FunctionComponent,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
-import { Redirect, useRouteMatch } from "react-router-dom";
-import { WinnerInfoWithAmount } from "../../../back/src/game/game-engine/solver";
-import { ChatMessage, GameStateUI, UserSession } from "../../../common/models";
+import React, { useContext, useEffect } from "react";
+import { Redirect, useParams } from "react-router-dom";
 import { SessionContext } from "../context/SessionContext";
 import { socketService } from "../socketService";
 import { ChatWindow } from "./ChatWindow";
 import { WrapperdControls } from "./Controls";
 import { Flop } from "./Flop";
+import { GameContext, GameContextType } from "./GameContext";
 import { Info } from "./Info";
 import { Players } from "./Players";
-import { Winners } from "./Winners";
 
-export function Game({ user, gameId }) {
-  const [gameState, setGameState] = useState<GameStateUI | null>(null);
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [quit, setQuit] = useState<boolean>(false);
-  const [error, setError] = useState<string>();
+type GameProps = {
+  userId: string;
+} & Omit<GameContextType, "setGameId">;
 
-  useEffect(() => {
-    const { socket } = socketService;
-
-    socket.emit("joinGame", gameId);
-    socket.on("join-failure", (message) => {
-      setError(message);
-    });
-
-    socket.on("chat-history", (messages: ChatMessage[]) => {
-      setMessages(messages);
-      socketService.socket.on("chat-message", (message: ChatMessage) => {
-        setMessages((prevMessages) => [...prevMessages, message]);
-      });
-    });
-
-    socket.on("game-data", (gameData: GameStateUI) => {
-      setGameState(gameData);
-    });
-
-    socket.on("quit-game", () => {
-      setQuit(true);
-    });
-
-    return () => {
-      socket.removeAllListeners();
-    };
-  }, [user]);
-
+export const Game: React.FC<GameProps> = ({
+  userId,
+  gameState,
+  messages,
+  error,
+  quit,
+}) => {
   if (quit) {
     return <Redirect exact to="/home" />;
   }
@@ -75,10 +38,10 @@ export function Game({ user, gameId }) {
               <Chip label={`Game ID: ${gameState.gameData.id}`} />
               <Info players={gameState.players} gameData={gameState.gameData} />
               <Flop flop={gameState.gameData.flop} />
-              <Players gameState={gameState} myId={user.id}></Players>
+              <Players gameState={gameState} myId={userId}></Players>
               <WrapperdControls
                 gameData={gameState.gameData}
-                myId={user.id}
+                myId={userId}
                 onDeal={handleDeal}
                 onBet={handleBet}
               ></WrapperdControls>
@@ -98,23 +61,35 @@ export function Game({ user, gameId }) {
       </div>
     </Container>
   );
-}
+};
 
 const BtnWrapper = styled("div")(({ theme }) => ({
   margin: theme.spacing(2),
   textAlign: "center",
 }));
 
-export const ConnectedGame = (props) => {
-  const { user, connected } = useContext(SessionContext);
-  const gameId = useRouteMatch<{ id: string }>().params.id;
+export const withGameIdParamHandler = (Component: React.FC) => () => {
+  const { gameId } = useParams<{ gameId: string }>();
+  const { setGameId } = useContext(GameContext);
+  useEffect(() => {
+    if (gameId) {
+      setGameId(gameId);
+    }
+  }, [gameId]);
 
-  if (!user) {
-    return <div>No User</div>;
-  }
-
-  return <Game {...props} user={user} gameId={gameId} />;
+  return <Component />;
 };
+
+export const withGameData = (Component: React.FC<any>) => (props) => {
+  const { user } = useContext(SessionContext);
+  const gameContextProps = useContext(GameContext);
+
+  return (
+    user && <Component {...props} userId={user.id} {...gameContextProps} />
+  );
+};
+
+export const ConnectedGame = flow(withGameData, withGameIdParamHandler)(Game);
 
 const quitGame = () => socketService.socket.emit("quit-game-request");
 

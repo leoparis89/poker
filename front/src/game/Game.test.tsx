@@ -7,6 +7,9 @@ import { Game } from "./Game";
 import { EventEmitter } from "events";
 import { socketService } from "../socketService";
 import { GameDataUI, UserSession, GameStateUI } from "../../../common/models";
+import { MemoryRouter, Route } from "react-router-dom";
+
+import { GameContextProvider } from "./GameContext";
 
 jest.mock("../socketService");
 
@@ -57,19 +60,19 @@ const gameState: GameStateUI = {
 
 describe("<Game/>", () => {
   it("should display players", () => {
-    render(<Game user={{ id: "foo" } as any} gameId={"foo"} />);
-    act(() => {
-      socketService.socket.emit("game-data", gameState);
-    });
+    render(<Game userId="foo" gameState={gameState} messages={[]} />);
+    // act(() => {
+    //   socketService.socket.emit("game-data", gameState);
+    // });
 
     expect(screen.queryAllByRole("listitem").length).toEqual(3);
   });
 
   test("user at start turn should display dealer button", () => {
-    render(<Game user={{ id: "foo" } as any} gameId={"foo"} />);
-    act(() => {
-      socketService.socket.emit("game-data", gameState);
-    });
+    render(<Game userId="foo" gameState={gameState} messages={[]} />);
+    // act(() => {
+    //   socketService.socket.emit("game-data", gameState);
+    // });
 
     expect(screen.queryByTestId("user-card-foo")).toHaveTextContent("Dealer");
     expect(screen.queryByTestId("user-card-bar")).not.toHaveTextContent(
@@ -80,3 +83,13 @@ describe("<Game/>", () => {
     );
   });
 });
+
+const renderWithRouter = (children: JSX.Element) => {
+  return render(
+    <MemoryRouter initialEntries={["/game/mockId"]}>
+      <Route exact path={`game/:gameId`}>
+        <GameContextProvider>{children}</GameContextProvider>
+      </Route>
+    </MemoryRouter>
+  );
+};

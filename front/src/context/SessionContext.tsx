@@ -6,15 +6,15 @@ import { getProfile } from "../sessionService";
 import { socketService } from "../socketService";
 
 interface ISessionContext {
-  user: undefined | Profile;
+  user: null | Profile;
   connected: boolean;
   setUser: any;
 }
 const initalContext: ISessionContext = {
   connected: false,
-  user: undefined,
+  user: null,
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  setUser: () => {}
+  setUser: () => {},
 };
 
 export const SessionContext = React.createContext(initalContext);
@@ -22,13 +22,14 @@ export const SessionContext = React.createContext(initalContext);
 export function Session(props) {
   const [user, setUser] = useState<Profile>();
   const [connected, setConnected] = useState(false);
+
   useEffect(() => {
-    if (window.location.pathname === "/login" || user) {
+    if (user) {
       return;
     }
 
     getProfile()
-      .then(profile => {
+      .then((profile) => {
         socketService.init();
         socketService.socket
           .on("disconnect", () => setConnected(false))
@@ -36,16 +37,17 @@ export function Session(props) {
 
         setUser(profile);
       })
-      .catch(err => {
+      .catch((err) => {
         if (err.response.status === 401) {
           logout();
         }
         toast.error("Failed to fetch profile...");
       });
-  });
+  }, []);
+
   return (
-    <SessionContext.Provider value={{ user, setUser, connected }}>
-      {props.children}
+    <SessionContext.Provider value={{ user: user || null, setUser, connected }}>
+      {user && props.children}
     </SessionContext.Provider>
   );
 }

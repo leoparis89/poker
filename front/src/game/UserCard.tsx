@@ -1,4 +1,4 @@
-import { Box, colors, Paper, styled } from "@material-ui/core";
+import { Box, colors, Paper, styled, Theme } from "@material-ui/core";
 import React, { FunctionComponent } from "react";
 import { UserGameData } from "back/game/game-engine/models";
 import { UserSession } from "common/models";
@@ -7,9 +7,9 @@ import { PokerChip } from "./PokerChip";
 
 require("./ribbon.css");
 
-const Wrapper = styled(Paper)((props: any) => ({
+const Wrapper = styled(Paper)<any, { ["current-turn"]?: number }>((props) => ({
   minHeight: 150,
-  ...(props.currentTurn && {
+  ...(props["current-turn"] && {
     boxShadow: `0 2px 10px 0 ${colors.green[500]}`,
   }),
   padding: 20,
@@ -39,7 +39,7 @@ export const UserCard: FunctionComponent<UserDataUI> = ({
       <Wrapper
         data-testid={`user-card-${profile.id}`}
         role="listitem"
-        currentTurn={currentTurn}
+        current-turn={currentTurn ? 1 : 0}
       >
         {isDealer && (
           <div className="corner-ribbon top-right sticky blue shadow">

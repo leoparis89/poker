@@ -11,7 +11,7 @@ export class SocketService {
 
   public get socket() {
     if (!this._socket) {
-      throw new Error("Socket not connected !");
+      throw new Error("Socket not created !");
     }
 
     return this._socket;
