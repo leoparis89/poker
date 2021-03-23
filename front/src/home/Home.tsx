@@ -26,6 +26,10 @@ export const Home = function () {
       setActiveGameId(result.id);
     });
 
+  if (activeGameId) {
+    return <Redirect to={`/game/${activeGameId}`} />;
+  }
+
   return (
     <div style={{ textAlign: "center" }}>
       <Typography
@@ -40,8 +44,7 @@ export const Home = function () {
       </Button>
       {/* <Button onClick={() => setShow(true)}>Join</Button>
       <Button onClick={logout}>Logout</Button> */}
-      {activeGameId && <Redirect to={`/game/${activeGameId}`}></Redirect>}
-      <Join show={show} handleClose={handleClose}></Join>
+      <Join show={show} handleClose={handleClose} />
     </div>
   );
 };

@@ -35,7 +35,6 @@ export const Game: React.FC<GameProps> = ({
         ) : (
           gameState && (
             <div>
-              <Chip label={`Game ID: ${gameState.gameData.id}`} />
               <Info players={gameState.players} gameData={gameState.gameData} />
               <Flop flop={gameState.gameData.flop} />
               <Players gameState={gameState} myId={userId}></Players>
@@ -70,12 +69,17 @@ const BtnWrapper = styled("div")(({ theme }) => ({
 
 export const withGameIdParamHandler = (Component: React.FC) => () => {
   const { gameId } = useParams<{ gameId: string }>();
-  const { setGameId } = useContext(GameContext);
+  const { setGameId, quit, reset } = useContext(GameContext);
   useEffect(() => {
+    if (quit) {
+      reset();
+      return;
+    }
+
     if (gameId) {
       setGameId(gameId);
     }
-  }, [gameId]);
+  }, [gameId, quit]);
 
   return <Component />;
 };

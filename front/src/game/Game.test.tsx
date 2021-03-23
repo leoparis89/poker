@@ -60,7 +60,9 @@ const gameState: GameStateUI = {
 
 describe("<Game/>", () => {
   it("should display players", () => {
-    render(<Game userId="foo" gameState={gameState} messages={[]} />);
+    render(
+      <Game reset={() => {}} userId="foo" gameState={gameState} messages={[]} />
+    );
     // act(() => {
     //   socketService.socket.emit("game-data", gameState);
     // });
@@ -69,7 +71,9 @@ describe("<Game/>", () => {
   });
 
   test("user at start turn should display dealer button", () => {
-    render(<Game userId="foo" gameState={gameState} messages={[]} />);
+    render(
+      <Game reset={() => {}} userId="foo" gameState={gameState} messages={[]} />
+    );
     // act(() => {
     //   socketService.socket.emit("game-data", gameState);
     // });

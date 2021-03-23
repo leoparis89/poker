@@ -10,6 +10,7 @@ import {
 } from "@material-ui/core";
 import FaceIcon from "@material-ui/icons/Face";
 import MenuIcon from "@material-ui/icons/Menu";
+import { GameContext } from "front/src/game/GameContext";
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { AvatarMenu } from "../AvatarMenu";
@@ -33,6 +34,7 @@ const UnstyledLink = styled(Link)({ textDecoration: "none", color: "inherit" });
 export function NavBar() {
   const classes = useStyles();
   const { user, connected } = useContext(SessionContext);
+  const { gameState } = useContext(GameContext);
   return (
     // <Navbar bg="dark" variant="dark">
     //   <Navbar.Brand href="#home">
@@ -83,6 +85,9 @@ export function NavBar() {
           </UnstyledLink>
           {user && (
             <>
+              {gameState && (
+                <Chip label={`Game ID: ${gameState.gameData.id}`} />
+              )}
               <AvatarMenu avatarUrl={user?.photos?.[0].value as any} />
               <Online online={connected} />
               <ThemeToggle />

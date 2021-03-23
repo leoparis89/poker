@@ -7,6 +7,7 @@ export type GameContextType = {
   gameState: GameStateUI | null;
   messages: ChatMessage[];
   setGameId: (id: string) => void;
+  reset: Function;
   error?: string;
   quit?: boolean;
 };
@@ -15,6 +16,7 @@ export const GameContext = React.createContext<GameContextType>({
   gameState: null,
   messages: [],
   setGameId: () => {},
+  reset: () => {},
 });
 
 export const GameContextProvider: React.FC = ({ children }) => {
@@ -56,6 +58,12 @@ export const GameContextProvider: React.FC = ({ children }) => {
     };
   }, [gameId]);
 
+  const handleReset = () => {
+    setGameId(undefined);
+    setGameState(null);
+    setQuit(false);
+  };
+
   return (
     <GameContext.Provider
       value={{
@@ -64,6 +72,7 @@ export const GameContextProvider: React.FC = ({ children }) => {
         error,
         quit,
         setGameId,
+        reset: handleReset,
       }}
     >
       {children}
