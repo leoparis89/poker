@@ -5,13 +5,13 @@ import React from "react";
 import { Game } from "./Game";
 
 import { EventEmitter } from "events";
-import { socketService } from "../socketService";
 import { GameDataUI, UserSession, GameStateUI } from "../../../common/models";
 import { MemoryRouter, Route } from "react-router-dom";
 
-import { GameContextProvider } from "./GameContext";
+import { GameStateProvider } from "./GameStateProvider";
+import { socketService } from "../service/socketService";
 
-jest.mock("../socketService");
+jest.mock("../service/socketService");
 
 beforeAll(() => {
   (socketService.socket as any) = new EventEmitter();
@@ -92,7 +92,7 @@ const renderWithRouter = (children: JSX.Element) => {
   return render(
     <MemoryRouter initialEntries={["/game/mockId"]}>
       <Route exact path={`game/:gameId`}>
-        <GameContextProvider>{children}</GameContextProvider>
+        <GameStateProvider>{children}</GameStateProvider>
       </Route>
     </MemoryRouter>
   );

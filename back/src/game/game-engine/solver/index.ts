@@ -1,6 +1,6 @@
 import { Hand } from "pokersolver";
 import { FullFlop, UserGameData } from "../models";
-import { RankSuit } from "../../../../../common/models";
+import { RankSuit } from "common/models";
 
 export const getWinners = (
   hands: [RankSuit, RankSuit][],

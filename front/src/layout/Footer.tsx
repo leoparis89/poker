@@ -1,7 +1,7 @@
 import { styled } from "@material-ui/core";
 import React from "react";
 
-import { settings } from "back/src/settings";
+import { version } from "../../package.json";
 
 const StyledFooter = styled("footer")(({ theme }) => ({
   textAlign: "center",
@@ -10,7 +10,5 @@ const StyledFooter = styled("footer")(({ theme }) => ({
 }));
 
 export const Footer = () => (
-  <StyledFooter>
-    React Poker &#9824;&#65039; version {settings.version}
-  </StyledFooter>
+  <StyledFooter>React Poker &#9824;&#65039; version {version}</StyledFooter>
 );

@@ -1,8 +1,5 @@
 import { Profile } from "passport-google-oauth20";
-import {
-  UserGameData,
-  GameDataCore,
-} from "../back/src/game/game-engine/models";
+import { UserGameData, GameDataCore } from "back/src/game/game-engine/models";
 
 export interface ChatMessage {
   text: string;

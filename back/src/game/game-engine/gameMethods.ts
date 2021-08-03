@@ -1,4 +1,4 @@
-import { GameData } from "../../../../common/models";
+import { GameData } from "common/models";
 import { allFolded } from "./actionHandlers";
 import { UserGameData } from "./models";
 

@@ -1,4 +1,4 @@
-import { RankSuit } from "../../../../common/models";
+import { RankSuit } from "common/models";
 import { WinnerInfo, WinnerInfoWithAmount } from "./solver";
 
 export type GameDataCore = ReadOnly<_GameDataCore>;
