@@ -3,14 +3,14 @@ import { flow } from "lodash";
 import { Alert } from "@material-ui/lab";
 import React, { useContext, useEffect } from "react";
 import { Redirect, useParams } from "react-router-dom";
-import { SessionContext } from "../context/SessionContext";
-import { socketService } from "../socketService";
-import { ChatWindow } from "./ChatWindow";
-import { WrapperdControls } from "./Controls";
-import { Flop } from "./Flop";
-import { GameContext, GameContextType } from "./GameContext";
-import { Info } from "./Info";
-import { Players } from "./Players";
+import { SessionContext } from "../context/SessionProvider";
+import { socketService } from "../service/socketService";
+import { ChatWindow } from "./chat/ChatWindow";
+import { WrapperdControls } from "./controls/Controls";
+import { Flop } from "./display/Flop";
+import { GameContext, GameContextType } from "./GameStateProvider";
+import { Info } from "./display/Info";
+import { Players } from "./display/Players";
 
 type GameProps = {
   userId: string;

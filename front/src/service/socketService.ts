@@ -5,7 +5,7 @@ export class SocketService {
 
   public init() {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    this._socket = Socket(require("./urls").socketIo);
+    this._socket = Socket(require("../config/urls").socketIo);
     return this._socket;
   }
 

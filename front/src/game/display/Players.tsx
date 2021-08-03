@@ -1,7 +1,7 @@
 import { Grid } from "@material-ui/core";
 import React, { FunctionComponent } from "react";
 // import { gameIsOver } from "back/src/game/game-engine/gameMethods";
-import { gameIsOver } from "../../../back/src/game/game-engine/gameMethods";
+import { gameIsOver } from "back/src/game/game-engine/gameMethods";
 import { GameStateUI } from "common/models";
 import { UserCard } from "./UserCard";
 

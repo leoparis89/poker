@@ -1,14 +1,14 @@
 import { fireEvent, render, screen, act } from "@testing-library/react";
 import { cloneDeep } from "lodash";
 import React from "react";
-import { newGame } from "../../../back/src/game/game-engine/actionHandlers";
-import { gameReducer } from "../../../back/src/game/game-engine/gameReducer.";
+import { newGame } from "back/src/game/game-engine/actionHandlers";
+import { gameReducer } from "back/src/game/game-engine/gameReducer.";
 import {
   Action,
   GameDataCore,
   UserGameData,
-} from "../../../back/src/game/game-engine/models";
-import { GameDataUI } from "../../../common/models";
+} from "back/src/game/game-engine/models";
+import { GameDataUI } from "../../../../common/models";
 import { Controls } from "./Controls";
 
 const toGameDataUI = (gameData: GameDataCore): GameDataUI => {

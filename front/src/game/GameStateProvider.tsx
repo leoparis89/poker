@@ -1,5 +1,5 @@
 import { ChatMessage, GameStateUI } from "common/models";
-import { socketService } from "../socketService";
+import { socketService } from "../service/socketService";
 import React, { useEffect, useState } from "react";
 import { useParams, useRouteMatch } from "react-router-dom";
 
@@ -19,7 +19,7 @@ export const GameContext = React.createContext<GameContextType>({
   reset: () => {},
 });
 
-export const GameContextProvider: React.FC = ({ children }) => {
+export const GameStateProvider: React.FC = ({ children }) => {
   const [gameState, setGameState] = useState<GameStateUI | null>(null);
   const [gameId, setGameId] = useState<string>();
   const [messages, setMessages] = useState<ChatMessage[]>([]);

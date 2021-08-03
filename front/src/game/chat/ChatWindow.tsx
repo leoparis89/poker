@@ -14,8 +14,8 @@ import moment from "moment";
 import React, { FunctionComponent, useContext, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { ChatMessage } from "common/models";
-import { SessionContext } from "../context/SessionContext";
-import { socketService } from "../socketService";
+import { SessionContext } from "../../context/SessionProvider";
+import { socketService } from "../../service/socketService";
 
 export const ChatWindow: FunctionComponent<{ messages: any }> = ({
   messages,

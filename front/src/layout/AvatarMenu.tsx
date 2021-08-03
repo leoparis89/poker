@@ -2,7 +2,7 @@ import { Avatar } from "@material-ui/core";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import React from "react";
-import { logout } from "./context/SessionContext";
+import { logout } from "../context/SessionProvider";
 
 type AvatarMenuProps = {
   avatarUrl: string;

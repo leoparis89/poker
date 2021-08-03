@@ -1,5 +1,5 @@
 import React from "react";
-import { PlayingCard } from "../cards/PlayingCard";
+import { PlayingCard } from "./PlayingCard";
 import { Paper, styled } from "@material-ui/core";
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -11,7 +11,7 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   marginBottom: theme.spacing(2),
   borderRadius: 25,
   ...(process.env.NODE_ENV !== "test" && {
-    backgroundImage: `url(${require("./assets/table-background.jpg")})`,
+    backgroundImage: `url(${require("../assets/table-background.jpg")})`,
   }),
 }));
 

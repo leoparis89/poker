@@ -1,7 +1,7 @@
 import { styled } from "@material-ui/core";
 import React from "react";
 
-import { settings } from "../../../back/src/settings";
+import { settings } from "back/src/settings";
 
 const StyledFooter = styled("footer")(({ theme }) => ({
   textAlign: "center",

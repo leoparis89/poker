@@ -2,8 +2,8 @@ import { styled, Typography, useTheme } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import React, { useContext, useEffect, useState } from "react";
 import { Redirect } from "react-router-dom";
-import { SessionContext } from "../context/SessionContext";
-import { gameService } from "../gameService";
+import { SessionContext } from "../context/SessionProvider";
+import { gameService } from "../service/gameService";
 import Join from "./Join";
 
 export const Home = function () {

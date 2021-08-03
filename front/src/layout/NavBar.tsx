@@ -10,12 +10,12 @@ import {
 } from "@material-ui/core";
 import FaceIcon from "@material-ui/icons/Face";
 import MenuIcon from "@material-ui/icons/Menu";
-import { GameContext } from "front/src/game/GameContext";
+import { GameContext } from "../game/GameStateProvider";
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
-import { AvatarMenu } from "../AvatarMenu";
-import { SessionContext } from "../context/SessionContext";
+import { SessionContext } from "../context/SessionProvider";
 import { ThemeToggle } from "../theme/ThemeToggle";
+import { AvatarMenu } from "./AvatarMenu";
 
 const useStyles = makeStyles((theme) => ({
   root: {

@@ -21,7 +21,7 @@ export function Login() {
 
       <a
         style={{ marginTop: 30, display: "block", textDecoration: "none" }}
-        href={require("../urls").googleAuth + queryStr}
+        href={require("../config/urls").googleAuth + queryStr}
       >
         <Button variant="contained" color="primary">
           Login with google

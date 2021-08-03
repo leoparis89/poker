@@ -2,8 +2,8 @@ import Cookies from "js-cookie";
 import { Profile } from "passport-google-oauth20";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { getProfile } from "../sessionService";
-import { socketService } from "../socketService";
+import { getProfile } from "../service/sessionService";
+import { socketService } from "../service/socketService";
 
 interface ISessionContext {
   user: null | Profile;
@@ -19,7 +19,7 @@ const initalContext: ISessionContext = {
 
 export const SessionContext = React.createContext(initalContext);
 
-export function Session(props) {
+export function SessionProvider(props) {
   const [user, setUser] = useState<Profile>();
   const [connected, setConnected] = useState(false);
 

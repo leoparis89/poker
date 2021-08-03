@@ -1,8 +1,8 @@
 import Cookies from "js-cookie";
 import React from "react";
 import { Redirect, Route } from "react-router-dom";
-import { NavBar } from "./components/NavBar";
-import { Session } from "./context/SessionContext";
+import { NavBar } from "./layout/NavBar";
+import { SessionProvider } from "./context/SessionProvider";
 
 export function AuthRoute({ path, component: Comp, isPublic }) {
   const loggedIn = !!Cookies.get("loggedIn");
@@ -24,10 +24,10 @@ export function AuthRoute({ path, component: Comp, isPublic }) {
   const gameIdQuery = gameId ? "?gameId=" + gameId : "";
   return loggedIn ? (
     <Route path={path}>
-      <Session>
+      <SessionProvider>
         <NavBar />
         <Comp />
-      </Session>
+      </SessionProvider>
     </Route>
   ) : (
     <Redirect to={"/login" + gameIdQuery}></Redirect>

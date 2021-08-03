@@ -2,7 +2,7 @@ import { Box, colors, Paper, styled, Theme } from "@material-ui/core";
 import React, { FunctionComponent } from "react";
 import { UserGameData } from "back/game/game-engine/models";
 import { UserSession } from "common/models";
-import { PlayingCard } from "../cards/PlayingCard";
+import { PlayingCard } from "./PlayingCard";
 import { PokerChip } from "./PokerChip";
 
 require("./ribbon.css");

@@ -3,14 +3,14 @@ import React from "react";
 import { BrowserRouter as Router, Redirect, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { AuthRoute } from "./AuthRoute";
-import { Session } from "./context/SessionContext";
-import { Footer } from "./components/Footer";
+import { SessionProvider } from "./context/SessionProvider";
+import { Footer } from "./layout/Footer";
 import { Game } from "./game";
 import { Home } from "./home";
 import { Login } from "./login";
 import { DarkLight } from "./theme/DarkLight";
 import { PokerTheme } from "./theme/PokerTheme";
-import { GameContextProvider } from "./game/GameContext";
+import { GameStateProvider } from "./game/GameStateProvider";
 
 export const App = function () {
   return (
@@ -18,7 +18,7 @@ export const App = function () {
       <DarkLight>
         <PokerTheme>
           <Router>
-            <GameContextProvider>
+            <GameStateProvider>
               <Switch>
                 <AuthRoute path={"/home"} component={Home} isPublic={false} />
                 <AuthRoute
@@ -29,7 +29,7 @@ export const App = function () {
                 <AuthRoute path={"/login"} component={Login} isPublic={true} />
                 <Redirect exact to="/home" />
               </Switch>
-            </GameContextProvider>
+            </GameStateProvider>
           </Router>
           <ToastContainer />
         </PokerTheme>

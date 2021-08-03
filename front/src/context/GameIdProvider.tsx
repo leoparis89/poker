@@ -6,12 +6,12 @@ interface IGameContext {
 }
 const initalContext: IGameContext = {
   gameId: null,
-  setGameId: () => {}
+  setGameId: () => {},
 };
 
 export const GameContext = React.createContext(initalContext);
 
-export function Game(props) {
+export function GameIdProvider(props) {
   const [gameId, setGameId] = useState(null);
   return (
     <GameContext.Provider value={{ gameId, setGameId }}>

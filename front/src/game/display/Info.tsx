@@ -3,7 +3,7 @@ import { Alert } from "@material-ui/lab";
 import { WinnerInfoWithAmount } from "back/game/game-engine/solver";
 import { UserSession } from "common/models";
 import React from "react";
-import { gameStarted } from "../../../back/src/game/game-engine/gameMethods";
+import { gameStarted } from "back/src/game/game-engine/gameMethods";
 import { PokerChip } from "./PokerChip";
 import { Winners } from "./Winners";
 
