@@ -59,9 +59,16 @@ const gameState: GameStateUI = {
 };
 
 describe("<Game/>", () => {
-  it("should display players", () => {
-    render(
-      <Game reset={() => {}} userId="foo" gameState={gameState} messages={[]} />
+  it("should display players", async () => {
+    await act(async () =>
+      (render as any)(
+        <Game
+          reset={() => {}}
+          userId="foo"
+          gameState={gameState}
+          messages={[]}
+        />
+      )
     );
     // act(() => {
     //   socketService.socket.emit("game-data", gameState);
@@ -70,9 +77,16 @@ describe("<Game/>", () => {
     expect(screen.queryAllByRole("listitem").length).toEqual(3);
   });
 
-  test("user at start turn should display dealer button", () => {
-    render(
-      <Game reset={() => {}} userId="foo" gameState={gameState} messages={[]} />
+  test("user at start turn should display dealer button", async () => {
+    await act(async () =>
+      (render as any)(
+        <Game
+          reset={() => {}}
+          userId="foo"
+          gameState={gameState}
+          messages={[]}
+        />
+      )
     );
     // act(() => {
     //   socketService.socket.emit("game-data", gameState);
