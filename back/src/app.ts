@@ -21,7 +21,7 @@ const session = expressSession({
 });
 const app = express();
 
-app.use(morgan("tiny"));
+app.use(morgan("tiny") as any); // Broken type
 app.use(require("cookie-parser")());
 app.use(require("body-parser").urlencoded({ extended: true }));
 
