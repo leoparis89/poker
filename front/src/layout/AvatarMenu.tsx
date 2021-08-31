@@ -1,4 +1,4 @@
-import { Avatar } from "@material-ui/core";
+import { Avatar, useTheme } from "@material-ui/core";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import React from "react";
@@ -17,8 +17,9 @@ export const AvatarMenu: React.FC<AvatarMenuProps> = ({ avatarUrl }) => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+  const theme = useTheme();
   return (
-    <div>
+    <div style={{ margin: theme.spacing(1) }}>
       {/* <Button
         aria-controls="simple-menu"
         aria-haspopup="true"

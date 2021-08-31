@@ -7,6 +7,7 @@ import {
   styled,
   Toolbar,
   Typography,
+  useTheme,
 } from "@material-ui/core";
 import FaceIcon from "@material-ui/icons/Face";
 import MenuIcon from "@material-ui/icons/Menu";
@@ -35,6 +36,7 @@ export function NavBar() {
   const classes = useStyles();
   const { user, connected } = useContext(SessionContext);
   const { gameState } = useContext(GameContext);
+  const theme = useTheme();
   return (
     // <Navbar bg="dark" variant="dark">
     //   <Navbar.Brand href="#home">
@@ -86,7 +88,10 @@ export function NavBar() {
           {user && (
             <>
               {gameState && (
-                <Chip label={`Game ID: ${gameState.gameData.id}`} />
+                <Chip
+                  label={`Game ID: ${gameState.gameData.id}`}
+                  style={{ margin: theme.spacing(1) }}
+                />
               )}
               <AvatarMenu avatarUrl={user?.photos?.[0].value as any} />
               <Online online={connected} />
